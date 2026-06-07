@@ -1,1 +1,1 @@
-# MediKart-Pharmacy-Medical-Store-E-Commerce-Documentation
+# MediKart-Pharmacy-Medical-Store-E-Commerce
