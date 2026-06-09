@@ -1,0 +1,17 @@
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo {
+  width: 80px;   /* Increase logo width */
+  height: 80px;  /* Increase logo height */
+  object-fit: contain;
+}
+
+.brand-name {
+  font-size: 28px;
+  font-weight: bold;
+  margin: 0;
+}
