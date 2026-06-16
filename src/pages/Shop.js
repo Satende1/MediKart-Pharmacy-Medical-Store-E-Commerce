@@ -3,8 +3,7 @@ import React from "react";
 function Shop() {
   return (
     <div>
-      <h1>Shop</h1>
-      <p>Browse our medical products.</p>
+      <h1>Welcome to MediKart Shop</h1>
     </div>
   );
 }

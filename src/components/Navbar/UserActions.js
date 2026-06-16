@@ -1,5 +1,5 @@
 import React from "react";
-
+import "./UserAction.css";
 function UserActions() {
   return (
     <div className="user-actions">
