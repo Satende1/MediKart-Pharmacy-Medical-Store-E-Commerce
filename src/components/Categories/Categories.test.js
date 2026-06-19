@@ -3,7 +3,7 @@ import { BrowserRouter } from "react-router-dom";
 import Categories from "./Categories";
 
 // Mock image imports
-jest.mock("../../assets/categories/medicines.png", () => "medicines.png");
+jest.mock("../../assets/categories/medicines.jpg", () => "medicines.jpg");
 jest.mock("../../assets/categories/healthcare.png", () => "healthcare.png");
 jest.mock("../../assets/categories/vitamins.png", () => "vitamins.png");
 jest.mock("../../assets/categories/personalcare.png", () => "personalcare.png");
