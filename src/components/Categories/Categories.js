@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import "./Categories.css";
 
-import medicines from "../../assets/categories/medicines.png";
+import medicines from "../../assets/categories/medicines.jpg";
 import healthcare from "../../assets/categories/healthcare.png";
 import vitamins from "../../assets/categories/vitamins.png";
 import personalcare from "../../assets/categories/personalcare.png";

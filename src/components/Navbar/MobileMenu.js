@@ -1,10 +1,10 @@
 import React, { useState } from "react";
+import { NavLink } from "react-router-dom";
 import "./MobileMenu.css";
 import logo from "../../assets/Medikart-logo.png";
 
 function MobileMenu() {
   const [isOpen, setIsOpen] = useState(false);
-  const [activeLink, setActiveLink] = useState("Home");
 
   const menuItems = [
     { name: "Home", icon: "🏠", path: "/" },
@@ -27,7 +27,7 @@ function MobileMenu() {
         <div
           className="mobile-overlay"
           onClick={() => setIsOpen(false)}
-        ></div>
+        />
       )}
 
       <div className={`mobile-sidebar ${isOpen ? "open" : ""}`}>
@@ -38,7 +38,6 @@ function MobileMenu() {
           ✕
         </button>
 
-        {/* Logo Section */}
         <div className="sidebar-header">
           <img
             src={logo}
@@ -51,17 +50,16 @@ function MobileMenu() {
         <ul className="mobile-nav-links">
           {menuItems.map((item) => (
             <li key={item.name}>
-              <a
-                href={item.path}
-                className={activeLink === item.name ? "active" : ""}
-                onClick={() => {
-                  setActiveLink(item.name);
-                  setIsOpen(false);
-                }}
+              <NavLink
+                to={item.path}
+                onClick={() => setIsOpen(false)}
+                className={({ isActive }) =>
+                  isActive ? "active" : ""
+                }
               >
                 <span className="icon">{item.icon}</span>
                 {item.name}
-              </a>
+              </NavLink>
             </li>
           ))}
         </ul>
