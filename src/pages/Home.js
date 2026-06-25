@@ -4,7 +4,7 @@ import Categories from "../components/Categories/Categories";
 import FeaturedProducts from "../FeaturedProducts/FeaturedProducts";
 import TrendingProducts from "../TrendingProducts/TrendingProducts";
 import FlashSale from "../FlashSale/FlashSale";
-
+import Newsletter from "../components/Newsletter/Newsletter";
 function Home() {
   return (
     <>
@@ -13,6 +13,7 @@ function Home() {
       <FeaturedProducts/>
       <TrendingProducts/>
       <FlashSale/>
+      <Newsletter/>
     </>
   );
 }
