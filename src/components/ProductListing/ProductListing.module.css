@@ -1,0 +1,129 @@
+.container {
+  width: 95%;
+  max-width: 1440px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+.container h2 {
+  text-align: center;
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 35px;
+}
+
+/* Product Grid */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+
+/* Loading & Empty State */
+
+.loading,
+.empty {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+/* Load More Button */
+
+.center {
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
+}
+
+.load {
+  background: #0f766e;
+  color: #fff;
+  border: none;
+  outline: none;
+  padding: 14px 36px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.load:hover {
+  background: #115e59;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(15, 118, 110, 0.3);
+}
+
+/* Large Laptop */
+
+@media (max-width: 1200px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Tablet */
+
+@media (max-width: 992px) {
+  .container {
+    padding: 0 16px;
+  }
+
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+}
+
+/* Mobile */
+
+@media (max-width: 768px) {
+  .container {
+    width: 96%;
+    padding: 0 12px;
+  }
+
+  .container h2 {
+    font-size: 1.8rem;
+    margin-bottom: 25px;
+  }
+
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .load {
+    padding: 12px 28px;
+    font-size: 15px;
+  }
+}
+
+/* Small Mobile */
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0 10px;
+  }
+
+  .container h2 {
+    font-size: 1.5rem;
+  }
+
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .load {
+    width: 100%;
+    max-width: 220px;
+  }
+}

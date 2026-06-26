@@ -1,10 +1,11 @@
 import React from "react";
+import ProductListing from "../components/ProductListing/ProductListing";
 
 function Shop() {
   return (
-    <div>
-      <h1>Welcome to MediKart Shop</h1>
-    </div>
+    <main>
+      <ProductListing />
+    </main>
   );
 }
 
