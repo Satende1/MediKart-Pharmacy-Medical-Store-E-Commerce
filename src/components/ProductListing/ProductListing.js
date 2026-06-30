@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { FaSearch, FaTimes } from "react-icons/fa";
 import styles from "./ProductListing.module.css";
 import ProductCard from "../ProductCard/ProductCard";
 import productsData from "../../data/products";
@@ -7,6 +8,7 @@ const ProductListing = () => {
   const [loading, setLoading] = useState(true);
   const [products, setProducts] = useState([]);
   const [visible, setVisible] = useState(4);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     setTimeout(() => {
@@ -14,6 +16,21 @@ const ProductListing = () => {
       setLoading(false);
     }, 1200);
   }, []);
+
+  // Filter products by name or category
+  const filteredProducts = products.filter((product) => {
+    const keyword = searchTerm.toLowerCase();
+
+    return (
+      product.name.toLowerCase().includes(keyword) ||
+      product.category.toLowerCase().includes(keyword)
+    );
+  });
+
+  const clearSearch = () => {
+    setSearchTerm("");
+    setVisible(4);
+  };
 
   if (loading) {
     return (
@@ -33,28 +50,65 @@ const ProductListing = () => {
 
   return (
     <section className={styles.container}>
-      <h2>Our Products</h2>
 
-      <div className={styles.grid}>
-        {products
-          .slice(0, visible)
-          .map((product) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-              onAddToCart={(p) => console.log("Add to cart", p.id)}
+      {/* Heading and Search Bar */}
+      <div className={styles.topBar}>
+        <h2>Our Products</h2>
+
+        <div className={styles.searchBox}>
+          <FaSearch className={styles.searchIcon} />
+
+          <input
+            type="text"
+            placeholder="Search products or categories..."
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setVisible(4);
+            }}
+          />
+
+          {searchTerm && (
+            <FaTimes
+              className={styles.clearIcon}
+              onClick={clearSearch}
             />
-          ))}
+          )}
+        </div>
       </div>
 
-      {visible < products.length && (
-        <div className={styles.center}>
-          <button
-            className={styles.load}
-            onClick={() => setVisible((prev) => prev + 4)}
-          >
-            Load More
-          </button>
+      {/* Products */}
+      {filteredProducts.length > 0 ? (
+        <>
+          <div className={styles.grid}>
+            {filteredProducts
+              .slice(0, visible)
+              .map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  onAddToCart={(p) =>
+                    console.log("Add to cart", p.id)
+                  }
+                />
+              ))}
+          </div>
+
+          {visible < filteredProducts.length && (
+            <div className={styles.center}>
+              <button
+                className={styles.load}
+                onClick={() => setVisible((prev) => prev + 4)}
+              >
+                Load More
+              </button>
+            </div>
+          )}
+        </>
+      ) : (
+        <div className={styles.empty}>
+          <h3>No Products Found</h3>
+          <p>Try another search keyword.</p>
         </div>
       )}
     </section>

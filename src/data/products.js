@@ -6,6 +6,9 @@ import bpmonitor from "../assets/FlashSale/bpMonitor.jpg";
 import vitamin from "../assets/FlashSale/Vitamin C.png";
 import syrup from "../assets/FlashSale/Cough Syrup.png";
 
+
+
+
 const products = [
   {
     id: 1,
@@ -63,6 +66,7 @@ const products = [
     rating: 4.1,
     image: syrup,
   },
-];
+  
+]
 
 export default products;

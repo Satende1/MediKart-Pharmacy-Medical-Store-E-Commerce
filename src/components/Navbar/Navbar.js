@@ -15,8 +15,7 @@ function Navbar() {
       <NavLinks />
 
       <SearchBar />
-
-
+      
       <UserActions />
 
       <MobileMenu />
