@@ -29,6 +29,12 @@
   gap: 24px;
 }
 
+.product-price {
+  color: #0f766e;
+  font-size: 22px;
+  font-weight: 700;
+}
+
 /* Tablet */
 @media (max-width: 992px) {
   .trending-grid {

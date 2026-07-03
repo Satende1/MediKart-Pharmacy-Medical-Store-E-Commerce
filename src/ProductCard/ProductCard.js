@@ -1,7 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
 import "./ProductCard.css";
 
 function ProductCard({ product }) {
+  const [isAdded, setIsAdded] = useState(false);
+
+  const handleAddToCart = () => {
+    setIsAdded(true);
+    // Reset after 2 seconds
+    setTimeout(() => {
+      setIsAdded(false);
+    }, 2000);
+  };
+
   return (
     <div className="product-card">
       <img
@@ -24,8 +34,11 @@ function ProductCard({ product }) {
             View Details
           </button>
 
-          <button className="cart-btn">
-            Add to Cart
+          <button 
+            className={`cart ${isAdded ? 'added' : ''}`}
+            onClick={handleAddToCart}
+          >
+            {isAdded ? '✓ Added' : 'Add to Cart'}
           </button>
         </div>
       </div>

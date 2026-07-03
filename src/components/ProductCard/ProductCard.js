@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import styles from "./ProductCard.module.css";
 
 const ProductCard = ({ product, onAddToCart }) => {
@@ -29,13 +30,16 @@ const ProductCard = ({ product, onAddToCart }) => {
         </p>
 
         <div className={styles.buttons}>
-          <button className={styles.details}>
+          <Link
+            to={`/product/${product.id}`}
+            className={styles.details}
+          >
             View Details
-          </button>
+          </Link>
 
           <button
             className={styles.cart}
-            onClick={() => onAddToCart(product)}
+            onClick={() => onAddToCart?.(product)}
           >
             Add to Cart
           </button>

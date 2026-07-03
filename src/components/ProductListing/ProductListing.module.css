@@ -136,6 +136,23 @@
   gap: 20px;
 }
 
+.leftControls {
+  display: flex;
+  align-items: center;
+}
+
+.rightControls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.controlsRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .topBar h2 {
   font-size: 2rem;
   font-weight: 700;
@@ -187,10 +204,24 @@
   .topBar {
     flex-direction: column;
     align-items: stretch;
+    gap: 12px;
   }
 
   .topBar h2 {
     text-align: center;
+  }
+
+  .controlsRow {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .leftControls {
+    flex: 0 0 40%;
+  }
+
+  .rightControls {
+    flex: 1 1 60%;
   }
 
   .searchBox {

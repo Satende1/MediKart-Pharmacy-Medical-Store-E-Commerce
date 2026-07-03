@@ -48,12 +48,12 @@ function TrendingProducts() {
             Explore the most popular healthcare products on Medikart
           </p>
         </div>
-
         <div className="trending-grid">
           {trendingProducts.map((product) => (
             <ProductCard
               key={product.id}
               product={product}
+              price={product.price}
             />
           ))}
         </div>

@@ -1,0 +1,52 @@
+.specifications {
+  margin-top: 40px;
+  background: #fff;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 3px 10px rgba(0,0,0,.08);
+}
+
+.specifications h2 {
+  margin-bottom: 20px;
+  color: #0f766e;
+}
+
+.spec-list {
+  display: grid;
+  gap: 12px;
+}
+
+.spec-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 14px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.spec-label {
+  font-weight: 600;
+  color: #0f766e;
+}
+
+.spec-value {
+  text-align: right;
+  color: #333;
+}
+
+@media(max-width:768px){
+
+.specifications{
+padding:15px;
+}
+
+.spec-item {
+  flex-direction: column;
+  gap: 6px;
+}
+
+.spec-value {
+  text-align: left;
+}
+
+}

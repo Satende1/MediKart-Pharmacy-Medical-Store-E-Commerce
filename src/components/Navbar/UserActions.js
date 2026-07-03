@@ -1,17 +1,17 @@
 import React from "react";
-import "./UserAction.css";
+import styles from"./UserAction.module.css";
 function UserActions() {
   return (
-    <div className="user-actions">
-      <button className="wishlist-btn">
+    <div className={styles["user-actions"]}>
+      <button className={styles["wishlist-btn"]}>
         ❤️ Wishlist
       </button>
 
-      <button className="cart-btn">
+      <button className={styles["cart-btn"]}>
         🛒 Cart
       </button>
 
-      <button className="login-btn">
+      <button className={styles["login-btn"]}>
         👤 Login
       </button>
     </div>

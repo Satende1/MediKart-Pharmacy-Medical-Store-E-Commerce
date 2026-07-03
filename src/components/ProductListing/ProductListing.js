@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { FaSearch, FaTimes } from "react-icons/fa";
-import styles from "./ProductListing.module.css";
 import ProductCard from "../ProductCard/ProductCard";
 import productsData from "../../data/products";
+import SortDropdown from "../SortDropdown/SortDropdown";
+import styles from "./ProductListing.module.css";
 
-const ProductListing = () => {
+const ProductListing = ({ sortBy = "", setSortBy = () => {} }) => {
   const [loading, setLoading] = useState(true);
   const [products, setProducts] = useState([]);
   const [visible, setVisible] = useState(4);
@@ -26,6 +27,27 @@ const ProductListing = () => {
       product.category.toLowerCase().includes(keyword)
     );
   });
+
+  // Apply sorting based on `sortBy` prop
+  const sortedProducts = (() => {
+    const list = [...filteredProducts];
+    switch (sortBy) {
+      case "priceLowHigh":
+        return list.sort((a, b) => a.price - b.price);
+      case "priceHighLow":
+        return list.sort((a, b) => b.price - a.price);
+      case "nameAZ":
+        return list.sort((a, b) => a.name.localeCompare(b.name));
+      case "nameZA":
+        return list.sort((a, b) => b.name.localeCompare(a.name));
+      case "rating":
+        return list.sort((a, b) => b.rating - a.rating);
+      case "newest":
+        return list.sort((a, b) => b.id - a.id);
+      default:
+        return list;
+    }
+  })();
 
   const clearSearch = () => {
     setSearchTerm("");
@@ -53,27 +75,33 @@ const ProductListing = () => {
 
       {/* Heading and Search Bar */}
       <div className={styles.topBar}>
+        <div className={styles.leftControls}>
+          <SortDropdown sortBy={sortBy} setSortBy={setSortBy} />
+        </div>
+
         <h2>Our Products</h2>
 
-        <div className={styles.searchBox}>
-          <FaSearch className={styles.searchIcon} />
+        <div className={styles.rightControls}>
+          <div className={styles.searchBox}>
+            <FaSearch className={styles.searchIcon} />
 
-          <input
-            type="text"
-            placeholder="Search products or categories..."
-            value={searchTerm}
-            onChange={(e) => {
-              setSearchTerm(e.target.value);
-              setVisible(4);
-            }}
-          />
-
-          {searchTerm && (
-            <FaTimes
-              className={styles.clearIcon}
-              onClick={clearSearch}
+            <input
+              type="text"
+              placeholder="Search products or categories..."
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setVisible(4);
+              }}
             />
-          )}
+
+            {searchTerm && (
+              <FaTimes
+                className={styles.clearIcon}
+                onClick={clearSearch}
+              />
+            )}
+          </div>
         </div>
       </div>
 
@@ -81,7 +109,7 @@ const ProductListing = () => {
       {filteredProducts.length > 0 ? (
         <>
           <div className={styles.grid}>
-            {filteredProducts
+            {sortedProducts
               .slice(0, visible)
               .map((product) => (
                 <ProductCard

@@ -1,4 +1,5 @@
 import { render, screen, fireEvent } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 import ProductCard from "./ProductCard";
 
 const mockProduct = {
@@ -10,14 +11,21 @@ const mockProduct = {
   image: "test-image.jpg",
 };
 
-describe("ProductCard Component", () => {
-  test("renders product image", () => {
-    render(
+const renderProductCard = (props = {}) => {
+  return render(
+    <MemoryRouter>
       <ProductCard
         product={mockProduct}
         onAddToCart={jest.fn()}
+        {...props}
       />
-    );
+    </MemoryRouter>
+  );
+};
+
+describe("ProductCard Component", () => {
+  test("renders product image", () => {
+    renderProductCard();
 
     const image = screen.getByAltText("Dolo 650");
     expect(image).toBeInTheDocument();
@@ -25,71 +33,41 @@ describe("ProductCard Component", () => {
   });
 
   test("renders product name", () => {
-    render(
-      <ProductCard
-        product={mockProduct}
-        onAddToCart={jest.fn()}
-      />
-    );
+    renderProductCard();
 
     expect(screen.getByText("Dolo 650")).toBeInTheDocument();
   });
 
   test("renders product category", () => {
-    render(
-      <ProductCard
-        product={mockProduct}
-        onAddToCart={jest.fn()}
-      />
-    );
+    renderProductCard();
 
     expect(screen.getByText("Tablets")).toBeInTheDocument();
   });
 
   test("renders product price", () => {
-    render(
-      <ProductCard
-        product={mockProduct}
-        onAddToCart={jest.fn()}
-      />
-    );
+    renderProductCard();
 
     expect(screen.getByText("₹35")).toBeInTheDocument();
   });
 
   test("renders product rating", () => {
-    render(
-      <ProductCard
-        product={mockProduct}
-        onAddToCart={jest.fn()}
-      />
-    );
+    renderProductCard();
 
     expect(screen.getByText("⭐ 4.6")).toBeInTheDocument();
   });
 
-  test("renders View Details button", () => {
-    render(
-      <ProductCard
-        product={mockProduct}
-        onAddToCart={jest.fn()}
-      />
-    );
+  test("renders View Details link", () => {
+    renderProductCard();
 
     expect(
-      screen.getByRole("button", {
+      screen.getByRole("link", {
         name: /view details/i,
       })
     ).toBeInTheDocument();
   });
 
   test("renders Add to Cart button", () => {
-    render(
-      <ProductCard
-        product={mockProduct}
-        onAddToCart={jest.fn()}
-      />
-    );
+    renderProductCard();
 
     expect(
       screen.getByRole("button", {
@@ -102,10 +80,12 @@ describe("ProductCard Component", () => {
     const mockAddToCart = jest.fn();
 
     render(
-      <ProductCard
-        product={mockProduct}
-        onAddToCart={mockAddToCart}
-      />
+      <MemoryRouter>
+        <ProductCard
+          product={mockProduct}
+          onAddToCart={mockAddToCart}
+        />
+      </MemoryRouter>
     );
 
     fireEvent.click(
