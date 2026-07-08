@@ -16,6 +16,7 @@ import QuantitySelector from "./components/QuantitySelector/QuantitySelector";
 import RelatedProducts from "./components/RelatedProducts/RelatedProducts";
 import ProductSpecifications from "./components/ProductSpecifications/ProductSpecifications";
 import ProductListing from "./pages/ProductListing/ProductListing";
+import ScrollToTop from "./ScrollToTop/ScrollToTop";
 
 // Dummy data
 import products from "./data/products";
@@ -24,6 +25,13 @@ function App() {
   return (
     <BrowserRouter>
       <Navbar />
+      <ScrollToTop>
+        <Route>
+          <Route path="/" element={<Home />} />
+          <Route path="/products" element={<ProductListing />} />
+          <Route path="/product/:id" element={<ProductDetails />} />
+        </Route>
+      </ScrollToTop>
 
       <Routes>
 
@@ -66,7 +74,7 @@ function App() {
           element={
             <QuantitySelector
               quantity={1}
-              setQuantity={() => {}}
+              setQuantity={() => { }}
             />
           }
         />

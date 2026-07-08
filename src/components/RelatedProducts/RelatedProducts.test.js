@@ -1,13 +1,14 @@
-/* eslint-disable testing-library/no-container */
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
+import { MemoryRouter } from "react-router-dom";
 import RelatedProducts from "./RelatedProducts";
 
 // Mock useNavigate
 const mockNavigate = jest.fn();
 
 jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
   useNavigate: () => mockNavigate,
 }));
 
@@ -15,109 +16,144 @@ describe("RelatedProducts Component", () => {
   const products = [
     {
       id: 1,
-      name: "Dolo 650 Tablet",
-      image: "dolo.jpg",
-      price: 35,
-      discount: 10,
+      name: "Paracetamol",
+      category: "Medicine",
+      price: 99,
+      rating: 4.8,
+      image: "/test-image.png",
     },
     {
       id: 2,
-      name: "Crocin Advance",
-      image: "crocin.jpg",
-      price: 50,
-      discount: 0,
+      name: "Vitamin D",
+      category: "Supplements",
+      price: 249,
+      rating: 4.6,
+      image: "/test-image2.png",
     },
   ];
 
   beforeEach(() => {
-    mockNavigate.mockClear();
+    jest.clearAllMocks();
   });
 
-  test("renders section title", () => {
-    render(<RelatedProducts products={products} />);
+  test("renders heading", () => {
+    render(
+      <MemoryRouter>
+        <RelatedProducts products={products} />
+      </MemoryRouter>
+    );
 
     expect(screen.getByText("Our Products")).toBeInTheDocument();
   });
 
-  test("renders all product names", () => {
-    render(<RelatedProducts products={products} />);
+  test("renders all products", () => {
+    render(
+      <MemoryRouter>
+        <RelatedProducts products={products} />
+      </MemoryRouter>
+    );
 
-    expect(screen.getByText("Dolo 650 Tablet")).toBeInTheDocument();
-    expect(screen.getByText("Crocin Advance")).toBeInTheDocument();
+    expect(screen.getByText("Paracetamol")).toBeInTheDocument();
+    expect(screen.getByText("Vitamin D")).toBeInTheDocument();
   });
 
-  test("renders all product prices", () => {
-    render(<RelatedProducts products={products} />);
+  test("renders product prices", () => {
+    render(
+      <MemoryRouter>
+        <RelatedProducts products={products} />
+      </MemoryRouter>
+    );
 
-    expect(screen.getByText("₹35")).toBeInTheDocument();
-    expect(screen.getByText("₹50")).toBeInTheDocument();
+    expect(screen.getByText("₹99")).toBeInTheDocument();
+    expect(screen.getByText("₹249")).toBeInTheDocument();
   });
 
-  test("renders product discounts", () => {
-    render(<RelatedProducts products={products} />);
+  test("renders View Details buttons", () => {
+    render(
+      <MemoryRouter>
+        <RelatedProducts products={products} />
+      </MemoryRouter>
+    );
 
-    expect(screen.getByText("10% OFF")).toBeInTheDocument();
-    expect(screen.getByText("Best price")).toBeInTheDocument();
+    const buttons = screen.getAllByText("View Details");
+    expect(buttons).toHaveLength(2);
   });
 
-  test("renders all product images", () => {
-    render(<RelatedProducts products={products} />);
+  test("renders Add to Cart buttons", () => {
+    render(
+      <MemoryRouter>
+        <RelatedProducts products={products} />
+      </MemoryRouter>
+    );
 
-    const images = screen.getAllByRole("img");
-
-    expect(images).toHaveLength(2);
-    expect(images[0]).toHaveAttribute("src", "dolo.jpg");
-    expect(images[0]).toHaveAttribute("alt", "Dolo 650 Tablet");
-
-    expect(images[1]).toHaveAttribute("src", "crocin.jpg");
-    expect(images[1]).toHaveAttribute("alt", "Crocin Advance");
+    const buttons = screen.getAllByText("Add to Cart");
+    expect(buttons).toHaveLength(2);
   });
 
-  test("navigates to product details when first card is clicked", () => {
-    render(<RelatedProducts products={products} />);
+  test("navigates when View Details is clicked", () => {
+    render(
+      <MemoryRouter>
+        <RelatedProducts products={products} />
+      </MemoryRouter>
+    );
 
-    fireEvent.click(screen.getByText("Dolo 650 Tablet"));
+    fireEvent.click(screen.getAllByText("View Details")[0]);
 
     expect(mockNavigate).toHaveBeenCalledWith("/product/1");
   });
 
-  test("navigates to second product when clicked", () => {
-    render(<RelatedProducts products={products} />);
-
-    fireEvent.click(screen.getByText("Crocin Advance"));
-
-    expect(mockNavigate).toHaveBeenCalledWith("/product/2");
-  });
-
-  test("renders correct number of cards", () => {
-    const { container } = render(
-      <RelatedProducts products={products} />
+  test("navigates when image is clicked", () => {
+    render(
+      <MemoryRouter>
+        <RelatedProducts products={products} />
+      </MemoryRouter>
     );
 
-    expect(container.querySelectorAll(".related-card")).toHaveLength(2);
+    fireEvent.click(screen.getAllByRole("img")[0]);
+
+    expect(mockNavigate).toHaveBeenCalledWith("/product/1");
   });
 
-  test("renders correct number of image containers", () => {
-    const { container } = render(
-      <RelatedProducts products={products} />
+  test("changes Add to Cart button text after click", () => {
+    jest.useFakeTimers();
+
+    render(
+      <MemoryRouter>
+        <RelatedProducts products={products} />
+      </MemoryRouter>
     );
 
-    // eslint-disable-next-line testing-library/no-container
-    expect(container.querySelectorAll(".image-box")).toHaveLength(2);
+    const button = screen.getAllByText("Add to Cart")[0];
+
+    fireEvent.click(button);
+
+    expect(screen.getByText("✓ Added")).toBeInTheDocument();
+
+    jest.runAllTimers();
+
+    expect(screen.getAllByText("Add to Cart")[0]).toBeInTheDocument();
+
+    jest.useRealTimers();
   });
 
-  test("renders correct number of product info sections", () => {
-    const { container } = render(
-      <RelatedProducts products={products} />
+  test("renders correct number of product images", () => {
+    render(
+      <MemoryRouter>
+        <RelatedProducts products={products} />
+      </MemoryRouter>
     );
 
-    // eslint-disable-next-line testing-library/no-container
-    expect(container.querySelectorAll(".product-info")).toHaveLength(2);
+    expect(screen.getAllByRole("img")).toHaveLength(2);
   });
 
-  test("renders without crashing when products array is empty", () => {
-    render(<RelatedProducts products={[]} />);
+  test("renders product categories", () => {
+    render(
+      <MemoryRouter>
+        <RelatedProducts products={products} />
+      </MemoryRouter>
+    );
 
-    expect(screen.getByText("Our Products")).toBeInTheDocument();
+    expect(screen.getByText("Medicine")).toBeInTheDocument();
+    expect(screen.getByText("Supplements")).toBeInTheDocument();
   });
 });

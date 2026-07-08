@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import styles from "./ProductCard.module.css";
+import "../RelatedProducts/RelatedProducts";
 
 const ProductCard = ({ product, onAddToCart }) => {
   return (

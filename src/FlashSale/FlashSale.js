@@ -1,72 +1,74 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import styles from "./FlashSale.module.css";
 
-import Debo650 from "../assets/FlashSale/Debo650.jpg";
-import crocin from "../assets/FlashSale/crocin.jpg";
-import revital from "../assets/FlashSale/revital.jpg";
-import limcee from "../assets/FlashSale/limcee.jpg";
-import glucometer from "../assets/FlashSale/glucometer.jpg";
-import bpMonitor from "../assets/FlashSale/bpMonitor.jpg";
-import sanitizer from "../assets/FlashSale/sanitizer.jpg";
-import n95mask from "../assets/FlashSale/n95mask.jpg";
+import Dolo650 from "../assets/FlashSale/Debo650.jpg";
+import Crocin from "../assets/FlashSale/crocin.jpg";
+import Revital from "../assets/FlashSale/revital.jpg";
+import Limcee from "../assets/FlashSale/limcee.jpg";
+import Glucometer from "../assets/FlashSale/glucometer.jpg";
+import BPMonitor from "../assets/FlashSale/bpMonitor.jpg";
+import N95Mask from "../assets/FlashSale/n95mask.jpg";
+import Sanitizer from "../assets/FlashSale/sanitizer.jpg";
+import "../data/products";
 
 const flashSaleProducts = [
   {
-    id: 1,
+    id: 8,
     title: "Dolo 650",
-    image: Debo650,
+    image: Dolo650,
     originalPrice: 120,
     discountedPrice: 95,
   },
   {
-    id: 2,
+    id: 9,
     title: "Pain Relief",
-    image: crocin,
+    image: Crocin,
     originalPrice: 350,
     discountedPrice: 275,
   },
   {
-    id: 3,
+    id: 10,
     title: "Revital for Men/Women",
-    image: revital,
+    image: Revital,
     originalPrice: 2499,
     discountedPrice: 1999,
   },
   {
-    id: 4,
+    id: 11,
     title: "Vitamin C Chewable (Limcee)",
-    image: limcee,
+    image: Limcee,
     originalPrice: 250,
     discountedPrice: 180,
   },
   {
-    id: 5,
+    id: 12,
     title: "Glucometer Kit",
-    image: glucometer,
+    image: Glucometer,
     originalPrice: 1899,
     discountedPrice: 1499,
   },
   {
-    id: 6,
-    title: "BP-Monitor",
-    image: bpMonitor,
+    id: 13,
+    title: "BP Monitor",
+    image: BPMonitor,
     originalPrice: 90,
     discountedPrice: 70,
   },
   {
-    id: 7,
+    id: 3,
     title: "Sanitizer",
-    image: sanitizer,
+    image: Sanitizer,
     originalPrice: 450,
     discountedPrice: 349,
   },
   {
-    id: 8,
+    id: 14,
     title: "N95 Mask",
-    image: n95mask,
+    image: N95Mask,
     originalPrice: 399,
     discountedPrice: 299,
-  }
+  },
 ];
 
 const FlashSale = () => {
@@ -76,40 +78,51 @@ const FlashSale = () => {
     seconds: "00",
   });
 
+  const [addedItems, setAddedItems] = useState({});
+
   useEffect(() => {
-    const targetTime =
-      new Date().getTime() + 24 * 60 * 60 * 1000;
+    const targetTime = Date.now() + 24 * 60 * 60 * 1000;
 
     const timer = setInterval(() => {
-      const difference =
-        targetTime - new Date().getTime();
+      const difference = targetTime - Date.now();
 
       if (difference <= 0) {
         clearInterval(timer);
+        setTimeLeft({
+          hours: "00",
+          minutes: "00",
+          seconds: "00",
+        });
         return;
       }
 
+      const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((difference / (1000 * 60)) % 60);
+      const seconds = Math.floor((difference / 1000) % 60);
+
       setTimeLeft({
-        hours: String(
-          Math.floor(
-            (difference / (1000 * 60 * 60)) % 24
-          )
-        ).padStart(2, "0"),
-
-        minutes: String(
-          Math.floor(
-            (difference / (1000 * 60)) % 60
-          )
-        ).padStart(2, "0"),
-
-        seconds: String(
-          Math.floor((difference / 1000) % 60)
-        ).padStart(2, "0"),
+        hours: String(hours).padStart(2, "0"),
+        minutes: String(minutes).padStart(2, "0"),
+        seconds: String(seconds).padStart(2, "0"),
       });
     }, 1000);
 
     return () => clearInterval(timer);
   }, []);
+
+  const handleAddToCart = (id) => {
+    setAddedItems((prev) => ({
+      ...prev,
+      [id]: true,
+    }));
+
+    setTimeout(() => {
+      setAddedItems((prev) => ({
+        ...prev,
+        [id]: false,
+      }));
+    }, 5000);
+  };
 
   return (
     <section className={styles.flashSale}>
@@ -120,42 +133,25 @@ const FlashSale = () => {
         </div>
 
         <div className={styles.timer}>
-          <div className={styles.timeBox}>
-            <span className={styles.timeValue}>
-              {timeLeft.hours}
-            </span>
-            <span className={styles.timeLabel}>
-              Hours
-            </span>
-          </div>
-
-          <div className={styles.timeBox}>
-            <span className={styles.timeValue}>
-              {timeLeft.minutes}
-            </span>
-            <span className={styles.timeLabel}>
-              Minutes
-            </span>
-          </div>
-
-          <div className={styles.timeBox}>
-            <span className={styles.timeValue}>
-              {timeLeft.seconds}
-            </span>
-            <span className={styles.timeLabel}>
-              Seconds
-            </span>
-          </div>
+          {["hours", "minutes", "seconds"].map((unit) => (
+            <div key={unit} className={styles.timeBox}>
+              <span className={styles.timeValue}>
+                {timeLeft[unit]}
+              </span>
+              <span className={styles.timeLabel}>
+                {unit.charAt(0).toUpperCase() + unit.slice(1)}
+              </span>
+            </div>
+          ))}
         </div>
       </div>
 
       <div className={styles.productGrid}>
         {flashSaleProducts.map((product) => {
           const discountPercentage = Math.round(
-            ((product.originalPrice -
-              product.discountedPrice) /
+            ((product.originalPrice - product.discountedPrice) /
               product.originalPrice) *
-              100
+            100
           );
 
           return (
@@ -163,9 +159,7 @@ const FlashSale = () => {
               key={product.id}
               className={styles.productCard}
             >
-              <div
-                className={styles.discountBadge}
-              >
+              <div className={styles.discountBadge}>
                 {discountPercentage}% OFF
               </div>
 
@@ -174,7 +168,6 @@ const FlashSale = () => {
                   src={product.image}
                   alt={product.title}
                   className={styles.productImage}
-                  loading="lazy"
                 />
               </div>
 
@@ -183,37 +176,32 @@ const FlashSale = () => {
                   {product.title}
                 </h3>
 
-                <div
-                  className={styles.priceSection}
-                >
-                  <span
-                    className={styles.originalPrice}
-                  >
+                <div className={styles.priceSection}>
+                  <span className={styles.originalPrice}>
                     ₹{product.originalPrice}
                   </span>
 
-                  <span
-                    className={
-                      styles.discountedPrice
-                    }
-                  >
+                  <span className={styles.discountedPrice}>
                     ₹{product.discountedPrice}
                   </span>
                 </div>
 
-                <div
-                  className={styles.buttonGroup}
-                >
-                  <button
-                    className={styles.detailsBtn}
+                <div className="button-group">
+                  <Link
+                    to={`/product/${product.id}`}
+                    className="view-btn"
                   >
                     View Details
-                  </button>
+                  </Link>
 
                   <button
-                    className={styles.cartBtn}
+                    className={`cart-btn ${addedItems[product.id] ? "added" : ""
+                      }`}
+                    onClick={() => handleAddToCart(product.id)}
                   >
-                    Add to Cart
+                    {addedItems[product.id]
+                      ? "✓ Added"
+                      : "Add to Cart"}
                   </button>
                 </div>
               </div>

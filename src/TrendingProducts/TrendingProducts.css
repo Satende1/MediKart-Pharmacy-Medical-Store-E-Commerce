@@ -52,3 +52,10 @@
     font-size: 1.7rem;
   }
 }
+
+.price {
+  font-size: 20px;
+  font-weight: 400; /* Bold */
+  color: #16a34a;
+  margin: 8px 0;
+}

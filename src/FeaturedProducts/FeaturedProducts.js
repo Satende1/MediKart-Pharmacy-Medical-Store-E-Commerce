@@ -1,5 +1,5 @@
-import React from "react";
-import ProductCard from "../ProductCard/ProductCard";
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import "./FeaturedProducts.css";
 
 import product1 from "../assets/products/product1.png";
@@ -16,21 +16,21 @@ const products = [
     image: product1,
   },
   {
-    id: 2,
-    name: "Vitamin C Capsules",
+    id: 7,
+    name: "Vitamin D Capsules",
     price: 249,
     rating: 4.7,
     image: product2,
   },
   {
-    id: 3,
+    id: 2,
     name: "Blood Pressure Monitor",
     price: 1499,
     rating: 4.9,
     image: product3,
   },
   {
-    id: 4,
+    id: 3,
     name: "Hand Sanitizer",
     price: 199,
     rating: 4.6,
@@ -39,22 +39,69 @@ const products = [
 ];
 
 function FeaturedProducts() {
+  const [addedItems, setAddedItems] = useState({});
+
+  const handleAddToCart = (id) => {
+    setAddedItems((prev) => ({
+      ...prev,
+      [id]: true,
+    }));
+
+    setTimeout(() => {
+      setAddedItems((prev) => ({
+        ...prev,
+        [id]: false,
+      }));
+    }, 2000);
+  };
+
   return (
     <section className="featured-products">
       <div className="container">
         <div className="featured-header">
           <h2>Featured Products</h2>
-          <p>
-            Discover our most popular healthcare products
-          </p>
+          <p>Discover our most popular healthcare products</p>
         </div>
 
         <div className="products-grid">
           {products.map((product) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-            />
+            <div className="product-card" key={product.id}>
+              <img
+                src={product.image}
+                alt={product.name}
+                className="product-image"
+              />
+
+              <div className="product-info">
+                <span className="category">{product.category}</span>
+
+                <h3>{product.name}</h3>
+
+                <p className="price">₹{product.price}</p>
+
+                <p className="rating">⭐ {product.rating}</p>
+
+                <div className="button-group">
+                  <Link
+                    to={`/product/${product.id}`}
+                    className="view-btn"
+                  >
+                    View Details
+                  </Link>
+
+                  <button
+                    className={`cart-btn ${
+                      addedItems[product.id] ? "added" : ""
+                    }`}
+                    onClick={() => handleAddToCart(product.id)}
+                  >
+                    {addedItems[product.id]
+                      ? "✓ Added"
+                      : "Add to Cart"}
+                  </button>
+                </div>
+              </div>
+            </div>
           ))}
         </div>
       </div>

@@ -15,7 +15,7 @@
 /* Image */
 
 .imageContainer {
-  height: 160px;
+  height: 200px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -24,7 +24,7 @@
 }
 
 .image {
-  width: 90%;      /* smaller image */
+  width: 50%;      /* smaller image */
   height: 150%;
   object-fit: contain;
   transition: .3s;

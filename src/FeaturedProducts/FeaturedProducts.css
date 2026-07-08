@@ -47,3 +47,76 @@
     font-size: 1.7rem;
   }
 }
+
+.button-group {
+  display: flex;
+  gap: 10px;
+}
+
+.view-btn,
+.cart-btn {
+  flex: 1;
+  padding:  12px;
+  text-align: center;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: 0.3s ease;
+  min-width: 0;
+}
+
+/* Blue View Details button */
+.view-btn {
+  height: 50px;
+  background: #2563eb;
+  color: #fff;
+  text-align: center;
+}
+
+.view-btn:hover {
+  background: #1d4ed8;
+}
+
+/* Green Add to Cart button */
+.cart-btn {
+  background: #16a34a;
+  color: #fff;
+  border: none;
+}
+
+.cart-btn:hover {
+  background: #15803d;
+}
+
+/* After clicking Add to Cart */
+.cart-btn.added {
+  background: #22c55e;
+}
+
+.price {
+  font-size: 20px;
+  font-weight: 700; /* Bold */
+  color: #16a34a;
+  margin: 8px 0;
+}
+
+@media (max-width: 768px) {
+  .button-group {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .view-btn,
+  .cart-btn {
+    flex: 1;
+    width: 50%;
+    padding: 10px 0;
+    font-size: 14px;
+    text-align: center;
+    white-space: nowrap;
+    box-sizing: border-box;
+  }
+}

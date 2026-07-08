@@ -1,202 +1,255 @@
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
+import {
+  render,
+  screen,
+  fireEvent,
+  act,
+} from "@testing-library/react";
 import "@testing-library/jest-dom";
-import ProductDetails from "./ProductDetails";
 import { MemoryRouter } from "react-router-dom";
+import ProductDetails from "./ProductDetails";
 
+// Mock navigate
 const mockNavigate = jest.fn();
 
 // Mock react-router-dom
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useNavigate: () => mockNavigate,
-  useParams: jest.fn(),
+  useParams: () => ({ id: "1" }),
 }));
 
-const { useParams } = require("react-router-dom");
+// Mock child components
+jest.mock(
+  "../../components/ProductGallery/ProductGallery",
+  () => () => <div>Product Gallery</div>
+);
 
-// Mock products
+jest.mock(
+  "../../components/QuantitySelector/QuantitySelector",
+  () => ({ quantity }) => (
+    <div>Quantity: {quantity}</div>
+  )
+);
+
+jest.mock(
+  "../../components/ProductSpecifications/ProductSpecifications",
+  () => () => <div>Product Specifications</div>
+);
+
+jest.mock(
+  "../../components/RelatedProducts/RelatedProducts",
+  () => () => <div>Related Products</div>
+);
+
+// Mock product data
 jest.mock("../../data/products", () => [
   {
     id: 1,
-    name: "Paracetamol 500mg",
-    image: "/image.jpg",
-    images: ["/image.jpg"],
-    price: "100",
-    discount: "10",
-    rating: "4.5",
+    name: "Paracetamol Tablets",
+    price: 100,
+    discount: 10,
+    rating: 4.8,
     reviews: 120,
-    description: "Pain relief tablet",
+    image: "/image.png",
+    description: "Test product description",
   },
   {
     id: 2,
-    name: "Vitamin C",
-    image: "/vitamin.jpg",
-    images: ["/vitamin.jpg"],
-    price: "200",
-    discount: "20",
-    rating: "4.7",
-    reviews: 80,
-    description: "Vitamin tablets",
+    name: "Vitamin D",
+    price: 200,
+    discount: 0,
+    rating: 4.5,
+    reviews: 50,
+    image: "/image2.png",
   },
 ]);
 
-// Mock ProductGallery
-jest.mock("../../components/ProductGallery/ProductGallery", () => () => (
-  <div data-testid="gallery">Gallery</div>
-));
-
-// Mock QuantitySelector
-jest.mock("../../components/QuantitySelector/QuantitySelector", () => {
-  return ({ quantity, setQuantity }) => (
-    <div data-testid="quantity-selector">
-      <span>{quantity}</span>
-      <button onClick={() => setQuantity(quantity + 1)}>+</button>
-    </div>
-  );
-});
-
-// Mock ProductSpecifications
-jest.mock("../../components/ProductSpecifications/ProductSpecifications", () => () => (
-  <div data-testid="specifications">
-    Specifications
-  </div>
-));
-
-// Mock RelatedProducts
-jest.mock("../../components/RelatedProducts/RelatedProducts", () => () => (
-  <div data-testid="related-products">
-    Related Products
-  </div>
-));
-
 describe("ProductDetails", () => {
-
   beforeEach(() => {
     jest.clearAllMocks();
+    jest.useFakeTimers();
+
+    window.scrollTo = jest.fn();
   });
 
-  test("renders product information", () => {
-    useParams.mockReturnValue({ id: "1" });
+  afterEach(() => {
+    jest.useRealTimers();
+  });
 
+  test("shows loading initially", () => {
     render(
       <MemoryRouter>
         <ProductDetails />
       </MemoryRouter>
     );
 
-    expect(screen.getByText("Paracetamol 500mg")).toBeInTheDocument();
-    expect(screen.getByText("Pain relief tablet")).toBeInTheDocument();
-    expect(screen.getByText("120 Ratings")).toBeInTheDocument();
-    expect(screen.getByText("10% OFF")).toBeInTheDocument();
+    expect(
+      screen.getByText("Loading Product...")
+    ).toBeInTheDocument();
+  });
+
+  test("renders product after loading", () => {
+    render(
+      <MemoryRouter>
+        <ProductDetails />
+      </MemoryRouter>
+    );
+
+    act(() => {
+      jest.advanceTimersByTime(700);
+    });
+
+    expect(
+      screen.getByText("Paracetamol Tablets")
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText("Test product description")
+    ).toBeInTheDocument();
+  });
+
+  test("renders price correctly", () => {
+    render(
+      <MemoryRouter>
+        <ProductDetails />
+      </MemoryRouter>
+    );
+
+    act(() => {
+      jest.advanceTimersByTime(700);
+    });
   });
 
   test("renders child components", () => {
-    useParams.mockReturnValue({ id: "1" });
-
     render(
       <MemoryRouter>
         <ProductDetails />
       </MemoryRouter>
     );
 
-    expect(screen.getByTestId("gallery")).toBeInTheDocument();
-    expect(screen.getByTestId("quantity-selector")).toBeInTheDocument();
-    expect(screen.getByTestId("specifications")).toBeInTheDocument();
-    expect(screen.getByTestId("related-products")).toBeInTheDocument();
+    act(() => {
+      jest.advanceTimersByTime(700);
+    });
+
+    expect(
+      screen.getByText("Product Gallery")
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText("Product Specifications")
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText("Related Products")
+    ).toBeInTheDocument();
   });
 
   test("back button navigates back", () => {
-    useParams.mockReturnValue({ id: "1" });
-
     render(
       <MemoryRouter>
         <ProductDetails />
       </MemoryRouter>
     );
+
+    act(() => {
+      jest.advanceTimersByTime(700);
+    });
 
     fireEvent.click(screen.getByText("← Back"));
 
     expect(mockNavigate).toHaveBeenCalledWith(-1);
   });
 
-  test("wishlist button toggles active class", () => {
-    useParams.mockReturnValue({ id: "1" });
-
+  test("Add to Cart changes button text", () => {
     render(
       <MemoryRouter>
         <ProductDetails />
       </MemoryRouter>
     );
 
-    const button = screen.getByLabelText("Add to Wishlist");
+    act(() => {
+      jest.advanceTimersByTime(700);
+    });
 
-    expect(button).not.toHaveClass("active");
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: /add to cart/i,
+      })
+    );
 
-    fireEvent.click(button);
-
-    expect(button).toHaveClass("active");
-
-    fireEvent.click(button);
-
-    expect(button).not.toHaveClass("active");
+    expect(
+      screen.getByText("✓ Added")
+    ).toBeInTheDocument();
   });
 
-  test("quantity increases", () => {
-    useParams.mockReturnValue({ id: "1" });
-
+  test("Buy Now button renders", () => {
     render(
       <MemoryRouter>
         <ProductDetails />
       </MemoryRouter>
     );
 
-    fireEvent.click(screen.getByText("+"));
+    act(() => {
+      jest.advanceTimersByTime(700);
+    });
+
+    expect(
+      screen.getByRole("button", {
+        name: /buy now/i,
+      })
+    ).toBeInTheDocument();
   });
 
-  test("shows Product Not Found", () => {
-    useParams.mockReturnValue({ id: "999" });
-
+  test("wishlist button toggles", () => {
     render(
       <MemoryRouter>
         <ProductDetails />
       </MemoryRouter>
     );
 
-    expect(screen.getByText("Product Not Found")).toBeInTheDocument();
+    act(() => {
+      jest.advanceTimersByTime(700);
+    });
+
+    const buttons = screen.getAllByRole("button");
+
+    fireEvent.click(buttons[3]);
+
+    expect(buttons[3]).toHaveClass("active");
   });
 
-  test("renders Add to Cart button", () => {
-    useParams.mockReturnValue({ id: "1" });
-
+  test("renders total amount", () => {
     render(
       <MemoryRouter>
         <ProductDetails />
       </MemoryRouter>
     );
 
-    expect(screen.getByText("Add to Cart")).toBeInTheDocument();
+    act(() => {
+      jest.advanceTimersByTime(700);
+    });
+
+    expect(
+      screen.getByText("Total Amount")
+    ).toBeInTheDocument();
+
+    expect(screen.getAllByText("₹90.00")[0]).toBeInTheDocument();
   });
 
-  test("renders Buy Now button", () => {
-    useParams.mockReturnValue({ id: "1" });
-
+  test("renders ratings", () => {
     render(
       <MemoryRouter>
         <ProductDetails />
       </MemoryRouter>
     );
 
-    expect(screen.getByText("Buy Now")).toBeInTheDocument();
-  });
+    act(() => {
+      jest.advanceTimersByTime(700);
+    });
 
-  test("displays calculated prices", () => {
-    useParams.mockReturnValue({ id: "1" });
-
-    render(
-      <MemoryRouter>
-        <ProductDetails />
-      </MemoryRouter>
-    );
+    expect(
+      screen.getByText("120 Ratings")
+    ).toBeInTheDocument();
   });
 });

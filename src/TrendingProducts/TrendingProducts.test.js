@@ -1,88 +1,167 @@
-import { render, screen } from "@testing-library/react";
+import React from "react";
+import { render, screen, fireEvent } from "@testing-library/react";
+import "@testing-library/jest-dom";
+import { MemoryRouter } from "react-router-dom";
 import TrendingProducts from "./TrendingProducts";
 
-// Mock ProductCard component
-jest.mock("../ProductCard/ProductCard", () => ({ product }) => (
-  <div data-testid="product-card">
-    <img src={product.image} alt={product.name} />
-    <h3>{product.name}</h3>
-    <p>₹{product.price}</p>
-    <p>{product.rating}</p>
-  </div>
-));
-
-// Mock product images
-jest.mock("../assets/products/product5.png", () => "product5.png");
-jest.mock("../assets/products/product6.png", () => "product6.png");
-jest.mock("../assets/products/product7.png", () => "product7.png");
-jest.mock("../assets/products/product8.png", () => "product8.png");
-
 describe("TrendingProducts Component", () => {
-  test("renders Trending Products heading", () => {
-    render(<TrendingProducts />);
-
-    expect(
-      screen.getByRole("heading", {
-        name: /trending products/i,
-      })
-    ).toBeInTheDocument();
+  beforeEach(() => {
+    jest.clearAllMocks();
   });
 
-  test("renders description text", () => {
-    render(<TrendingProducts />);
+  test("renders Trending Products heading", () => {
+    render(
+      <MemoryRouter>
+        <TrendingProducts />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByText("Trending Products")).toBeInTheDocument();
+  });
+
+  test("renders description", () => {
+    render(
+      <MemoryRouter>
+        <TrendingProducts />
+      </MemoryRouter>
+    );
 
     expect(
       screen.getByText(
-        /explore the most popular healthcare products on medikart/i
+        "Explore the most popular healthcare products on Medikart"
       )
     ).toBeInTheDocument();
   });
 
   test("renders all product names", () => {
-    render(<TrendingProducts />);
+    render(
+      <MemoryRouter>
+        <TrendingProducts />
+      </MemoryRouter>
+    );
 
-    expect(
-      screen.getByText("Digital Thermometer")
-    ).toBeInTheDocument();
-
-    expect(
-      screen.getByText("Protein Powder")
-    ).toBeInTheDocument();
-
-    expect(
-      screen.getByText("Face Wash")
-    ).toBeInTheDocument();
-
-    expect(
-      screen.getByText("Vitamin D Capsules")
-    ).toBeInTheDocument();
+    expect(screen.getByText("Digital Thermometer")).toBeInTheDocument();
+    expect(screen.getByText("Protein Powder")).toBeInTheDocument();
+    expect(screen.getByText("Face Wash")).toBeInTheDocument();
+    expect(screen.getByText("Vitamin D Capsules")).toBeInTheDocument();
   });
 
-  test("renders exactly 4 product cards", () => {
-    render(<TrendingProducts />);
+  test("renders all prices", () => {
+    render(
+      <MemoryRouter>
+        <TrendingProducts />
+      </MemoryRouter>
+    );
 
-    const cards = screen.getAllByTestId("product-card");
-
-    expect(cards).toHaveLength(4);
+    expect(screen.getByText("₹299")).toBeInTheDocument();
+    expect(screen.getByText("₹899")).toBeInTheDocument();
+    expect(screen.getByText("₹249")).toBeInTheDocument();
+    expect(screen.getByText("₹399")).toBeInTheDocument();
   });
 
-  test("renders product images", () => {
-    render(<TrendingProducts />);
+  test("renders all ratings", () => {
+    render(
+      <MemoryRouter>
+        <TrendingProducts />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByText("⭐ 4.8")).toBeInTheDocument();
+    expect(screen.getByText("⭐ 4.7")).toBeInTheDocument();
+    expect(screen.getByText("⭐ 4.9")).toBeInTheDocument();
+    expect(screen.getByText("⭐ 4.6")).toBeInTheDocument();
+  });
+
+  test("renders four product images", () => {
+    render(
+      <MemoryRouter>
+        <TrendingProducts />
+      </MemoryRouter>
+    );
+
+    expect(screen.getAllByRole("img")).toHaveLength(4);
+  });
+
+  test("renders four View Details links", () => {
+    render(
+      <MemoryRouter>
+        <TrendingProducts />
+      </MemoryRouter>
+    );
+
+    const links = screen.getAllByRole("link", {
+      name: /view details/i,
+    });
+
+    expect(links).toHaveLength(4);
+  });
+
+  test("View Details links have correct href", () => {
+    render(
+      <MemoryRouter>
+        <TrendingProducts />
+      </MemoryRouter>
+    );
+
+    const links = screen.getAllByRole("link", {
+      name: /view details/i,
+    });
+
+    expect(links[0]).toHaveAttribute("href", "/product/4");
+    expect(links[1]).toHaveAttribute("href", "/product/5");
+    expect(links[2]).toHaveAttribute("href", "/product/6");
+    expect(links[3]).toHaveAttribute("href", "/product/7");
+  });
+
+  test("renders four Add to Cart buttons", () => {
+    render(
+      <MemoryRouter>
+        <TrendingProducts />
+      </MemoryRouter>
+    );
+
+    const buttons = screen.getAllByRole("button", {
+      name: /add to cart/i,
+    });
+
+    expect(buttons).toHaveLength(4);
+  });
+
+  test("changes button text after clicking Add to Cart", () => {
+    jest.useFakeTimers();
+
+    render(
+      <MemoryRouter>
+        <TrendingProducts />
+      </MemoryRouter>
+    );
+
+    const button = screen.getAllByRole("button", {
+      name: /add to cart/i,
+    })[0];
+
+    fireEvent.click(button);
+
+    expect(screen.getByText("✓ Added")).toBeInTheDocument();
+
+    jest.advanceTimersByTime(2000);
 
     expect(
-      screen.getByAltText("Digital Thermometer")
+      screen.getAllByRole("button", {
+        name: /add to cart/i,
+      })[0]
     ).toBeInTheDocument();
 
-    expect(
-      screen.getByAltText("Protein Powder")
-    ).toBeInTheDocument();
+    jest.useRealTimers();
+  });
 
-    expect(
-      screen.getByAltText("Face Wash")
-    ).toBeInTheDocument();
+  test("renders exactly four product cards", () => {
+    const { container } = render(
+      <MemoryRouter>
+        <TrendingProducts />
+      </MemoryRouter>
+    );
 
-    expect(
-      screen.getByAltText("Vitamin D Capsules")
-    ).toBeInTheDocument();
+    expect(container.querySelectorAll(".product-card")).toHaveLength(4);
   });
 });
