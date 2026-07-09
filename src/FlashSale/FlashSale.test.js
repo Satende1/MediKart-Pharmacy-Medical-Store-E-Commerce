@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
@@ -21,6 +22,7 @@ jest.mock("./FlashSale.module.css", () => ({}));
 
 describe("FlashSale Component", () => {
   beforeEach(() => {
+    // eslint-disable-next-line testing-library/no-render-in-setup
     render(
       <MemoryRouter>
         <FlashSale />
