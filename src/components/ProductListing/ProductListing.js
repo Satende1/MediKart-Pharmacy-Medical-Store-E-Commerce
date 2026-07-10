@@ -4,6 +4,7 @@ import ProductCard from "../ProductCard/ProductCard";
 import productsData from "../../data/products";
 import SortDropdown from "../SortDropdown/SortDropdown";
 import styles from "./ProductListing.module.css";
+import Footer from "../Footer/Footer";
 
 const ProductListing = ({ sortBy = "", setSortBy = () => {} }) => {
   const [loading, setLoading] = useState(true);
@@ -142,5 +143,6 @@ const ProductListing = ({ sortBy = "", setSortBy = () => {} }) => {
     </section>
   );
 };
+    <Footer>Footer</Footer>
 
 export default ProductListing;

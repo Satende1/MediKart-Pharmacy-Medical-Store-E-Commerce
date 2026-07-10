@@ -11,6 +11,8 @@ import RelatedProducts from "../../components/RelatedProducts/RelatedProducts";
 
 import "./ProductDetails.css";
 
+import Footer from "../../components/Footer/Footer";
+
 const ProductDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -234,6 +236,7 @@ const ProductDetails = () => {
       <ProductSpecifications product={product} />
 
       <RelatedProducts products={relatedProducts} />
+      <Footer />
 
     </div>
   );

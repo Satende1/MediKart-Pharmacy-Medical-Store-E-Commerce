@@ -245,47 +245,61 @@
 /* ===========================
    Mobile
 =========================== */
-
-@media (max-width: 576px) {
-
-  .product-page {
-    padding: 15px;
-  }
-
-  .product-name {
-    font-size: 26px;
-  }
-
-  .discount-price {
-    font-size: 24px;
-  }
-
-  .button-group {
+@media (max-width: 768px) {
+  .left-column {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     width: 100%;
-    gap: 8px;
+  }
+
+  .main-image-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+  }
+
+  .main-image {
+    display: block;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .product-page,
+  .product-wrapper,
+  .left-column,
+  .right-column {
+    width: 100%;
+    max-width: 100%;
+    padding: 0 15px;
+    box-sizing: border-box;
+  }
+
+  .product-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .right-column {
+    flex: 1;
+  }
+
+  .total-box,
+  .button-group,
+  .description,
+  .quantity-area {
+    width: 100%;
   }
 
   .cart-btn,
   .buy-btn {
     flex: 1;
-    height: 46px;
-    font-size: 13px;
-    padding: 0 8px;
   }
 
   .wish-btn {
-    width: 46px;
-    min-width: 46px;
-    height: 46px;
-    font-size: 16px;
-  }
-
-  .loadingContainer h2 {
-    font-size: 20px;
-  }
-
-  .loader {
     width: 50px;
-    height: 50px;
   }
 }

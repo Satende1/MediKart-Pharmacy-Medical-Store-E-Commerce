@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import ProductListing from "../components/ProductListing/ProductListing";
-
+import Footer from "../components/Footer/Footer";
 const Shop = () => {
   const [sortBy, setSortBy] = useState("");
 
@@ -10,6 +10,7 @@ const Shop = () => {
         sortBy={sortBy}
         setSortBy={setSortBy}
       />
+      <Footer></Footer>
     </main>
   );
 };

@@ -101,3 +101,40 @@
 .cart:hover {
   background: green;
 }
+
+/* Mobile View */
+@media (max-width: 768px) {
+  .product-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    text-align: center;
+  }
+
+  .product-image {
+    width: 140px;
+    height: 140px;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto 12px;
+  }
+
+  .product-name,
+  .product-price,
+  .product-rating,
+  .product-category {
+    text-align: center;
+    width: 100%;
+  }
+
+  .button-group,
+  .product-buttons {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+}
