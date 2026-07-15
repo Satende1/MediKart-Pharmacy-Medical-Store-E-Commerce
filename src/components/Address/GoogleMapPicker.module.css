@@ -1,0 +1,131 @@
+.mapContainer {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.searchBox {
+  width: 100%;
+  height: 48px;
+  padding: 0 16px;
+  margin-bottom: 18px;
+  border: 1px solid #dcdcdc;
+  border-radius: 8px;
+  outline: none;
+  font-size: 16px;
+  transition: 0.3s;
+}
+
+.searchBox:focus {
+  border-color: #16a34a;
+  box-shadow: 0 0 6px rgba(22, 163, 74, 0.3);
+}
+
+.map {
+  width: 100%;
+  height: 450px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #e5e5e5;
+}
+
+.addressCard {
+  margin-top: 20px;
+  padding: 20px;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+}
+
+.addressTitle {
+  font-size: 20px;
+  font-weight: 700;
+  color: #222;
+  margin-bottom: 12px;
+}
+
+.addressText {
+  color: #555;
+  line-height: 1.7;
+  margin-bottom: 15px;
+}
+
+.locationInfo {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.infoBox {
+  flex: 1;
+  min-width: 180px;
+  background: #ffffff;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #e5e5e5;
+}
+
+.infoLabel {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 6px;
+}
+
+.infoValue {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.saveBtn {
+  margin-top: 20px;
+  width: 100%;
+  padding: 14px;
+  background: #16a34a;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 17px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.saveBtn:hover {
+  background: #15803d;
+}
+
+.loading {
+  text-align: center;
+  padding: 60px;
+  font-size: 20px;
+  font-weight: 600;
+  color: #16a34a;
+}
+
+@media (max-width: 768px) {
+  .mapContainer {
+    padding: 15px;
+  }
+
+  .map {
+    height: 350px;
+  }
+
+  .locationInfo {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .searchBox {
+    font-size: 15px;
+  }
+
+  .saveBtn {
+    font-size: 16px;
+  }
+}

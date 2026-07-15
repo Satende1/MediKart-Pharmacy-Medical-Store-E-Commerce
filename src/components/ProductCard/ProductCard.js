@@ -1,8 +1,50 @@
-import { Link } from "react-router-dom";
+import React from "react";
+import { Link, useNavigate } from "react-router-dom";
 import styles from "./ProductCard.module.css";
-import "../RelatedProducts/RelatedProducts";
 
-const ProductCard = ({ product, onAddToCart }) => {
+const ProductCard = ({ product }) => {
+  const navigate = useNavigate();
+
+  const handleAddToCart = () => {
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+    const existingProduct = cart.find(
+      (item) => item.id === product.id
+    );
+
+    let updatedCart;
+
+    if (existingProduct) {
+      updatedCart = cart.map((item) =>
+        item.id === product.id
+          ? {
+              ...item,
+              quantity: (item.quantity || 1) + 1,
+            }
+          : item
+      );
+    } else {
+      updatedCart = [
+        ...cart,
+        {
+          ...product,
+          quantity: 1,
+        },
+      ];
+    }
+
+    localStorage.setItem(
+      "cart",
+      JSON.stringify(updatedCart)
+    );
+
+    // Update cart notification
+    window.dispatchEvent(new Event("cartUpdated"));
+
+    // Go to Cart page
+    navigate("/cart");
+  };
+
   return (
     <div className={styles.card}>
       <div className={styles.imageContainer}>
@@ -40,7 +82,7 @@ const ProductCard = ({ product, onAddToCart }) => {
 
           <button
             className={styles.cart}
-            onClick={() => onAddToCart?.(product)}
+            onClick={handleAddToCart}
           >
             Add to Cart
           </button>

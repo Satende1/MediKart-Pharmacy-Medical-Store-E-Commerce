@@ -41,16 +41,53 @@ const products = [
 function FeaturedProducts() {
   const [addedItems, setAddedItems] = useState({});
 
-  const handleAddToCart = (id) => {
+  const handleAddToCart = (product) => {
+    const cart =
+      JSON.parse(localStorage.getItem("cart")) || [];
+
+    const existingProduct = cart.find(
+      (item) => item.id === product.id
+    );
+
+    let updatedCart;
+
+    if (existingProduct) {
+      updatedCart = cart.map((item) =>
+        item.id === product.id
+          ? {
+              ...item,
+              quantity: (item.quantity || 1) + 1,
+            }
+          : item
+      );
+    } else {
+      updatedCart = [
+        ...cart,
+        {
+          ...product,
+          quantity: 1,
+        },
+      ];
+    }
+
+    localStorage.setItem(
+      "cart",
+      JSON.stringify(updatedCart)
+    );
+
+    // Update Navbar Cart Count
+    window.dispatchEvent(new Event("cartUpdated"));
+
+    // Change Button Text
     setAddedItems((prev) => ({
       ...prev,
-      [id]: true,
+      [product.id]: true,
     }));
 
     setTimeout(() => {
       setAddedItems((prev) => ({
         ...prev,
-        [id]: false,
+        [product.id]: false,
       }));
     }, 2000);
   };
@@ -60,12 +97,17 @@ function FeaturedProducts() {
       <div className="container">
         <div className="featured-header">
           <h2>Featured Products</h2>
-          <p>Discover our most popular healthcare products</p>
+          <p>
+            Discover our most popular healthcare products
+          </p>
         </div>
 
         <div className="products-grid">
           {products.map((product) => (
-            <div className="product-card" key={product.id}>
+            <div
+              className="product-card"
+              key={product.id}
+            >
               <img
                 src={product.image}
                 alt={product.name}
@@ -73,13 +115,19 @@ function FeaturedProducts() {
               />
 
               <div className="product-info">
-                <span className="category">{product.category}</span>
+                <span className="category">
+                  {product.category}
+                </span>
 
                 <h3>{product.name}</h3>
 
-                <p className="price">₹{product.price}</p>
+                <p className="price">
+                  ₹{product.price}
+                </p>
 
-                <p className="rating">⭐ {product.rating}</p>
+                <p className="rating">
+                  ⭐ {product.rating}
+                </p>
 
                 <div className="button-group">
                   <Link
@@ -91,9 +139,13 @@ function FeaturedProducts() {
 
                   <button
                     className={`cart-btn ${
-                      addedItems[product.id] ? "added" : ""
+                      addedItems[product.id]
+                        ? "added"
+                        : ""
                     }`}
-                    onClick={() => handleAddToCart(product.id)}
+                    onClick={() =>
+                      handleAddToCart(product)
+                    }
                   >
                     {addedItems[product.id]
                       ? "✓ Added"

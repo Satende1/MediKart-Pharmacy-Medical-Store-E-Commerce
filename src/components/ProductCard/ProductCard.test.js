@@ -1,100 +1,257 @@
+import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
+
 import ProductCard from "./ProductCard";
 
-const mockProduct = {
-  id: 1,
-  name: "Dolo 650",
-  category: "Tablets",
-  price: 35,
-  rating: 4.6,
-  image: "test-image.jpg",
-};
 
-const renderProductCard = (props = {}) => {
-  return render(
-    <MemoryRouter>
-      <ProductCard
-        product={mockProduct}
-        onAddToCart={jest.fn()}
-        {...props}
-      />
-    </MemoryRouter>
-  );
-};
+// Mock useNavigate
+const mockNavigate = jest.fn();
+
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useNavigate: () => mockNavigate,
+}));
+
 
 describe("ProductCard Component", () => {
-  test("renders product image", () => {
-    renderProductCard();
 
-    const image = screen.getByAltText("Dolo 650");
-    expect(image).toBeInTheDocument();
-    expect(image).toHaveAttribute("src", "test-image.jpg");
+  const product = {
+    id: 1,
+    name: "Paracetamol 500mg",
+    category: "Medicine",
+    price: 100,
+    rating: 4.8,
+    image: "/product.png",
+  };
+
+
+  beforeEach(() => {
+    localStorage.clear();
+    jest.clearAllMocks();
   });
 
-  test("renders product name", () => {
-    renderProductCard();
 
-    expect(screen.getByText("Dolo 650")).toBeInTheDocument();
-  });
-
-  test("renders product category", () => {
-    renderProductCard();
-
-    expect(screen.getByText("Tablets")).toBeInTheDocument();
-  });
-
-  test("renders product price", () => {
-    renderProductCard();
-
-    expect(screen.getByText("₹35")).toBeInTheDocument();
-  });
-
-  test("renders product rating", () => {
-    renderProductCard();
-
-    expect(screen.getByText("⭐ 4.6")).toBeInTheDocument();
-  });
-
-  test("renders View Details link", () => {
-    renderProductCard();
-
-    expect(
-      screen.getByRole("link", {
-        name: /view details/i,
-      })
-    ).toBeInTheDocument();
-  });
-
-  test("renders Add to Cart button", () => {
-    renderProductCard();
-
-    expect(
-      screen.getByRole("button", {
-        name: /add to cart/i,
-      })
-    ).toBeInTheDocument();
-  });
-
-  test("calls onAddToCart when Add to Cart button is clicked", () => {
-    const mockAddToCart = jest.fn();
+  test("renders product details", () => {
 
     render(
       <MemoryRouter>
-        <ProductCard
-          product={mockProduct}
-          onAddToCart={mockAddToCart}
-        />
+        <ProductCard product={product} />
       </MemoryRouter>
     );
 
-    fireEvent.click(
-      screen.getByRole("button", {
-        name: /add to cart/i,
-      })
+
+    expect(
+      screen.getByText("Paracetamol 500mg")
+    ).toBeInTheDocument();
+
+
+    expect(
+      screen.getByText("Medicine")
+    ).toBeInTheDocument();
+
+
+    expect(
+      screen.getByText("₹100")
+    ).toBeInTheDocument();
+
+
+    expect(
+      screen.getByText("⭐ 4.8")
+    ).toBeInTheDocument();
+
+  });
+
+
+
+  test("renders product image", () => {
+
+    render(
+      <MemoryRouter>
+        <ProductCard product={product} />
+      </MemoryRouter>
     );
 
-    expect(mockAddToCart).toHaveBeenCalledTimes(1);
-    expect(mockAddToCart).toHaveBeenCalledWith(mockProduct);
+
+    const image =
+      screen.getByAltText(
+        "Paracetamol 500mg"
+      );
+
+
+    expect(image).toBeInTheDocument();
+
+
+    expect(image.src).toContain(
+      "product.png"
+    );
+
   });
+
+
+
+  test("View Details link has correct path", () => {
+
+    render(
+      <MemoryRouter>
+        <ProductCard product={product} />
+      </MemoryRouter>
+    );
+
+
+    const link =
+      screen.getByText(
+        "View Details"
+      );
+
+
+    expect(link).toHaveAttribute(
+      "href",
+      "/product/1"
+    );
+
+  });
+
+
+
+  test("adds product to cart", () => {
+
+    render(
+      <MemoryRouter>
+        <ProductCard product={product} />
+      </MemoryRouter>
+    );
+
+
+    fireEvent.click(
+      screen.getByText(
+        "Add to Cart"
+      )
+    );
+
+
+    const cart =
+      JSON.parse(
+        localStorage.getItem("cart")
+      );
+
+
+    expect(cart).toHaveLength(1);
+
+
+    expect(cart[0].name)
+      .toBe("Paracetamol 500mg");
+
+
+    expect(cart[0].quantity)
+      .toBe(1);
+
+  });
+
+
+
+  test("increases quantity if product already exists", () => {
+
+    localStorage.setItem(
+      "cart",
+      JSON.stringify([
+        {
+          ...product,
+          quantity: 2,
+        },
+      ])
+    );
+
+
+    render(
+      <MemoryRouter>
+        <ProductCard product={product} />
+      </MemoryRouter>
+    );
+
+
+    fireEvent.click(
+      screen.getByText(
+        "Add to Cart"
+      )
+    );
+
+
+    const cart =
+      JSON.parse(
+        localStorage.getItem("cart")
+      );
+
+
+    expect(
+      cart[0].quantity
+    ).toBe(3);
+
+  });
+
+
+
+  test("navigates to cart after adding product", () => {
+
+    render(
+      <MemoryRouter>
+        <ProductCard product={product} />
+      </MemoryRouter>
+    );
+
+
+    fireEvent.click(
+      screen.getByText(
+        "Add to Cart"
+      )
+    );
+
+
+    expect(
+      mockNavigate
+    ).toHaveBeenCalledWith(
+      "/cart"
+    );
+
+  });
+
+
+
+  test("dispatches cartUpdated event", () => {
+
+    const eventHandler = jest.fn();
+
+
+    window.addEventListener(
+      "cartUpdated",
+      eventHandler
+    );
+
+
+    render(
+      <MemoryRouter>
+        <ProductCard product={product} />
+      </MemoryRouter>
+    );
+
+
+    fireEvent.click(
+      screen.getByText(
+        "Add to Cart"
+      )
+    );
+
+
+    expect(
+      eventHandler
+    ).toHaveBeenCalled();
+
+
+    window.removeEventListener(
+      "cartUpdated",
+      eventHandler
+    );
+
+  });
+
 });

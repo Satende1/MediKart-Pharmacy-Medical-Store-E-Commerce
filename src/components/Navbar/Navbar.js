@@ -6,6 +6,7 @@ import NavLinks from "./NavLinks";
 import SearchBar from "./SearchBar";
 import UserActions from "./UserActions";
 import MobileMenu from "./MobileMenu";
+
 function Navbar() {
   return (
     <nav className="navbar">
@@ -15,12 +16,14 @@ function Navbar() {
       <NavLinks />
 
       <SearchBar />
-      
+
       <UserActions />
 
       <MobileMenu />
 
     </nav>
+
+
   );
 }
 

@@ -2,93 +2,414 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./RelatedProducts.module.css";
 
+
 const RelatedProducts = ({ products }) => {
+
+
   const navigate = useNavigate();
+
+
   const [added, setAdded] = useState({});
 
-  const handleAddToCart = (e, id) => {
+
+
+
+
+  const handleAddToCart = (e, product) => {
+
+
     e.stopPropagation();
 
-    setAdded((prev) => ({
+
+
+    const cart =
+      JSON.parse(
+        localStorage.getItem("cart")
+      ) || [];
+
+
+
+
+    const existingProduct =
+      cart.find(
+        item => item.id === product.id
+      );
+
+
+
+    let updatedCart;
+
+
+
+
+    if(existingProduct){
+
+
+
+      updatedCart =
+      cart.map(item =>
+
+
+        item.id === product.id
+
+
+        ?
+
+        {
+
+          ...item,
+
+          quantity:
+          (item.quantity || 1) + 1
+
+        }
+
+
+        :
+
+        item
+
+
+      );
+
+
+
+    }
+
+    else {
+
+
+
+      updatedCart = [
+
+
+        ...cart,
+
+
+        {
+
+          ...product,
+
+          quantity:1
+
+        }
+
+
+      ];
+
+
+
+    }
+
+
+
+
+
+
+    localStorage.setItem(
+
+      "cart",
+
+      JSON.stringify(updatedCart)
+
+    );
+
+
+
+
+
+    // Update Navbar Cart Count
+
+    window.dispatchEvent(
+
+      new Event("cartUpdated")
+
+    );
+
+
+
+
+
+    setAdded(prev => ({
+
       ...prev,
-      [id]: true,
+
+      [product.id]:true
+
     }));
 
-    setTimeout(() => {
-      setAdded((prev) => ({
+
+
+
+
+
+    setTimeout(()=>{
+
+
+      setAdded(prev => ({
+
+
         ...prev,
-        [id]: false,
+
+
+        [product.id]:false
+
+
       }));
-    }, 2000);
+
+
+    },2000);
+
+
+
   };
 
+
+
+
+
+
+
   return (
-    <section className={styles.relatedProducts}>
-      <h2 className={styles.relatedTitle}>Our Products</h2>
 
-      <div className={styles.relatedGrid}>
-        {products.map((product) => (
-          <div
-            key={product.id}
-            className={styles.relatedCard}
-          >
-            <div
-              className={styles.imageBox}
-              onClick={() => navigate(`/product/${product.id}`)}
-            >
-              <img
-                src={product.image}
-                alt={product.name}
-                className={styles.productImage}
-              />
-            </div>
+<section className={styles.relatedProducts}>
 
-            <div className={styles.productInfo}>
-              <span className={styles.category}>
-                {product.category}
-              </span>
 
-              <h3 className={styles.productName}>
-                {product.name}
-              </h3>
+<h2 className={styles.relatedTitle}>
 
-              <p className={styles.productPrice}>
-                ₹{product.price}
-              </p>
+Our Products
 
-              <p className={styles.rating}>
-                ⭐ {product.rating}
-              </p>
+</h2>
 
-              <div className={styles.buttonGroup}>
-                <button
-                  className={styles.detailsBtn}
-                  onClick={() =>
-                    navigate(`/product/${product.id}`)
-                  }
-                >
-                  View Details
-                </button>
 
-                <button
-                  className={`${styles.cartBtn} ${
-                    added[product.id] ? styles.added : ""
-                  }`}
-                  onClick={(e) =>
-                    handleAddToCart(e, product.id)
-                  }
-                >
-                  {added[product.id]
-                    ? "✓ Added"
-                    : "Add to Cart"}
-                </button>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </section>
+
+
+
+<div className={styles.relatedGrid}>
+
+
+{
+
+products.map((product)=>(
+
+
+<div
+
+key={product.id}
+
+className={styles.relatedCard}
+
+>
+
+
+
+
+<div
+
+className={styles.imageBox}
+
+onClick={()=>
+
+
+navigate(
+`/product/${product.id}`
+)
+
+}
+
+
+>
+
+
+
+<img
+
+src={product.image}
+
+alt={product.name}
+
+className={styles.productImage}
+
+/>
+
+
+
+</div>
+
+
+
+
+
+
+
+<div className={styles.productInfo}>
+
+
+
+<span className={styles.category}>
+
+{product.category}
+
+</span>
+
+
+
+
+
+<h3 className={styles.productName}>
+
+{product.name}
+
+</h3>
+
+
+
+
+
+
+<p className={styles.productPrice}>
+
+₹{product.price}
+
+</p>
+
+
+
+
+
+<p className={styles.rating}>
+
+⭐ {product.rating}
+
+</p>
+
+
+
+
+
+
+
+<div className={styles.buttonGroup}>
+
+
+
+
+
+<button
+
+
+className={styles.detailsBtn}
+
+
+onClick={()=>
+
+
+navigate(
+`/product/${product.id}`
+)
+
+}
+
+
+>
+
+
+View Details
+
+
+</button>
+
+
+
+
+
+
+
+<button
+
+
+className={`${
+styles.cartBtn
+}
+${
+added[product.id]
+?
+styles.added
+:
+""
+}`}
+
+
+
+onClick={(e)=>
+
+handleAddToCart(
+e,
+product
+)
+
+}
+
+
+
+>
+
+
+
+{
+
+added[product.id]
+
+?
+
+"✓ Added"
+
+:
+
+"Add to Cart"
+
+}
+
+
+
+</button>
+
+
+
+
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+</div>
+
+
+))
+
+
+}
+
+
+
+</div>
+
+
+
+</section>
+
+
   );
+
 };
+
+
 
 export default RelatedProducts;

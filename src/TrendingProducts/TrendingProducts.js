@@ -41,16 +41,53 @@ const trendingProducts = [
 function TrendingProducts() {
   const [addedItems, setAddedItems] = useState({});
 
-  const handleAddToCart = (id) => {
+  const handleAddToCart = (product) => {
+    const cart =
+      JSON.parse(localStorage.getItem("cart")) || [];
+
+    const existingProduct = cart.find(
+      (item) => item.id === product.id
+    );
+
+    let updatedCart;
+
+    if (existingProduct) {
+      updatedCart = cart.map((item) =>
+        item.id === product.id
+          ? {
+              ...item,
+              quantity: (item.quantity || 1) + 1,
+            }
+          : item
+      );
+    } else {
+      updatedCart = [
+        ...cart,
+        {
+          ...product,
+          quantity: 1,
+        },
+      ];
+    }
+
+    localStorage.setItem(
+      "cart",
+      JSON.stringify(updatedCart)
+    );
+
+    // Update Navbar Cart Count
+    window.dispatchEvent(new Event("cartUpdated"));
+
+    // Show Added Button
     setAddedItems((prev) => ({
       ...prev,
-      [id]: true,
+      [product.id]: true,
     }));
 
     setTimeout(() => {
       setAddedItems((prev) => ({
         ...prev,
-        [id]: false,
+        [product.id]: false,
       }));
     }, 2000);
   };
@@ -60,7 +97,9 @@ function TrendingProducts() {
       <div className="container">
         <div className="trending-header">
           <h2>Trending Products</h2>
-          <p>Explore the most popular healthcare products on Medikart</p>
+          <p>
+            Explore the most popular healthcare products on Medikart
+          </p>
         </div>
 
         <div className="trending-grid">
@@ -73,7 +112,9 @@ function TrendingProducts() {
               />
 
               <div className="product-info">
-                <span className="category">{product.category}</span>
+                <span className="category">
+                  {product.category}
+                </span>
 
                 <h3>{product.name}</h3>
 
@@ -81,7 +122,9 @@ function TrendingProducts() {
                   <strong>₹{product.price}</strong>
                 </p>
 
-                <p className="rating">⭐ {product.rating}</p>
+                <p className="rating">
+                  ⭐ {product.rating}
+                </p>
 
                 <div className="button-group">
                   <Link
@@ -93,9 +136,13 @@ function TrendingProducts() {
 
                   <button
                     className={`cart-btn ${
-                      addedItems[product.id] ? "added" : ""
+                      addedItems[product.id]
+                        ? "added"
+                        : ""
                     }`}
-                    onClick={() => handleAddToCart(product.id)}
+                    onClick={() =>
+                      handleAddToCart(product)
+                    }
                   >
                     {addedItems[product.id]
                       ? "✓ Added"

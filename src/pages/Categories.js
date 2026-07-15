@@ -1,5 +1,5 @@
 import React from "react";
-
+import "./Categories.modules.css";
 function Categories() {
   return (
     <div>

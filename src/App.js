@@ -1,7 +1,9 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Navbar from "./components/Navbar/Navbar";
+import ScrollToTop from "./ScrollToTop/ScrollToTop";
 
+// Pages
 import Home from "./pages/Home";
 import Shop from "./pages/Shop";
 import About from "./pages/About";
@@ -9,40 +11,36 @@ import Categories from "./pages/Categories";
 import Contact from "./pages/Contact";
 
 import ProductListingPage from "./pages/ProductListingPage";
+import ProductListing from "./pages/ProductListing/ProductListing";
 import ProductDetails from "./pages/ProductDetails/ProductDetails";
 
-// Components
+// Wishlist & Cart Pages
+import Wishlist from "./pages/Wishlist/Wishlist";
+import Cart from "./pages/Cart/Cart";
+
+// Components (Demo)
 import QuantitySelector from "./components/QuantitySelector/QuantitySelector";
 import RelatedProducts from "./components/RelatedProducts/RelatedProducts";
 import ProductSpecifications from "./components/ProductSpecifications/ProductSpecifications";
-import ProductListing from "./pages/ProductListing/ProductListing";
-import ScrollToTop from "./ScrollToTop/ScrollToTop";
 
-// Dummy data
+// Dummy Data
 import products from "./data/products";
 
 function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
+
       <Navbar />
-      <ScrollToTop>
-        <Route>
-          <Route path="/" element={<Home />} />
-          <Route path="/products" element={<ProductListing />} />
-          <Route path="/product/:id" element={<ProductDetails />} />
-        </Route>
-      </ScrollToTop>
 
       <Routes>
-
+        {/* Home */}
         <Route path="/" element={<Home />} />
 
+        {/* Main Pages */}
         <Route path="/shop" element={<Shop />} />
-
         <Route path="/about" element={<About />} />
-
         <Route path="/categories" element={<Categories />} />
-
         <Route path="/contact" element={<Contact />} />
 
         {/* Product Listing */}
@@ -67,14 +65,25 @@ function App() {
           element={<ProductDetails />}
         />
 
-        {/* Component Demo Routes */}
+        {/* Wishlist */}
+        <Route
+          path="/wishlist"
+          element={<Wishlist />}
+        />
 
+        {/* Cart */}
+        <Route
+          path="/cart"
+          element={<Cart />}
+        />
+
+        {/* Demo Components */}
         <Route
           path="/quantity-selector"
           element={
             <QuantitySelector
               quantity={1}
-              setQuantity={() => { }}
+              setQuantity={() => {}}
             />
           }
         />
@@ -82,9 +91,7 @@ function App() {
         <Route
           path="/related-products"
           element={
-            <RelatedProducts
-              products={products}
-            />
+            <RelatedProducts products={products} />
           }
         />
 
@@ -96,7 +103,6 @@ function App() {
             />
           }
         />
-
       </Routes>
     </BrowserRouter>
   );

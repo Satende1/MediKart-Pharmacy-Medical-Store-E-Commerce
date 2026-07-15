@@ -6,6 +6,7 @@
 .container {
   max-width: 1200px;
   margin: auto;
+  
 }
 
 .categories-title {
@@ -14,6 +15,7 @@
   font-weight: 700;
   color: #1e293b;
   margin-bottom: 40px;
+  
 }
 
 .categories-grid {

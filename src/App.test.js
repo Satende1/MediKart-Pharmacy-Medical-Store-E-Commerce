@@ -1,37 +1,46 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
-import "@testing-library/jest-dom";
+import { MemoryRouter } from "react-router-dom";
 import App from "./App";
 
-// Mock all page components
-jest.mock("./pages/Home", () => () => <h1>Home Page</h1>);
-jest.mock("./pages/Shop", () => () => <h1>Shop Page</h1>);
-jest.mock("./pages/About", () => () => <h1>About Page</h1>);
-jest.mock("./pages/Categories", () => () => <h1>Categories Page</h1>);
-jest.mock("./pages/Contact", () => () => <h1>Contact Page</h1>);
+// Mock all pages
+jest.mock("./pages/Home", () => () => <div>Home Page</div>);
+jest.mock("./pages/Shop", () => () => <div>Shop Page</div>);
+jest.mock("./pages/About", () => () => <div>About Page</div>);
+jest.mock("./pages/Categories", () => () => <div>Categories Page</div>);
+jest.mock("./pages/Contact", () => () => <div>Contact Page</div>);
 jest.mock("./pages/ProductListingPage", () => () => (
-  <h1>Product Listing Page</h1>
+  <div>Product Listing Page</div>
 ));
 jest.mock("./pages/ProductListing/ProductListing", () => () => (
-  <h1>Product Listing</h1>
+  <div>Product Listing</div>
 ));
 jest.mock("./pages/ProductDetails/ProductDetails", () => () => (
-  <h1>Product Details</h1>
+  <div>Product Details</div>
+));
+jest.mock("./pages/Wishlist/Wishlist", () => () => (
+  <div>Wishlist Page</div>
+));
+jest.mock("./pages/Cart/Cart", () => () => (
+  <div>Cart Page</div>
 ));
 
-// Mock Navbar
+// Mock components
 jest.mock("./components/Navbar/Navbar", () => () => (
-  <nav>Navbar</nav>
+  <div>Navbar</div>
 ));
 
-// Mock Components
-jest.mock("./components/QuantitySelector/QuantitySelector", () => () => (
-  <div>Quantity Selector</div>
-));
+jest.mock("./ScrollToTop/ScrollToTop", () => () => null);
 
-jest.mock("./components/RelatedProducts/RelatedProducts", () => () => (
-  <div>Related Products</div>
-));
+jest.mock(
+  "./components/QuantitySelector/QuantitySelector",
+  () => () => <div>Quantity Selector</div>
+);
+
+jest.mock(
+  "./components/RelatedProducts/RelatedProducts",
+  () => () => <div>Related Products</div>
+);
 
 jest.mock(
   "./components/ProductSpecifications/ProductSpecifications",
@@ -42,93 +51,104 @@ jest.mock(
 jest.mock("./data/products", () => [
   {
     id: 1,
-    name: "Dolo 650",
+    name: "Test Product",
   },
 ]);
 
-describe("App Component", () => {
-  beforeEach(() => {
-    window.history.pushState({}, "", "/");
-  });
 
-  test("renders Navbar", () => {
-    render(<App />);
+const renderWithRoute = (route) => {
+  window.history.pushState({}, "Test", route);
+  return render(<App />);
+};
+
+describe("App Routing", () => {
+  test("renders Navbar on every page", () => {
+    renderWithRoute("/");
+
     expect(screen.getByText("Navbar")).toBeInTheDocument();
   });
 
-  test("renders Home page on '/' route", () => {
-    window.history.pushState({}, "", "/");
-    render(<App />);
+  test("renders Home page", () => {
+    renderWithRoute("/");
+
     expect(screen.getByText("Home Page")).toBeInTheDocument();
   });
 
   test("renders Shop page", () => {
-    window.history.pushState({}, "", "/shop");
-    render(<App />);
+    renderWithRoute("/shop");
+
     expect(screen.getByText("Shop Page")).toBeInTheDocument();
   });
 
   test("renders About page", () => {
-    window.history.pushState({}, "", "/about");
-    render(<App />);
+    renderWithRoute("/about");
+
     expect(screen.getByText("About Page")).toBeInTheDocument();
   });
 
   test("renders Categories page", () => {
-    window.history.pushState({}, "", "/categories");
-    render(<App />);
+    renderWithRoute("/categories");
+
     expect(screen.getByText("Categories Page")).toBeInTheDocument();
   });
 
   test("renders Contact page", () => {
-    window.history.pushState({}, "", "/contact");
-    render(<App />);
+    renderWithRoute("/contact");
+
     expect(screen.getByText("Contact Page")).toBeInTheDocument();
   });
 
-  test("renders Product Listing Page", () => {
-    window.history.pushState({}, "", "/products");
-    render(<App />);
+  test("renders Product Listing page", () => {
+    renderWithRoute("/products");
+
     expect(
       screen.getByText("Product Listing Page")
     ).toBeInTheDocument();
   });
 
-  test("renders Product Listing component", () => {
-    window.history.pushState({}, "", "/product-listing");
-    render(<App />);
-    expect(
-      screen.getByText("Product Listing")
-    ).toBeInTheDocument();
-  });
-
   test("renders Product Details page", () => {
-    window.history.pushState({}, "", "/product/1");
-    render(<App />);
+    renderWithRoute("/product/1");
+
     expect(
       screen.getByText("Product Details")
     ).toBeInTheDocument();
   });
 
-  test("renders Quantity Selector route", () => {
-    window.history.pushState({}, "", "/quantity-selector");
-    render(<App />);
+  test("renders Wishlist page", () => {
+    renderWithRoute("/wishlist");
+
+    expect(
+      screen.getByText("Wishlist Page")
+    ).toBeInTheDocument();
+  });
+
+  test("renders Cart page", () => {
+    renderWithRoute("/cart");
+
+    expect(
+      screen.getByText("Cart Page")
+    ).toBeInTheDocument();
+  });
+
+  test("renders Quantity Selector page", () => {
+    renderWithRoute("/quantity-selector");
+
     expect(
       screen.getByText("Quantity Selector")
     ).toBeInTheDocument();
   });
 
-  test("renders Related Products route", () => {
-    window.history.pushState({}, "", "/related-products");
-    render(<App />);
+  test("renders Related Products page", () => {
+    renderWithRoute("/related-products");
+
     expect(
       screen.getByText("Related Products")
     ).toBeInTheDocument();
   });
 
-  test("renders Product Specifications route", () => {
-    window.history.pushState({}, "", "/product-specifications");
-    render(<App />);
+  test("renders Product Specifications page", () => {
+    renderWithRoute("/product-specifications");
+
     expect(
       screen.getByText("Product Specifications")
     ).toBeInTheDocument();

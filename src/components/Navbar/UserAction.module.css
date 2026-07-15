@@ -1,42 +1,73 @@
-.user-actions {
+.userActions {
   display: flex;
-  gap: 10px;
+  align-items: center;
+  gap: 15px;
 }
-
-.wishlist-btn,
-.cart-btn,
-.login-btn {
-  padding: 8px 15px;
-  border: none;
-  border-radius: 5px;
+/* Common Button Style */
+.wishlistBtn,
+.cartBtn,
+.loginBtn {
+  position: relative;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
   cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
+  border: none;
+  text-decoration: none;
+  transition: 0.3s;
 }
 
-.wishlist-btn {
-  background-color: #fff0f3;
-  color: #e63946;
+/* Wishlist */
+.wishlistBtn {
+  color: #e91e63;
+  background: #fff0f5;
 }
-
-.cart-btn {
-  background-color: #f5f5f5;
-  color: #333;
+.wishlistBtn:hover {
+  background: #ffd6e7;
 }
-
-.login-btn {
-  background-color: #0a7b36;
+/* Cart */
+.cartBtn {
+  color: #008000;
+  background: #ecffec;
+}
+.cartBtn:hover {
+  background: #d5ffd5;
+}
+/* Login */
+.loginBtn {
   color: white;
+  background: #2563eb;
 }
-
-.wishlist-btn:hover {
-  background-color: #ffe5e9;
+.loginBtn:hover {
+  background: #1d4ed8;
 }
-
-.cart-btn:hover {
-  background-color: #e9ecef;
+/* Number Badge */
+.badge {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  width: 23px;
+  height: 23px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: red;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  border: 2px solid white;
 }
-
-.login-btn:hover {
-  background-color: #08662d;
+/* Mobile */
+@media(max-width:768px){
+  .userActions{
+    gap:8px;
+  }
+  .wishlistBtn,
+  .cartBtn,
+  .loginBtn{
+    padding:8px 10px;
+    font-size:13px;
+  }
 }
