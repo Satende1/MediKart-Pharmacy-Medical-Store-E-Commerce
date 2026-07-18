@@ -3,13 +3,13 @@ import "./ProductSpecifications.css";
 
 function ProductSpecifications({ product }) {
   const specs = [
-    { label: "Product Name", value: product.name },
-    { label: "Brand", value: product.brand },
-    { label: "Pack Size", value: product.packSize },
-    { label: "Expiry Date", value: product.expiry },
-    { label: "Availability", value: product.stock ? "In Stock" : "Out of Stock" },
-    { label: "Delivery Time", value: product.delivery },
-    { label: "Return Policy", value: product.returnPolicy },
+    { label: "Product Name",   value: product.name },
+    { label: "Brand",          value: product.brand },
+    { label: "Pack Size",      value: product.packSize },
+    { label: "Expiry Date",    value: product.expiry },
+    { label: "Availability",   value: product.stock ? "In Stock" : "Out of Stock" },
+    { label: "Delivery Time",  value: product.delivery },
+    { label: "Return Policy",  value: product.returnPolicy },
   ];
 
   return (

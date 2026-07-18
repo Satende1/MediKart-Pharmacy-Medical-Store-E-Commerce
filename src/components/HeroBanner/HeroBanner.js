@@ -7,12 +7,7 @@ import banner2 from "../../assets/images/Mediction1.png";
 import banner3 from "../../assets/images/Mediction2.png";
 import banner4 from "../../assets/images/Mediction3.png";
 
-const banners = [
-  banner1,
-  banner2,
-  banner3,
-  banner4
-];
+const banners = [ banner1, banner2, banner3, banner4];
 
 function HeroBanner() {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -72,11 +67,7 @@ function HeroBanner() {
             <span>✔ 24/7 Support</span>
           </div>
 
-          <button
-            className="shop-btn"
-            onClick={handleShopNow}
-          >
-            Shop Now
+          <button className="shop-btn" onClick={handleShopNow} >Shop Now
           </button>
         </div>
       </div>

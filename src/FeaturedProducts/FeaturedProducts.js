@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./FeaturedProducts.css";
 
 import product1 from "../assets/products/product1.png";
@@ -42,8 +44,7 @@ function FeaturedProducts() {
   const [addedItems, setAddedItems] = useState({});
 
   const handleAddToCart = (product) => {
-    const cart =
-      JSON.parse(localStorage.getItem("cart")) || [];
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
 
     const existingProduct = cart.find(
       (item) => item.id === product.id
@@ -70,13 +71,21 @@ function FeaturedProducts() {
       ];
     }
 
-    localStorage.setItem(
-      "cart",
-      JSON.stringify(updatedCart)
-    );
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
 
     // Update Navbar Cart Count
     window.dispatchEvent(new Event("cartUpdated"));
+
+    // Toast Message
+    toast.success(`${product.name} added to cart!`, {
+      position: "top-right",
+      autoClose: 2000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      theme: "colored",
+    });
 
     // Change Button Text
     setAddedItems((prev) => ({
@@ -93,71 +102,72 @@ function FeaturedProducts() {
   };
 
   return (
-    <section className="featured-products">
-      <div className="container">
-        <div className="featured-header">
-          <h2>Featured Products</h2>
-          <p>
-            Discover our most popular healthcare products
-          </p>
-        </div>
+    <>
+      <section className="featured-products">
+        <div className="container">
+          <div className="featured-header">
+            <h2>Featured Products</h2>
+            <p>
+              Discover our most popular healthcare products
+            </p>
+          </div>
 
-        <div className="products-grid">
-          {products.map((product) => (
-            <div
-              className="product-card"
-              key={product.id}
-            >
-              <img
-                src={product.image}
-                alt={product.name}
-                className="product-image"
-              />
+          <div className="products-grid">
+            {products.map((product) => (
+              <div
+                className="product-card"
+                key={product.id}
+              >
+                <img
+                  src={product.image}
+                  alt={product.name}
+                  className="product-image"
+                />
 
-              <div className="product-info">
-                <span className="category">
-                  {product.category}
-                </span>
+                <div className="product-info">
+                  <h3>{product.name}</h3>
 
-                <h3>{product.name}</h3>
+                  <p className="price">
+                    ₹{product.price}
+                  </p>
 
-                <p className="price">
-                  ₹{product.price}
-                </p>
+                  <p className="rating">
+                    ⭐ {product.rating}
+                  </p>
 
-                <p className="rating">
-                  ⭐ {product.rating}
-                </p>
+                  <div className="button-group">
+                    <Link
+                      to={`/product/${product.id}`}
+                      className="view-btn"
+                    >
+                      View Details
+                    </Link>
 
-                <div className="button-group">
-                  <Link
-                    to={`/product/${product.id}`}
-                    className="view-btn"
-                  >
-                    View Details
-                  </Link>
-
-                  <button
-                    className={`cart-btn ${
-                      addedItems[product.id]
-                        ? "added"
-                        : ""
-                    }`}
-                    onClick={() =>
-                      handleAddToCart(product)
-                    }
-                  >
-                    {addedItems[product.id]
-                      ? "✓ Added"
-                      : "Add to Cart"}
-                  </button>
+                    <button
+                      className={`cart-btn ${
+                        addedItems[product.id]
+                          ? "added"
+                          : ""
+                      }`}
+                      onClick={() =>
+                        handleAddToCart(product)
+                      }
+                    >
+                      {addedItems[product.id]
+                        ? "✓ Added"
+                        : "Add to Cart"}
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+
+      {/* Toast Container */}
+      <ToastContainer />
+    </>
   );
 }
 

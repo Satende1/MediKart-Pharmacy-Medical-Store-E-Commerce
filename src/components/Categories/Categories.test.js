@@ -61,22 +61,13 @@ describe("Categories Component", () => {
     );
 
     // eslint-disable-next-line testing-library/no-node-access
-    expect(screen.getByText("Medicines").closest("a")).toHaveAttribute(
-      "href",
-      "/category/medicines"
-    );
+    expect(screen.getByText("Medicines").closest("a")).toHaveAttribute( "href", "/category/medicines" );
 
     // eslint-disable-next-line testing-library/no-node-access
-    expect(screen.getByText("Healthcare").closest("a")).toHaveAttribute(
-      "href",
-      "/category/healthcare"
-    );
+    expect(screen.getByText("Healthcare").closest("a")).toHaveAttribute( "href", "/category/healthcare" );
 
     // eslint-disable-next-line testing-library/no-node-access
-    expect(screen.getByText("Vitamins").closest("a")).toHaveAttribute(
-      "href",
-      "/category/vitamins"
-    );
+    expect(screen.getByText("Vitamins").closest("a")).toHaveAttribute( "href", "/category/vitamins" );
   });
 
   test("renders exactly 6 category cards", () => {

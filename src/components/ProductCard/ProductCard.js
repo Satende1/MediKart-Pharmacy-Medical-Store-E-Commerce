@@ -56,36 +56,18 @@ const ProductCard = ({ product }) => {
       </div>
 
       <div className={styles.info}>
-        <span className={styles.category}>
-          {product.category}
-        </span>
+        <span className={styles.category}> {product.category} </span>
 
-        <h3 className={styles.name}>
-          {product.name}
-        </h3>
+        <h3 className={styles.name}> {product.name} </h3>
 
-        <p className={styles.price}>
-          ₹{product.price}
-        </p>
+        <p className={styles.price}> ₹{product.price} </p>
 
-        <p className={styles.rating}>
-          ⭐ {product.rating}
-        </p>
+        <p className={styles.rating}>⭐ {product.rating} </p>
 
         <div className={styles.buttons}>
-          <Link
-            to={`/product/${product.id}`}
-            className={styles.details}
-          >
-            View Details
-          </Link>
+          <Link to={`/product/${product.id}`} className={styles.details}> View Details </Link>
 
-          <button
-            className={styles.cart}
-            onClick={handleAddToCart}
-          >
-            Add to Cart
-          </button>
+          <button className={styles.cart} onClick={handleAddToCart} > Add to Cart </button>
         </div>
       </div>
     </div>

@@ -1,14 +1,10 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-
 import CartSummary from "./CartSummary";
-
-
 describe("CartSummary Component", () => {
 
   test("renders order summary", () => {
-
     render(
       <MemoryRouter>
         <CartSummary
@@ -17,18 +13,9 @@ describe("CartSummary Component", () => {
         />
       </MemoryRouter>
     );
-
-
-    expect(
-      screen.getByText("Order Summary")
-    ).toBeInTheDocument();
-
+    expect(screen.getByText("Order Summary")).toBeInTheDocument();
   });
-
-
-
   test("displays total items", () => {
-
     render(
       <MemoryRouter>
         <CartSummary
@@ -37,18 +24,10 @@ describe("CartSummary Component", () => {
         />
       </MemoryRouter>
     );
-
-
-    expect(
-      screen.getByText("5")
-    ).toBeInTheDocument();
+    expect(screen.getByText("5")).toBeInTheDocument();
 
   });
-
-
-
   test("displays free delivery", () => {
-
     render(
       <MemoryRouter>
         <CartSummary
@@ -57,18 +36,9 @@ describe("CartSummary Component", () => {
         />
       </MemoryRouter>
     );
-
-
-    expect(
-      screen.getByText("FREE")
-    ).toBeInTheDocument();
-
+    expect(screen.getByText("FREE")).toBeInTheDocument();
   });
-
-
-
   test("displays platform fee", () => {
-
     render(
       <MemoryRouter>
         <CartSummary
@@ -77,18 +47,10 @@ describe("CartSummary Component", () => {
         />
       </MemoryRouter>
     );
-
-
-    expect(
-      screen.getByText("₹0")
-    ).toBeInTheDocument();
+    expect(screen.getByText("₹0")).toBeInTheDocument();
 
   });
-
-
-
   test("displays total amount correctly", () => {
-
     render(
       <MemoryRouter>
         <CartSummary
@@ -97,18 +59,9 @@ describe("CartSummary Component", () => {
         />
       </MemoryRouter>
     );
-
-
-    expect(
-      screen.getByText("₹2,500")
-    ).toBeInTheDocument();
-
+    expect(screen.getByText("₹2,500")).toBeInTheDocument();
   });
-
-
-
   test("renders Continue Shopping link", () => {
-
     render(
       <MemoryRouter>
         <CartSummary
@@ -117,30 +70,12 @@ describe("CartSummary Component", () => {
         />
       </MemoryRouter>
     );
-
-
     const link =
-      screen.getByText(
-        "Continue Shopping"
-      );
-
-
-    expect(link)
-      .toBeInTheDocument();
-
-
-    expect(link)
-      .toHaveAttribute(
-        "href",
-        "/shop"
-      );
-
+      screen.getByText("Continue Shopping");
+    expect(link).toBeInTheDocument();
+    expect(link).toHaveAttribute("href", "/shop");
   });
-
-
-
   test("renders Proceed to Checkout button", () => {
-
     render(
       <MemoryRouter>
         <CartSummary
@@ -149,23 +84,12 @@ describe("CartSummary Component", () => {
         />
       </MemoryRouter>
     );
-
-
     const button =
-      screen.getByText(
-        "Proceed to Checkout"
-      );
-
-
-    expect(button)
-      .toBeInTheDocument();
-
+      screen.getByText("Proceed to Checkout");
+    expect(button).toBeInTheDocument();
   });
-
-
 
   test("checkout button is clickable", () => {
-
     render(
       <MemoryRouter>
         <CartSummary
@@ -174,21 +98,11 @@ describe("CartSummary Component", () => {
         />
       </MemoryRouter>
     );
-
-
     const button =
       screen.getByText(
         "Proceed to Checkout"
       );
-
-
     fireEvent.click(button);
-
-
-    expect(button)
-      .toBeInTheDocument();
-
+    expect(button).toBeInTheDocument();
   });
-
-
 });

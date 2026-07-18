@@ -8,17 +8,11 @@ jest.mock("../../components/CartItem/CartItem", () => (props) => (
   <div data-testid="cart-item">
     <p>{props.item.name}</p>
 
-    <button onClick={() => props.onIncrease(props.item.id)}>
-      Increase
-    </button>
+    <button onClick={() => props.onIncrease(props.item.id)}> Increase </button>
 
-    <button onClick={() => props.onDecrease(props.item.id)}>
-      Decrease
-    </button>
+    <button onClick={() => props.onDecrease(props.item.id)}> Decrease </button>
 
-    <button onClick={() => props.onRemove(props.item.id)}>
-      Remove
-    </button>
+    <button onClick={() => props.onRemove(props.item.id)}> Remove </button>
   </div>
 ));
 
@@ -30,9 +24,7 @@ jest.mock("../../components/CartSummary/CartSummary", () => (props) => (
 ));
 
 jest.mock("../../components/AddressSection/AddressSection", () => () => (
-  <div data-testid="address-section">
-    Address Section
-  </div>
+  <div data-testid="address-section"> Address Section </div>
 ));
 
 jest.mock("../../components/Footer/Footer", () => () => (
@@ -59,13 +51,9 @@ describe("Cart Page", () => {
       </MemoryRouter>
     );
 
-    expect(
-      screen.getByTestId("empty-state")
-    ).toBeInTheDocument();
+    expect(screen.getByTestId("empty-state")).toBeInTheDocument();
 
-    expect(
-      screen.getByText("Your Cart is Empty")
-    ).toBeInTheDocument();
+    expect(screen.getByText("Your Cart is Empty")).toBeInTheDocument();
   });
 
   test("renders cart items", () => {
@@ -87,17 +75,11 @@ describe("Cart Page", () => {
       </MemoryRouter>
     );
 
-    expect(
-      screen.getByText("Paracetamol")
-    ).toBeInTheDocument();
+    expect(screen.getByText("Paracetamol")).toBeInTheDocument();
 
-    expect(
-      screen.getByTestId("cart-summary")
-    ).toBeInTheDocument();
+    expect(screen.getByTestId("cart-summary")).toBeInTheDocument();
 
-    expect(
-      screen.getByTestId("address-section")
-    ).toBeInTheDocument();
+    expect(screen.getByTestId("address-section")).toBeInTheDocument();
   });
 
   test("increases quantity", () => {
@@ -119,13 +101,9 @@ describe("Cart Page", () => {
       </MemoryRouter>
     );
 
-    fireEvent.click(
-      screen.getByText("Increase")
-    );
+    fireEvent.click(screen.getByText("Increase"));
 
-    const cart = JSON.parse(
-      localStorage.getItem("cart")
-    );
+    const cart = JSON.parse(localStorage.getItem("cart"));
 
     expect(cart[0].quantity).toBe(2);
   });
@@ -149,13 +127,9 @@ describe("Cart Page", () => {
       </MemoryRouter>
     );
 
-    fireEvent.click(
-      screen.getByText("Decrease")
-    );
+    fireEvent.click(screen.getByText("Decrease"));
 
-    const cart = JSON.parse(
-      localStorage.getItem("cart")
-    );
+    const cart = JSON.parse(localStorage.getItem("cart"));
 
     expect(cart[0].quantity).toBe(1);
   });
@@ -179,13 +153,9 @@ describe("Cart Page", () => {
       </MemoryRouter>
     );
 
-    fireEvent.click(
-      screen.getByText("Remove")
-    );
+    fireEvent.click(screen.getByText("Remove"));
 
-    const cart = JSON.parse(
-      localStorage.getItem("cart")
-    );
+    const cart = JSON.parse(localStorage.getItem("cart"));
 
     expect(cart).toHaveLength(0);
   });
@@ -215,9 +185,7 @@ describe("Cart Page", () => {
       </MemoryRouter>
     );
 
-    expect(
-      screen.getByText("5 Items")
-    ).toBeInTheDocument();
+    expect(screen.getByText("5 Items")).toBeInTheDocument();
   });
 
   test("renders footer", () => {
@@ -227,8 +195,6 @@ describe("Cart Page", () => {
       </MemoryRouter>
     );
 
-    expect(
-      screen.getByTestId("footer")
-    ).toBeInTheDocument();
+    expect(screen.getByTestId("footer")).toBeInTheDocument();
   });
 });

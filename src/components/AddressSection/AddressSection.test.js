@@ -32,23 +32,10 @@ describe("AddressSection", () => {
     render(<AddressSection />);
 
     expect(screen.getByText("Deliver to")).toBeInTheDocument();
-
     expect(screen.getByText("Satender")).toBeInTheDocument();
-
-    expect(
-      screen.getByText("123 Main Road")
-    ).toBeInTheDocument();
-
-    expect(
-      screen.getByText(/Hyderabad/i)
-    ).toBeInTheDocument();
-
-    expect(
-      screen.getByText(/9876543210/i)
-    ).toBeInTheDocument();
-
-    expect(
-      screen.getByText("Change Address")
-    ).toBeInTheDocument();
+    expect(screen.getByText("123 Main Road")).toBeInTheDocument();
+    expect(screen.getByText(/Hyderabad/i)).toBeInTheDocument();
+    expect(screen.getByText(/9876543210/i)).toBeInTheDocument();
+    expect(screen.getByText("Change Address")).toBeInTheDocument();
   });
 });

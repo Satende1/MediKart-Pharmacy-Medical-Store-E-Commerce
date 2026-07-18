@@ -50,13 +50,10 @@ describe("HeroBanner Component", () => {
         <HeroBanner />
       </MemoryRouter>
     );
-
     const shopButton = screen.getByRole("button", {
       name: /shop now/i,
     });
-
     fireEvent.click(shopButton);
-
     expect(mockedNavigate).toHaveBeenCalledWith("/shop");
   });
 
@@ -66,7 +63,6 @@ describe("HeroBanner Component", () => {
         <HeroBanner />
       </MemoryRouter>
     );
-
     expect(screen.getByText("❮")).toBeInTheDocument();
     expect(screen.getByText("❯")).toBeInTheDocument();
   });
@@ -78,20 +74,9 @@ describe("HeroBanner Component", () => {
       </MemoryRouter>
     );
 
-    expect(
-      screen.getByText("✔ Genuine Medicines")
-    ).toBeInTheDocument();
-
-    expect(
-      screen.getByText("✔ Fast Delivery")
-    ).toBeInTheDocument();
-
-    expect(
-      screen.getByText("✔ Secure Payments")
-    ).toBeInTheDocument();
-
-    expect(
-      screen.getByText("✔ 24/7 Support")
-    ).toBeInTheDocument();
+    expect(screen.getByText("✔ Genuine Medicines")).toBeInTheDocument();
+    expect(screen.getByText("✔ Fast Delivery")).toBeInTheDocument();
+    expect(screen.getByText("✔ Secure Payments")).toBeInTheDocument();
+    expect(screen.getByText("✔ 24/7 Support")).toBeInTheDocument();
   });
 });

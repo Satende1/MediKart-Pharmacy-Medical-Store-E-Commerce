@@ -4,9 +4,7 @@
   gap: 15px;
 }
 /* Common Button Style */
-.wishlistBtn,
-.cartBtn,
-.loginBtn {
+.wishlistBtn,.cartBtn,.loginBtn {
   position: relative;
   padding: 10px 18px;
   border-radius: 8px;
@@ -64,10 +62,75 @@
   .userActions{
     gap:8px;
   }
-  .wishlistBtn,
-  .cartBtn,
-  .loginBtn{
+  .wishlistBtn,.cartBtn,.loginBtn{
     padding:8px 10px;
     font-size:13px;
+  }
+}
+
+.user-actions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  color: #333;
+  font-size: 15px;
+}
+
+.action-btn svg {
+  font-size: 20px;
+}
+
+/* Mobile View */
+@media (max-width: 768px) {
+  .action-btn span {
+    display: none;   /* Hide labels */
+  }
+
+  .action-btn {
+    gap: 0;
+    padding: 8px;
+  }
+
+  .action-btn svg {
+    font-size: 22px;
+  }
+}
+
+/* Desktop */
+.label {
+  display: inline;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .label {
+    display: none;
+  }
+
+  .wishlistBtn,
+  .cartBtn,
+  .loginBtn {
+    padding: 8px;
+    font-size: 22px;
+    gap: 0;
+    min-width: auto;
+  }
+
+  .userActions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .badge {
+    top: -5px;
+    right: -5px;
   }
 }

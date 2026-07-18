@@ -22,10 +22,7 @@ describe("EmptyState Component", () => {
     const image = screen.getByAltText("Your Cart is Empty");
 
     expect(image).toBeInTheDocument();
-    expect(image).toHaveAttribute(
-      "src",
-      "/images/empty-cart.png"
-    );
+    expect(image).toHaveAttribute("src", "/images/empty-cart.png");
   });
 
   test("renders title", () => {
@@ -35,9 +32,7 @@ describe("EmptyState Component", () => {
       </MemoryRouter>
     );
 
-    expect(
-      screen.getByText("Your Cart is Empty")
-    ).toBeInTheDocument();
+    expect(screen.getByText("Your Cart is Empty")).toBeInTheDocument();
   });
 
   test("renders description", () => {
@@ -47,11 +42,7 @@ describe("EmptyState Component", () => {
       </MemoryRouter>
     );
 
-    expect(
-      screen.getByText(
-        "Looks like you haven't added any products yet."
-      )
-    ).toBeInTheDocument();
+    expect(screen.getByText("Looks like you haven't added any products yet.")).toBeInTheDocument();
   });
 
   test("renders button with correct text", () => {
@@ -114,18 +105,10 @@ describe("EmptyState Component", () => {
       </MemoryRouter>
     );
 
-    expect(
-      screen.getByText("Wishlist Empty")
-    ).toBeInTheDocument();
+    expect(screen.getByText("Wishlist Empty")).toBeInTheDocument();
 
-    expect(
-      screen.getByText("Add items to your wishlist.")
-    ).toBeInTheDocument();
+    expect(screen.getByText("Add items to your wishlist.")).toBeInTheDocument();
 
-    expect(
-      screen.getByRole("link", {
-        name: /Go Shopping/i,
-      })
-    ).toHaveAttribute("href", "/products");
+    expect(screen.getByRole("link", { name: /Go Shopping/i, })).toHaveAttribute("href", "/products");
   });
 });

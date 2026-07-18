@@ -1,14 +1,16 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import Navbar from "./components/Navbar/Navbar";
 import ScrollToTop from "./ScrollToTop/ScrollToTop";
 
 // Pages
-import Home from "./pages/Home";
-import Shop from "./pages/Shop";
-import About from "./pages/About";
-import Categories from "./pages/Categories";
-import Contact from "./pages/Contact";
+import Home from "./pages/Home/Home";
+import Shop from "./pages/Shop/Shop";
+import About from "./pages/About/About";
+import Categories from "./pages/Categories/Categories";
+import Contact from "./pages/Contact/Contact";
 
 import ProductListingPage from "./pages/ProductListingPage";
 import ProductListing from "./pages/ProductListing/ProductListing";
@@ -44,66 +46,26 @@ function App() {
         <Route path="/contact" element={<Contact />} />
 
         {/* Product Listing */}
-        <Route
-          path="/products"
-          element={<ProductListingPage />}
-        />
-
-        <Route
-          path="/product-listing"
-          element={<ProductListing />}
-        />
-
-        <Route
-          path="/category/:category"
-          element={<ProductListingPage />}
-        />
+        <Route path="/products" element={<ProductListingPage />} />
+        <Route path="/product-listing" element={<ProductListing />} />
+        <Route path="/category/:category" element={<ProductListingPage />} />
 
         {/* Product Details */}
-        <Route
-          path="/product/:id"
-          element={<ProductDetails />}
-        />
+        <Route path="/product/:id" element={<ProductDetails />} />
 
         {/* Wishlist */}
-        <Route
-          path="/wishlist"
-          element={<Wishlist />}
-        />
+        <Route path="/wishlist" element={<Wishlist />} />
 
         {/* Cart */}
-        <Route
-          path="/cart"
-          element={<Cart />}
-        />
+        <Route path="/cart" element={<Cart />} />
 
         {/* Demo Components */}
-        <Route
-          path="/quantity-selector"
-          element={
-            <QuantitySelector
-              quantity={1}
-              setQuantity={() => {}}
-            />
-          }
-        />
-
-        <Route
-          path="/related-products"
-          element={
-            <RelatedProducts products={products} />
-          }
-        />
-
-        <Route
-          path="/product-specifications"
-          element={
-            <ProductSpecifications
-              product={products[0]}
-            />
-          }
-        />
+        <Route path="/quantity-selector" element={
+          <QuantitySelector quantity={1} setQuantity={() => { }} />} />
+        <Route path="/related-products" element={<RelatedProducts products={products} />} />
+        <Route path="/product-specifications" element={<ProductSpecifications product={products[0]} />} />
       </Routes>
+      <ToastContainer position="top-right" autoClose={2000} hideProgressBar={false} newestOnTop closeOnClick pauseOnHover draggable theme="colored" />
     </BrowserRouter>
   );
 }

@@ -107,3 +107,25 @@
     font-size: 14px;
   }
 }
+/* Mobile View */
+@media (max-width: 768px) {
+  .footer-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    text-align: left;
+  }
+
+  .footer-section {
+    width: 100%;
+  }
+
+  .social-icons {
+    justify-content: flex-start;
+  }
+
+  .footer-bottom {
+    grid-column: 1 / -1;
+    text-align: center;
+  }
+}

@@ -142,22 +142,17 @@
 .buy-btn {
   flex: 1;
   height: 52px;
-
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 8px;
-
   padding: 0 16px;
-
   border: none;
   border-radius: 8px;
-
   font-size: 15px;
   font-weight: 600;
   color: #fff;
   cursor: pointer;
-
   transition: all 0.3s ease;
   box-sizing: border-box;
   white-space: nowrap;
@@ -187,18 +182,14 @@
   width: 52px;
   min-width: 52px;
   height: 52px;
-
   display: flex;
   justify-content: center;
   align-items: center;
-
   border: 1px solid #ddd;
   border-radius: 8px;
-
   background: #fff;
   color: #555;
   font-size: 20px;
-
   cursor: pointer;
   transition: all 0.3s ease;
 }
@@ -304,3 +295,43 @@
   }
 }
 
+/* Mobile View */
+@media (max-width: 768px) {
+
+  /* Quantity + Buttons Side by Side */
+  .quantity-area,
+  .button-group {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .quantity-area {
+    justify-content: space-between;
+    margin: 20px 0;
+  }
+
+  .button-group {
+    flex-wrap: nowrap;
+  }
+
+  .cart-btn,
+  .buy-btn {
+    flex: 1;
+    padding: 12px;
+    font-size: 14px;
+  }
+
+  /* Circular Wishlist Button */
+  .wish-btn {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    font-size: 18px;
+  }
+}

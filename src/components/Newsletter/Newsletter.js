@@ -60,10 +60,7 @@ const Newsletter = () => {
             special promotional campaigns.
           </p>
 
-          <form
-            className={styles.form}
-            onSubmit={handleSubscribe}
-          >
+          <form className={styles.form} onSubmit={handleSubscribe}>
             <input
               type="email"
               placeholder="Enter your email address"
@@ -72,21 +69,12 @@ const Newsletter = () => {
               onChange={(e) => setEmail(e.target.value)}
             />
 
-            <button
-              type="submit"
-              className={styles.button}
-            >
-              Subscribe
-            </button>
+            <button type="submit" className={styles.button}>Subscribe</button>
           </form>
-
           {message && (
             <p
               className={`${styles.message} ${
-                messageType === "success"
-                  ? styles.success
-                  : styles.error
-              }`}
+                messageType === "success" ? styles.success : styles.error}`}
             >
               {message}
             </p>

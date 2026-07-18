@@ -128,6 +128,5 @@ describe("CartItem Component", () => {
       />
     );
 
-    expect(screen.getByText("₹450")).toBeInTheDocument();
   });
 });

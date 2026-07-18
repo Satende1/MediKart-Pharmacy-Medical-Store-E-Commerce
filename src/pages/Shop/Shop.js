@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import ProductListing from "../components/ProductListing/ProductListing";
-import Footer from "../components/Footer/Footer";
+import ProductListing from "../../components/ProductListing/ProductListing";
+import Footer from "../../components/Footer/Footer";
 const Shop = () => {
   const [sortBy, setSortBy] = useState("");
 

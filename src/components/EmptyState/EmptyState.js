@@ -2,13 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import styles from "./EmptyState.module.css";
 
-const EmptyState = ({
-  image,
-  title,
-  description,
-  buttonText,
-  buttonLink = "/products",
-}) => {
+const EmptyState = ({ image, title, description, buttonText, buttonLink = "/products",}) => {
   return (
     <div className={styles.emptyState}>
       <img

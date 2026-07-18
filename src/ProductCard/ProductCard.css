@@ -59,8 +59,8 @@
 }
 
 .cart {
-  background: #0f766e;
-  color: white;
+  background-color: white;
+  color:  #0f766e;
 }
 
 .details-btn:hover {

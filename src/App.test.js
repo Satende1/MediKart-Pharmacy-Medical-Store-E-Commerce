@@ -4,11 +4,11 @@ import { MemoryRouter } from "react-router-dom";
 import App from "./App";
 
 // Mock all pages
-jest.mock("./pages/Home", () => () => <div>Home Page</div>);
-jest.mock("./pages/Shop", () => () => <div>Shop Page</div>);
-jest.mock("./pages/About", () => () => <div>About Page</div>);
-jest.mock("./pages/Categories", () => () => <div>Categories Page</div>);
-jest.mock("./pages/Contact", () => () => <div>Contact Page</div>);
+jest.mock("./pages/Home/Home", () => () => <div>Home Page</div>);
+jest.mock("./pages/Shop/Shop", () => () => <div>Shop Page</div>);
+jest.mock("./pages/About/About", () => () => <div>About Page</div>);
+jest.mock("./pages/Categories/Categories", () => () => <div>Categories Page</div>);
+jest.mock("./pages/Contact/Contact", () => () => <div>Contact Page</div>);
 jest.mock("./pages/ProductListingPage", () => () => (
   <div>Product Listing Page</div>
 ));
@@ -32,18 +32,15 @@ jest.mock("./components/Navbar/Navbar", () => () => (
 
 jest.mock("./ScrollToTop/ScrollToTop", () => () => null);
 
-jest.mock(
-  "./components/QuantitySelector/QuantitySelector",
+jest.mock("./components/QuantitySelector/QuantitySelector",
   () => () => <div>Quantity Selector</div>
 );
 
-jest.mock(
-  "./components/RelatedProducts/RelatedProducts",
+jest.mock("./components/RelatedProducts/RelatedProducts",
   () => () => <div>Related Products</div>
 );
 
-jest.mock(
-  "./components/ProductSpecifications/ProductSpecifications",
+jest.mock("./components/ProductSpecifications/ProductSpecifications",
   () => () => <div>Product Specifications</div>
 );
 

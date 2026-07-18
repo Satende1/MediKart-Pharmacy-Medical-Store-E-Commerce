@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 import "./TrendingProducts.css";
 
 import product5 from "../assets/products/product5.png";
@@ -42,8 +43,7 @@ function TrendingProducts() {
   const [addedItems, setAddedItems] = useState({});
 
   const handleAddToCart = (product) => {
-    const cart =
-      JSON.parse(localStorage.getItem("cart")) || [];
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
 
     const existingProduct = cart.find(
       (item) => item.id === product.id
@@ -70,15 +70,24 @@ function TrendingProducts() {
       ];
     }
 
-    localStorage.setItem(
-      "cart",
-      JSON.stringify(updatedCart)
-    );
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
 
     // Update Navbar Cart Count
     window.dispatchEvent(new Event("cartUpdated"));
 
-    // Show Added Button
+    // Toast Message
+    toast.success(`${product.name} added to cart!`, {
+      position: "top-right",
+      autoClose: 2000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      theme: "colored",
+      icon: "🛒",
+    });
+
+    // Change Button Text
     setAddedItems((prev) => ({
       ...prev,
       [product.id]: true,
@@ -112,9 +121,7 @@ function TrendingProducts() {
               />
 
               <div className="product-info">
-                <span className="category">
-                  {product.category}
-                </span>
+                <span className="category">{product.category}</span>
 
                 <h3>{product.name}</h3>
 
@@ -122,9 +129,7 @@ function TrendingProducts() {
                   <strong>₹{product.price}</strong>
                 </p>
 
-                <p className="rating">
-                  ⭐ {product.rating}
-                </p>
+                <p className="rating">⭐ {product.rating}</p>
 
                 <div className="button-group">
                   <Link
@@ -136,13 +141,9 @@ function TrendingProducts() {
 
                   <button
                     className={`cart-btn ${
-                      addedItems[product.id]
-                        ? "added"
-                        : ""
+                      addedItems[product.id] ? "added" : ""
                     }`}
-                    onClick={() =>
-                      handleAddToCart(product)
-                    }
+                    onClick={() => handleAddToCart(product)}
                   >
                     {addedItems[product.id]
                       ? "✓ Added"
