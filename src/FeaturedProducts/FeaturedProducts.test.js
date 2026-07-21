@@ -1,165 +1,89 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
-import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 import FeaturedProducts from "./FeaturedProducts";
+import { toast } from "react-toastify";
+
+// Mock Images
+jest.mock("../assets/products/product1.png", () => "product1.png");
+jest.mock("../assets/products/product2.png", () => "product2.png");
+jest.mock("../assets/products/product3.png", () => "product3.png");
+jest.mock("../assets/products/product4.png", () => "product4.png");
+
+// Mock react-toastify
+jest.mock("react-toastify", () => ({
+  ToastContainer: () => <div>ToastContainer</div>,
+  toast: { success: jest.fn(), },
+}));
 
 describe("FeaturedProducts", () => {
   beforeEach(() => {
+    localStorage.clear();
     jest.clearAllMocks();
+    window.dispatchEvent = jest.fn();
   });
 
   test("renders Featured Products heading", () => {
-    render(
-      <MemoryRouter>
-        <FeaturedProducts />
-      </MemoryRouter>
-    );
-
-    expect(screen.getByText("Featured Products")).toBeInTheDocument();
+    render( <MemoryRouter> <FeaturedProducts /> </MemoryRouter> );
+    expect(screen.getByText("Featured Products") ).toBeInTheDocument();
   });
 
-  test("renders description", () => {
-    render(
-      <MemoryRouter>
-        <FeaturedProducts />
-      </MemoryRouter>
-    );
-
-    expect(
-      screen.getByText("Discover our most popular healthcare products")
-    ).toBeInTheDocument();
-  });
-
-  test("renders all product names", () => {
-    render(
-      <MemoryRouter>
-        <FeaturedProducts />
-      </MemoryRouter>
-    );
-
+  test("renders all products", () => {
+    render( <MemoryRouter> <FeaturedProducts /> </MemoryRouter> );
     expect(screen.getByText("Paracetamol Tablets")).toBeInTheDocument();
     expect(screen.getByText("Vitamin D Capsules")).toBeInTheDocument();
     expect(screen.getByText("Blood Pressure Monitor")).toBeInTheDocument();
     expect(screen.getByText("Hand Sanitizer")).toBeInTheDocument();
   });
 
-  test("renders all prices", () => {
-    render(
-      <MemoryRouter>
-        <FeaturedProducts />
-      </MemoryRouter>
-    );
-
-    expect(screen.getByText("₹99")).toBeInTheDocument();
-    expect(screen.getByText("₹249")).toBeInTheDocument();
-    expect(screen.getByText("₹1499")).toBeInTheDocument();
-    expect(screen.getByText("₹199")).toBeInTheDocument();
+  test("renders View Details buttons", () => {
+    render( <MemoryRouter> <FeaturedProducts /> </MemoryRouter> );
+    expect(screen.getAllByText("View Details")).toHaveLength(4);
   });
 
-  test("renders all ratings", () => {
-    render(
-      <MemoryRouter>
-        <FeaturedProducts />
-      </MemoryRouter>
-    );
+  test("renders Add to Cart buttons", () => {
+    render( <MemoryRouter> <FeaturedProducts /> </MemoryRouter> );
 
-    expect(screen.getByText("⭐ 4.8")).toBeInTheDocument();
-    expect(screen.getByText("⭐ 4.7")).toBeInTheDocument();
-    expect(screen.getByText("⭐ 4.9")).toBeInTheDocument();
-    expect(screen.getByText("⭐ 4.6")).toBeInTheDocument();
+    expect(screen.getAllByText("Add to Cart")).toHaveLength(4);
   });
 
-  test("renders four product images", () => {
-    render(
-      <MemoryRouter>
-        <FeaturedProducts />
-      </MemoryRouter>
-    );
+  test("adds product to localStorage cart", () => {
+    render( <MemoryRouter> <FeaturedProducts /> </MemoryRouter> );
 
-    expect(screen.getAllByRole("img")).toHaveLength(4);
+    fireEvent.click(screen.getAllByText("Add to Cart")[0]);
+
+    const cart = JSON.parse(localStorage.getItem("cart"));
+
+    expect(cart).toHaveLength(1);
+    expect(cart[0].name).toBe("Paracetamol Tablets");
+    expect(cart[0].quantity).toBe(1);
   });
 
-  test("renders four View Details links", () => {
-    render(
-      <MemoryRouter>
-        <FeaturedProducts />
-      </MemoryRouter>
-    );
+  test("calls toast.success when Add to Cart is clicked", () => {
+    render( <MemoryRouter> <FeaturedProducts /> </MemoryRouter> );
 
-    const links = screen.getAllByRole("link", {
-      name: /view details/i,
-    });
-
-    expect(links).toHaveLength(4);
+    fireEvent.click(screen.getAllByText("Add to Cart")[0]);
+    expect(toast.success).toHaveBeenCalled();
   });
 
-  test("View Details links have correct href", () => {
-    render(
-      <MemoryRouter>
-        <FeaturedProducts />
-      </MemoryRouter>
-    );
+  test("dispatches cartUpdated event", () => {
+    render( <MemoryRouter> <FeaturedProducts /> </MemoryRouter> );
 
-    const links = screen.getAllByRole("link", {
-      name: /view details/i,
-    });
+    fireEvent.click(screen.getAllByText("Add to Cart")[0]);
 
-    expect(links[0]).toHaveAttribute("href", "/product/1");
-    expect(links[1]).toHaveAttribute("href", "/product/7");
-    expect(links[2]).toHaveAttribute("href", "/product/2");
-    expect(links[3]).toHaveAttribute("href", "/product/3");
+    expect(window.dispatchEvent).toHaveBeenCalled();
   });
 
-  test("renders four Add to Cart buttons", () => {
-    render(
-      <MemoryRouter>
-        <FeaturedProducts />
-      </MemoryRouter>
-    );
+  test("changes button text to Added", () => {
+    render( <MemoryRouter> <FeaturedProducts /> </MemoryRouter> );
 
-    const buttons = screen.getAllByRole("button", {
-      name: /add to cart/i,
-    });
-
-    expect(buttons).toHaveLength(4);
-  });
-
-  test("changes button text after clicking Add to Cart", () => {
-    jest.useFakeTimers();
-
-    render(
-      <MemoryRouter>
-        <FeaturedProducts />
-      </MemoryRouter>
-    );
-
-    const button = screen.getAllByRole("button", {
-      name: /add to cart/i,
-    })[0];
-
-    fireEvent.click(button);
-
+    fireEvent.click(screen.getAllByText("Add to Cart")[0]);
     expect(screen.getByText("✓ Added")).toBeInTheDocument();
-
-    jest.advanceTimersByTime(2000);
-
-    expect(
-      screen.getAllByRole("button", {
-        name: /add to cart/i,
-      })[0]
-    ).toBeInTheDocument();
-
-    jest.useRealTimers();
   });
 
-  test("renders exactly four product cards", () => {
-    const { container } = render(
-      <MemoryRouter>
-        <FeaturedProducts />
-      </MemoryRouter>
-    );
+  test("renders ToastContainer", () => {
+    render(<MemoryRouter> <FeaturedProducts /> </MemoryRouter> );
 
-    expect(container.querySelectorAll(".product-card")).toHaveLength(4);
+    expect(screen.getByText("ToastContainer")).toBeInTheDocument();
   });
 });

@@ -10,6 +10,8 @@ function MobileMenu() {
     { name: "Home", icon: "🏠", path: "/" },
     { name: "Shop", icon: "🛒", path: "/shop" },
     { name: "Categories", icon: "📦", path: "/categories" },
+    { name: "Wishlist", icon: "❤️", path: "/wishlist" },
+    { name: "Cart", icon: "🛍️", path: "/cart" },
     { name: "About", icon: "ℹ️", path: "/about" },
     { name: "Contact", icon: "📞", path: "/contact" },
   ];

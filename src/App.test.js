@@ -1,14 +1,17 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
 import App from "./App";
 
-// Mock all pages
+// Mock Pages
 jest.mock("./pages/Home/Home", () => () => <div>Home Page</div>);
 jest.mock("./pages/Shop/Shop", () => () => <div>Shop Page</div>);
 jest.mock("./pages/About/About", () => () => <div>About Page</div>);
-jest.mock("./pages/Categories/Categories", () => () => <div>Categories Page</div>);
-jest.mock("./pages/Contact/Contact", () => () => <div>Contact Page</div>);
+jest.mock("./pages/Categories/Categories", () => () => (
+  <div>Categories Page</div>
+));
+jest.mock("./pages/Contact/Contact", () => () => (
+  <div>Contact Page</div>
+));
 jest.mock("./pages/ProductListingPage", () => () => (
   <div>Product Listing Page</div>
 ));
@@ -25,26 +28,32 @@ jest.mock("./pages/Cart/Cart", () => () => (
   <div>Cart Page</div>
 ));
 
-// Mock components
+// Mock Components
 jest.mock("./components/Navbar/Navbar", () => () => (
   <div>Navbar</div>
 ));
 
 jest.mock("./ScrollToTop/ScrollToTop", () => () => null);
 
-jest.mock("./components/QuantitySelector/QuantitySelector",
-  () => () => <div>Quantity Selector</div>
-);
+jest.mock("./components/QuantitySelector/QuantitySelector", () => () => (
+  <div>Quantity Selector</div>
+));
 
-jest.mock("./components/RelatedProducts/RelatedProducts",
-  () => () => <div>Related Products</div>
-);
+jest.mock("./components/RelatedProducts/RelatedProducts", () => () => (
+  <div>Related Products</div>
+));
 
-jest.mock("./components/ProductSpecifications/ProductSpecifications",
+jest.mock(
+  "./components/ProductSpecifications/ProductSpecifications",
   () => () => <div>Product Specifications</div>
 );
 
-// Mock product data
+// Mock ToastContainer
+jest.mock("react-toastify", () => ({
+  ToastContainer: () => <div>ToastContainer</div>,
+}));
+
+// Mock Product Data
 jest.mock("./data/products", () => [
   {
     id: 1,
@@ -52,102 +61,86 @@ jest.mock("./data/products", () => [
   },
 ]);
 
-
 const renderWithRoute = (route) => {
-  window.history.pushState({}, "Test", route);
+  window.history.pushState({}, "", route);
   return render(<App />);
 };
 
 describe("App Routing", () => {
   test("renders Navbar on every page", () => {
     renderWithRoute("/");
-
     expect(screen.getByText("Navbar")).toBeInTheDocument();
   });
 
   test("renders Home page", () => {
     renderWithRoute("/");
-
     expect(screen.getByText("Home Page")).toBeInTheDocument();
   });
 
   test("renders Shop page", () => {
     renderWithRoute("/shop");
-
     expect(screen.getByText("Shop Page")).toBeInTheDocument();
   });
 
   test("renders About page", () => {
     renderWithRoute("/about");
-
     expect(screen.getByText("About Page")).toBeInTheDocument();
   });
 
   test("renders Categories page", () => {
     renderWithRoute("/categories");
-
     expect(screen.getByText("Categories Page")).toBeInTheDocument();
   });
 
   test("renders Contact page", () => {
     renderWithRoute("/contact");
-
     expect(screen.getByText("Contact Page")).toBeInTheDocument();
   });
 
-  test("renders Product Listing page", () => {
+  test("renders Product Listing Page", () => {
     renderWithRoute("/products");
-
-    expect(
-      screen.getByText("Product Listing Page")
-    ).toBeInTheDocument();
+    expect(screen.getByText("Product Listing Page")).toBeInTheDocument();
   });
 
-  test("renders Product Details page", () => {
-    renderWithRoute("/product/1");
+  test("renders Product Listing", () => {
+    renderWithRoute("/product-listing");
+    expect(screen.getByText("Product Listing")).toBeInTheDocument();
+  });
 
-    expect(
-      screen.getByText("Product Details")
-    ).toBeInTheDocument();
+  test("renders Product Details", () => {
+    renderWithRoute("/product/1");
+    expect(screen.getByText("Product Details")).toBeInTheDocument();
   });
 
   test("renders Wishlist page", () => {
     renderWithRoute("/wishlist");
-
-    expect(
-      screen.getByText("Wishlist Page")
-    ).toBeInTheDocument();
+    expect(screen.getByText("Wishlist Page")).toBeInTheDocument();
   });
 
   test("renders Cart page", () => {
     renderWithRoute("/cart");
-
-    expect(
-      screen.getByText("Cart Page")
-    ).toBeInTheDocument();
+    expect(screen.getByText("Cart Page")).toBeInTheDocument();
   });
 
-  test("renders Quantity Selector page", () => {
+  test("renders Quantity Selector", () => {
     renderWithRoute("/quantity-selector");
-
-    expect(
-      screen.getByText("Quantity Selector")
-    ).toBeInTheDocument();
+    expect(screen.getByText("Quantity Selector")).toBeInTheDocument();
   });
 
-  test("renders Related Products page", () => {
+  test("renders Related Products", () => {
     renderWithRoute("/related-products");
-
-    expect(
-      screen.getByText("Related Products")
-    ).toBeInTheDocument();
+    expect(screen.getByText("Related Products")).toBeInTheDocument();
   });
 
-  test("renders Product Specifications page", () => {
+  test("renders Product Specifications", () => {
     renderWithRoute("/product-specifications");
-
     expect(
       screen.getByText("Product Specifications")
     ).toBeInTheDocument();
+  });
+
+  test("renders ToastContainer", () => {
+    renderWithRoute("/");
+    expect(screen.getByText("ToastContainer")).toBeInTheDocument();
   });
 });

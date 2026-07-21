@@ -17,6 +17,7 @@ describe("ProductGallery Component", () => {
   test("renders gallery container", () => {
     render(<ProductGallery />);
 
+    // eslint-disable-next-line testing-library/no-node-access
     expect(document.querySelector(".gallery")).toBeInTheDocument();
   });
 
@@ -62,6 +63,7 @@ describe("ProductGallery Component", () => {
     render(<ProductGallery />);
 
     expect(
+      // eslint-disable-next-line testing-library/no-node-access
       document.querySelector(".main-image-container")
     ).toBeInTheDocument();
   });

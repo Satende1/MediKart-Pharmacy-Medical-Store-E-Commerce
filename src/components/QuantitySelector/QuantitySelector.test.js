@@ -116,7 +116,7 @@ describe("QuantitySelector Component", () => {
     );
 
     expect(
-      // eslint-disable-next-line testing-library/no-container
+      // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
       container.querySelector(".quantity-selector-wrapper")
     ).toBeInTheDocument();
   });
@@ -130,7 +130,7 @@ describe("QuantitySelector Component", () => {
     );
 
     expect(
-      // eslint-disable-next-line testing-library/no-container
+      // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
       container.querySelector(".quantity-selector")
     ).toBeInTheDocument();
   });
@@ -144,7 +144,7 @@ describe("QuantitySelector Component", () => {
     );
 
     expect(
-      // eslint-disable-next-line testing-library/no-container
+      // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
       container.querySelector(".qty-value")
     ).toHaveTextContent("4");
   });

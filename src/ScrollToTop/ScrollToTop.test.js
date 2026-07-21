@@ -33,6 +33,7 @@ describe("ScrollToTop", () => {
       </MemoryRouter>
     );
 
+    // eslint-disable-next-line testing-library/no-node-access
     expect(container.firstChild).toBeNull();
   });
 });

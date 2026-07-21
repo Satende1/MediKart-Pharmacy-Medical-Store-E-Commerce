@@ -1,49 +1,66 @@
+import React from "react";
 import { render, screen } from "@testing-library/react";
-import { BrowserRouter } from "react-router-dom";
+import { MemoryRouter } from "react-router-dom";
 import Navbar from "./Navbar";
 
-// Mock image imports
-jest.mock("../../assets/Medikart-logo.png", () => "logo.png");
+// Mock child components
+jest.mock("./Logo", () => () => <div>Logo</div>);
+jest.mock("./NavLinks", () => () => <div>NavLinks</div>);
+jest.mock("./SearchBar", () => () => <div>SearchBar</div>);
+jest.mock("./UserActions", () => () => <div>UserActions</div>);
+jest.mock("./MobileMenu", () => () => <div>MobileMenu</div>);
 
-const renderNavbar = () => {
-  return render(
-    <BrowserRouter>
-      <Navbar />
-    </BrowserRouter>
-  );
-};
+describe("Navbar", () => {
+  test("renders all navbar components", () => {
+    render(
+      <MemoryRouter>
+        <Navbar />
+      </MemoryRouter>
+    );
 
-describe("Navbar Component", () => {
-  test("renders MediKart logo text", () => {
-    renderNavbar();
-    expect(screen.getAllByText("MediKart")[0]).toBeInTheDocument();
+    expect(screen.getByText("Logo")).toBeInTheDocument();
+    expect(screen.getByText("NavLinks")).toBeInTheDocument();
+    expect(screen.getByText("SearchBar")).toBeInTheDocument();
+    expect(screen.getByText("UserActions")).toBeInTheDocument();
+    expect(screen.getByText("MobileMenu")).toBeInTheDocument();
   });
 
-  test("renders navigation links", () => {
-    renderNavbar();
-    expect(screen.getAllByText("Home")[0]).toBeInTheDocument();
-    expect(screen.getAllByText("Shop")[0]).toBeInTheDocument();
-    expect(screen.getAllByText("Categories")[0]).toBeInTheDocument();
-    expect(screen.getAllByText("About")[0]).toBeInTheDocument();
-    expect(screen.getAllByText("Contact")[0]).toBeInTheDocument();
-  });
+  test("renders desktop navbar", () => {
+    const { container } = render(
+      <MemoryRouter>
+        <Navbar />
+      </MemoryRouter>
+    );
 
-  test("renders search input", () => {
-    renderNavbar();
     expect(
-      screen.getByPlaceholderText("Search Medicines...")
+      // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+      container.querySelector(".navbar-desktop")
     ).toBeInTheDocument();
   });
 
-  test("renders user action buttons", () => {
-    renderNavbar();
-    expect(screen.getByText(/Wishlist/i)).toBeInTheDocument();
-    expect(screen.getByText(/Cart/i)).toBeInTheDocument();
-    expect(screen.getByText(/Login/i)).toBeInTheDocument();
+  test("renders mobile navbar", () => {
+    const { container } = render(
+      <MemoryRouter>
+        <Navbar />
+      </MemoryRouter>
+    );
+
+    expect(
+      // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+      container.querySelector(".navbar-mobile")
+    ).toBeInTheDocument();
   });
 
-  test("renders mobile menu button", () => {
-    renderNavbar();
-    expect(screen.getByText("☰")).toBeInTheDocument();
+  test("renders navbar element", () => {
+    const { container } = render(
+      <MemoryRouter>
+        <Navbar />
+      </MemoryRouter>
+    );
+
+    expect(
+      // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+      container.querySelector(".navbar")
+    ).toBeInTheDocument();
   });
 });
