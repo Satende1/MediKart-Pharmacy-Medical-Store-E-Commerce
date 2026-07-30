@@ -32,9 +32,9 @@ const Cart = () => {
     const updatedCart = cartItems.map((item) =>
       item.id === id
         ? {
-            ...item,
-            quantity: (item.quantity || 1) + 1,
-          }
+          ...item,
+          quantity: (item.quantity || 1) + 1,
+        }
         : item
     );
 
@@ -48,9 +48,9 @@ const Cart = () => {
     const updatedCart = cartItems.map((item) =>
       item.id === id
         ? {
-            ...item,
-            quantity: Math.max(1, (item.quantity || 1) - 1),
-          }
+          ...item,
+          quantity: Math.max(1, (item.quantity || 1) - 1),
+        }
         : item
     );
 
@@ -112,9 +112,7 @@ const Cart = () => {
         <div className={styles.cartHeader}>
           <h1>🛒 My Cart</h1>
 
-          <span className={styles.itemCount}>
-            {totalItems} Items
-          </span>
+          <span className={styles.itemCount}> {totalItems} Items </span>
         </div>
 
         {/* Layout */}
@@ -144,9 +142,7 @@ const Cart = () => {
           </div>
         </div>
       </div>
-              <AddressSection/>
-
-
+      <AddressSection />
       <Footer />
     </>
   );

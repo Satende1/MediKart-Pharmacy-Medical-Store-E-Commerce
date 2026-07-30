@@ -1,0 +1,158 @@
+/* ===========================
+   Filter Panel
+=========================== */
+
+.filter-panel {
+  width: 260px;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e5e5e5;
+  position: sticky;
+  top: 20px;
+}
+
+.filter-panel h2 {
+  text-align: center;
+  color: #0b8d5c;
+  margin-bottom: 20px;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+/* Filter Group */
+
+.filter-group {
+  margin-bottom: 18px;
+}
+
+.filter-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+}
+
+.filter-group select,
+.filter-group input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #dcdcdc;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  transition: 0.3s;
+  box-sizing: border-box;
+}
+
+.filter-group select:focus,
+.filter-group input:focus {
+  border-color: #0b8d5c;
+  box-shadow: 0 0 5px rgba(11, 141, 92, 0.3);
+}
+
+/* Checkbox */
+
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 18px 0;
+}
+
+.checkbox-group input {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.checkbox-group label {
+  font-size: 15px;
+  color: #444;
+  cursor: pointer;
+}
+
+/* Clear Button */
+
+.clear-btn {
+  width: 100%;
+  padding: 12px;
+  background: #0b8d5c;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.clear-btn:hover {
+  background: #08724a;
+}
+
+/* Tablet */
+
+@media (max-width: 992px) {
+
+  .filter-panel {
+    width: 100%;
+    position: static;
+  }
+
+}
+
+/* Mobile */
+
+@media (max-width: 768px) {
+
+  .filter-panel {
+    width: 100%;
+    padding: 15px;
+    margin-bottom: 20px;
+  }
+
+  .filter-panel h2 {
+    font-size: 20px;
+  }
+
+  .filter-group {
+    margin-bottom: 15px;
+  }
+
+  .filter-group label {
+    font-size: 14px;
+  }
+
+  .filter-group select,
+  .filter-group input {
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  .checkbox-group label {
+    font-size: 14px;
+  }
+
+  .clear-btn {
+    font-size: 14px;
+    padding: 10px;
+  }
+
+}
+
+/* Small Mobile */
+
+@media (max-width: 480px) {
+
+  .filter-panel {
+    padding: 12px;
+  }
+
+  .filter-panel h2 {
+    font-size: 18px;
+  }
+
+}

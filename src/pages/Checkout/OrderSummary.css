@@ -1,0 +1,161 @@
+.order-summary-page {
+  max-width: 1100px;
+  margin: 40px auto;
+  padding: 20px;
+  background: #f7f9fc;
+}
+
+.order-summary-page h1 {
+  text-align: center;
+  color: #0c8c5c;
+  margin-bottom: 30px;
+}
+
+.summary-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+}
+
+.summary-card h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #0c8c5c;
+  margin-bottom: 18px;
+  font-size: 22px;
+}
+
+.summary-card p {
+  margin: 6px 0;
+  color: #555;
+  line-height: 1.5;
+}
+
+/* Product */
+
+.product-card {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 15px 0;
+  border-bottom: 1px solid #ececec;
+}
+
+.product-card:last-child {
+  border-bottom: none;
+}
+
+.product-card img {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background: #fff;
+  padding: 10px;
+}
+
+.product-info {
+  flex: 1;
+}
+
+.product-info h3 {
+  margin-bottom: 8px;
+  color: #222;
+}
+
+.product-info p {
+  margin: 5px 0;
+  color: #666;
+}
+
+/* Bill */
+
+.row,
+.total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 14px 0;
+  font-size: 16px;
+}
+
+.total {
+  font-size: 22px;
+  font-weight: bold;
+  color: #0c8c5c;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid #ddd;
+  margin: 15px 0;
+}
+
+/* Button */
+
+.payment-btn {
+  display: block;
+  width: 100%;
+  text-align: center;
+  text-decoration: none;
+  background: #0c8c5c;
+  color: #fff;
+  padding: 15px;
+  border-radius: 10px;
+  font-size: 18px;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+.payment-btn:hover {
+  background: #08724a;
+}
+
+/* Mobile */
+
+@media (max-width: 768px) {
+
+  .order-summary-page {
+    padding: 15px;
+  }
+
+  .summary-card {
+    padding: 16px;
+  }
+
+  .summary-card h2 {
+    font-size: 18px;
+  }
+
+  .product-card {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .product-card img {
+    width: 150px;
+    height: 150px;
+  }
+
+  .product-info {
+    width: 100%;
+  }
+
+  .row,
+  .total {
+    font-size: 15px;
+  }
+
+  .total {
+    font-size: 18px;
+  }
+
+  .payment-btn {
+    font-size: 16px;
+    padding: 14px;
+  }
+}

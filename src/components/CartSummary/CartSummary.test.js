@@ -1,108 +1,119 @@
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
+import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 import CartSummary from "./CartSummary";
-describe("CartSummary Component", () => {
 
-  test("renders order summary", () => {
+describe("CartSummary", () => {
+  const cartItems = [
+    {
+      id: 1,
+      name: "Dolo 650",
+      category: "Medicine",
+      price: 120,
+      quantity: 2,
+    },
+    {
+      id: 2,
+      name: "BP Monitor",
+      category: "Medical Devices",
+      price: 1500,
+      quantity: 1,
+    },
+  ];
+
+  test("renders Order Summary", () => {
     render(
       <MemoryRouter>
-        <CartSummary
-          totalItems={3}
-          totalPrice={1500}
-        />
+        <CartSummary cartItems={cartItems} totalItems={3} totalPrice={1740} />
       </MemoryRouter>
     );
+
     expect(screen.getByText("Order Summary")).toBeInTheDocument();
   });
-  test("displays total items", () => {
-    render(
-      <MemoryRouter>
-        <CartSummary
-          totalItems={5}
-          totalPrice={2000}
-        />
-      </MemoryRouter>
-    );
-    expect(screen.getByText("5")).toBeInTheDocument();
 
-  });
-  test("displays free delivery", () => {
+  test("renders product names", () => {
     render(
       <MemoryRouter>
-        <CartSummary
-          totalItems={2}
-          totalPrice={500}
-        />
+        <CartSummary cartItems={cartItems} totalItems={3} totalPrice={1740} />
       </MemoryRouter>
     );
-    expect(screen.getByText("FREE")).toBeInTheDocument();
-  });
-  test("displays platform fee", () => {
-    render(
-      <MemoryRouter>
-        <CartSummary
-          totalItems={1}
-          totalPrice={1000}
-        />
-      </MemoryRouter>
-    );
-    expect(screen.getByText("₹0")).toBeInTheDocument();
 
-  });
-  test("displays total amount correctly", () => {
-    render(
-      <MemoryRouter>
-        <CartSummary
-          totalItems={2}
-          totalPrice={2500}
-        />
-      </MemoryRouter>
-    );
-    expect(screen.getByText("₹2,500")).toBeInTheDocument();
-  });
-  test("renders Continue Shopping link", () => {
-    render(
-      <MemoryRouter>
-        <CartSummary
-          totalItems={2}
-          totalPrice={1000}
-        />
-      </MemoryRouter>
-    );
-    const link =
-      screen.getByText("Continue Shopping");
-    expect(link).toBeInTheDocument();
-    expect(link).toHaveAttribute("href", "/shop");
-  });
-  test("renders Proceed to Checkout button", () => {
-    render(
-      <MemoryRouter>
-        <CartSummary
-          totalItems={2}
-          totalPrice={1000}
-        />
-      </MemoryRouter>
-    );
-    const button =
-      screen.getByText("Proceed to Checkout");
-    expect(button).toBeInTheDocument();
+    expect(screen.getByText(/Dolo 650/i)).toBeInTheDocument();
+    expect(screen.getByText(/BP Monitor/i)).toBeInTheDocument();
   });
 
-  test("checkout button is clickable", () => {
+  test("renders total items", () => {
+    render(
+      <MemoryRouter>
+        <CartSummary cartItems={cartItems} totalItems={3} totalPrice={1740} />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByText("3")).toBeInTheDocument();
+  });
+
+  test("shows product price", () => {
+    render(
+      <MemoryRouter>
+        <CartSummary cartItems={cartItems} totalItems={3} totalPrice={1740} />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByText(/₹1,740/)).toBeInTheDocument();
+  });
+
+  test("shows delivery charge", () => {
+    render(
+      <MemoryRouter>
+        <CartSummary cartItems={cartItems} totalItems={3} totalPrice={1740} />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByText(/₹100/)).toBeInTheDocument();
+  });
+
+  test("shows total amount", () => {
+    render(
+      <MemoryRouter>
+        <CartSummary cartItems={cartItems} totalItems={3} totalPrice={1740} />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByText(/₹1,840/)).toBeInTheDocument();
+  });
+
+  test("has Continue Shopping link", () => {
+    render(
+      <MemoryRouter>
+        <CartSummary cartItems={cartItems} totalItems={3} totalPrice={1740} />
+      </MemoryRouter>
+    );
+
+    expect( screen.getByRole("link", {  name: /Continue Shopping/i, })).toHaveAttribute("href", "/shop");
+  });
+
+  test("has Proceed to Checkout link", () => {
     render(
       <MemoryRouter>
         <CartSummary
-          totalItems={2}
-          totalPrice={1000}
+          cartItems={cartItems}
+          totalItems={3}
+          totalPrice={1740}
         />
       </MemoryRouter>
     );
-    const button =
-      screen.getByText(
-        "Proceed to Checkout"
-      );
-    fireEvent.click(button);
-    expect(button).toBeInTheDocument();
+
+    expect(screen.getByRole("link", { name: /Proceed to Checkout/i, }) ).toHaveAttribute("href", "/shipping-address");
+  });
+
+  test("renders empty cart", () => {
+    render(
+      <MemoryRouter>
+        <CartSummary cartItems={[]} totalItems={0} totalPrice={0} />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByText("Order Summary")).toBeInTheDocument();
   });
 });

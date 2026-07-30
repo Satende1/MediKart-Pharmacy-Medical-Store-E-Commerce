@@ -64,26 +64,15 @@ const ProductDetails = () => {
     let updatedCart;
 
     if (existingProduct) { 
-      updatedCart =
-        cart.map
-        (item =>
+      updatedCart = cart.map(item =>
           item.id === product.id ? 
           { ...item,
             quantity: (item.quantity || 1) + quantity
           } : item
-
         );
     }else {
       updatedCart = 
-      [ ...cart,
-        { ...product,
-
-          price: discountPrice,
-
-          quantity: quantity
-
-        }
-      ];
+      [ ...cart, { ...product, price: discountPrice, quantity: quantity }];
     }
 
     localStorage.setItem( "cart", JSON.stringify(updatedCart) );
@@ -159,7 +148,7 @@ const ProductDetails = () => {
               <FaShoppingCart />
               { isAdded ? "✓ Added" : "Add to Cart" } 
             </button>
-            <button className="buy-btn"> <FaBolt />Buy Now </button>
+            <button className="buy-btn"> <FaBolt /> Buy Now </button>
             <button
               className={`wish-btn ${wishlist ? "active" : "" }`}
               onClick={handleWishlist}>

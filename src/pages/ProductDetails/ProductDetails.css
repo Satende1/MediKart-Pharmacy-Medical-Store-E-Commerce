@@ -335,3 +335,54 @@
     font-size: 18px;
   }
 }
+
+/* ==========================
+   ProductDetails Mobile Only
+========================== */
+@media (max-width: 768px) {
+
+  .product-page .button-group {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    width: 100%;
+    margin-top: 20px;
+  }
+
+  .product-page .cart-btn,
+  .product-page .buy-btn {
+    flex: 1;
+    height: 46px;
+    padding: 0 10px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    border-radius: 8px;
+  }
+
+  .product-page .wish-btn {
+    width: 46px;
+    min-width: 46px;
+    height: 46px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 8px;
+    flex-shrink: 0;
+  }
+
+  .product-page .cart-btn svg,
+  .product-page .buy-btn svg,
+  .product-page .wish-btn svg {
+    font-size: 16px;
+  }
+}

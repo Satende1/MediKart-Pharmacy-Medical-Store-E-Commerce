@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import "./MobileMenu.css";
 import logo from "../../assets/Medikart-logo.png";
 
 function MobileMenu() {
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
 
   const menuItems = [
     { name: "Home", icon: "🏠", path: "/" },
@@ -15,6 +16,17 @@ function MobileMenu() {
     { name: "About", icon: "ℹ️", path: "/about" },
     { name: "Contact", icon: "📞", path: "/contact" },
   ];
+
+  const handleLogout = () => {
+    // Remove user data
+    localStorage.removeItem("user");
+
+    // Close sidebar
+    setIsOpen(false);
+
+    // Redirect to Login page
+    navigate("/login");
+  };
 
   return (
     <>
@@ -29,7 +41,7 @@ function MobileMenu() {
         <div
           className="mobile-overlay"
           onClick={() => setIsOpen(false)}
-        />
+        ></div>
       )}
 
       <div className={`mobile-sidebar ${isOpen ? "open" : ""}`}>
@@ -60,14 +72,17 @@ function MobileMenu() {
                 }
               >
                 <span className="icon">{item.icon}</span>
-                {item.name}
+                <span>{item.name}</span>
               </NavLink>
             </li>
           ))}
         </ul>
 
         <div className="logout-container">
-          <button className="logout-btn">
+          <button
+            className="logout-btn"
+            onClick={handleLogout}
+          >
             🚪 Logout
           </button>
         </div>

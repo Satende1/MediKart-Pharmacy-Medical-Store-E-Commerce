@@ -1,9 +1,9 @@
 import React from "react";
-import "./FilterPanel.module.css";
+import "./FilterPanel.css";
 
-const FilterPanel = ({ filters, setFilters }) => {
+function FilterPanel({ filters, setFilters }) {
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
+    const { name, value, checked, type } = e.target;
 
     setFilters({
       ...filters,
@@ -24,17 +24,19 @@ const FilterPanel = ({ filters, setFilters }) => {
 
   return (
     <div className="filter-panel">
-      <h2>Filters</h2>
+
+      <h2>Filter Products</h2>
 
       {/* Category */}
       <div className="filter-group">
         <label>Category</label>
+
         <select
           name="category"
           value={filters.category}
           onChange={handleChange}
         >
-          <option value="">All</option>
+          <option value="">All Categories</option>
           <option value="Medicine">Medicine</option>
           <option value="Vitamin">Vitamin</option>
           <option value="Equipment">Equipment</option>
@@ -45,51 +47,57 @@ const FilterPanel = ({ filters, setFilters }) => {
       {/* Brand */}
       <div className="filter-group">
         <label>Brand</label>
+
         <select
           name="brand"
           value={filters.brand}
           onChange={handleChange}
         >
-          <option value="">All</option>
+          <option value="">All Brands</option>
           <option value="Dolo">Dolo</option>
-          <option value="Revital">Revital</option>
           <option value="Crocin">Crocin</option>
+          <option value="Revital">Revital</option>
           <option value="Himalaya">Himalaya</option>
+          <option value="Omron">Omron</option>
+          <option value="Accu-Chek">Accu-Chek</option>
         </select>
       </div>
 
       {/* Price */}
       <div className="filter-group">
-        <label>Min Price</label>
+        <label>Minimum Price</label>
+
         <input
           type="number"
           name="minPrice"
+          placeholder="₹0"
           value={filters.minPrice}
           onChange={handleChange}
-          placeholder="₹0"
         />
       </div>
 
       <div className="filter-group">
-        <label>Max Price</label>
+        <label>Maximum Price</label>
+
         <input
           type="number"
           name="maxPrice"
+          placeholder="₹5000"
           value={filters.maxPrice}
           onChange={handleChange}
-          placeholder="₹5000"
         />
       </div>
 
       {/* Rating */}
       <div className="filter-group">
         <label>Rating</label>
+
         <select
           name="rating"
           value={filters.rating}
           onChange={handleChange}
         >
-          <option value="">All</option>
+          <option value="">All Ratings</option>
           <option value="4">4★ & Above</option>
           <option value="3">3★ & Above</option>
           <option value="2">2★ & Above</option>
@@ -97,21 +105,28 @@ const FilterPanel = ({ filters, setFilters }) => {
       </div>
 
       {/* Availability */}
-      <div className="checkbox-group">
+      <div className="stock">
+
         <input
           type="checkbox"
           name="availability"
           checked={filters.availability}
           onChange={handleChange}
         />
+
         <label>In Stock Only</label>
+
       </div>
 
-      <button className="clear-btn" onClick={clearFilters}>
+      <button
+        className="clear-btn"
+        onClick={clearFilters}
+      >
         Clear Filters
       </button>
+
     </div>
   );
-};
+}
 
 export default FilterPanel;

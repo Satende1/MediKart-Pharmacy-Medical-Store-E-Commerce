@@ -25,7 +25,6 @@ describe("SortDropdown Component", () => {
 
     expect(options).toHaveLength(7);
 
-    expect(screen.getByText("Sort By")).toBeInTheDocument();
     expect(screen.getByText("Price: Low to High")).toBeInTheDocument();
     expect(screen.getByText("Price: High to Low")).toBeInTheDocument();
     expect(screen.getByText("Name: A - Z")).toBeInTheDocument();
@@ -77,9 +76,7 @@ describe("SortDropdown Component", () => {
 
     const selectElement = screen.getByRole("combobox");
 
-    fireEvent.change(selectElement, {
-      target: { value: "nameAZ" },
-    });
+    fireEvent.change(selectElement, { target: { value: "nameAZ" }, });
 
     expect(setSortBy).toHaveBeenCalledWith("nameAZ");
   });

@@ -33,7 +33,7 @@ const trendingProducts = [
   {
     id: 7,
     name: "Vitamin D Capsules",
-    price: 3,
+    price: 300,
     rating: 4.6,
     image: product8,
   },

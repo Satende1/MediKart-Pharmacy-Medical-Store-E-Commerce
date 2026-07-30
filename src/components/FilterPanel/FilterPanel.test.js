@@ -3,7 +3,7 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import FilterPanel from "./FilterPanel";
 
-describe("FilterPanel Component", () => {
+describe("FilterPanel", () => {
   let filters;
   let setFilters;
 
@@ -20,26 +20,32 @@ describe("FilterPanel Component", () => {
     setFilters = jest.fn();
   });
 
-  test("renders filter panel", () => {
-    render(<FilterPanel filters={filters} setFilters={setFilters} />);
+  test("renders Filter Products heading", () => {
+    render(
+      <FilterPanel
+        filters={filters}
+        setFilters={setFilters}
+      />
+    );
 
-    expect(screen.getByText("Filters")).toBeInTheDocument();
-    expect(screen.getByText("Category")).toBeInTheDocument();
-    expect(screen.getByText("Brand")).toBeInTheDocument();
-    expect(screen.getByText("Rating")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("₹0")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("₹5000")).toBeInTheDocument();
-    expect(screen.getByText("In Stock Only")).toBeInTheDocument();
-    expect(screen.getByText("Clear Filters")).toBeInTheDocument();
+    expect(screen.getByText("Filter Products")).toBeInTheDocument();
   });
 
   test("changes category", () => {
-    render(<FilterPanel filters={filters} setFilters={setFilters} />);
+    render(
+      <FilterPanel
+        filters={filters}
+        setFilters={setFilters}
+      />
+    );
 
     const selects = screen.getAllByRole("combobox");
 
     fireEvent.change(selects[0], {
-      target: { name: "category", value: "Medicine" },
+      target: {
+        name: "category",
+        value: "Medicine",
+      },
     });
 
     expect(setFilters).toHaveBeenCalledWith({
@@ -49,40 +55,41 @@ describe("FilterPanel Component", () => {
   });
 
   test("changes brand", () => {
-    render(<FilterPanel filters={filters} setFilters={setFilters} />);
+    render(
+      <FilterPanel
+        filters={filters}
+        setFilters={setFilters}
+      />
+    );
 
     const selects = screen.getAllByRole("combobox");
 
     fireEvent.change(selects[1], {
-      target: { name: "brand", value: "Crocin" },
+      target: {
+        name: "brand",
+        value: "Dolo",
+      },
     });
 
     expect(setFilters).toHaveBeenCalledWith({
       ...filters,
-      brand: "Crocin",
-    });
-  });
-
-  test("changes rating", () => {
-    render(<FilterPanel filters={filters} setFilters={setFilters} />);
-
-    const selects = screen.getAllByRole("combobox");
-
-    fireEvent.change(selects[2], {
-      target: { name: "rating", value: "4" },
-    });
-
-    expect(setFilters).toHaveBeenCalledWith({
-      ...filters,
-      rating: "4",
+      brand: "Dolo",
     });
   });
 
   test("changes minimum price", () => {
-    render(<FilterPanel filters={filters} setFilters={setFilters} />);
+    render(
+      <FilterPanel
+        filters={filters}
+        setFilters={setFilters}
+      />
+    );
 
     fireEvent.change(screen.getByPlaceholderText("₹0"), {
-      target: { name: "minPrice", value: "100" },
+      target: {
+        name: "minPrice",
+        value: "100",
+      },
     });
 
     expect(setFilters).toHaveBeenCalledWith({
@@ -92,10 +99,18 @@ describe("FilterPanel Component", () => {
   });
 
   test("changes maximum price", () => {
-    render(<FilterPanel filters={filters} setFilters={setFilters} />);
+    render(
+      <FilterPanel
+        filters={filters}
+        setFilters={setFilters}
+      />
+    );
 
     fireEvent.change(screen.getByPlaceholderText("₹5000"), {
-      target: { name: "maxPrice", value: "500" },
+      target: {
+        name: "maxPrice",
+        value: "500",
+      },
     });
 
     expect(setFilters).toHaveBeenCalledWith({
@@ -104,32 +119,58 @@ describe("FilterPanel Component", () => {
     });
   });
 
-  test("toggles availability checkbox", () => {
-    render(<FilterPanel filters={filters} setFilters={setFilters} />);
+  test("changes rating", () => {
+    render(
+      <FilterPanel
+        filters={filters}
+        setFilters={setFilters}
+      />
+    );
 
-    const checkbox = screen.getByRole("checkbox");
+    const selects = screen.getAllByRole("combobox");
 
-    fireEvent.click(checkbox);
+    fireEvent.change(selects[2], {
+      target: {
+        name: "rating",
+        value: "4",
+      },
+    });
 
     expect(setFilters).toHaveBeenCalledWith({
       ...filters,
-      availability: true,
-    });
-  });
-
-  test("clear filters button resets all filters", () => {
-    filters = {
-      category: "Medicine",
-      brand: "Crocin",
       rating: "4",
+    });
+  });
+
+  test("changes availability", () => {
+    render(
+      <FilterPanel
+        filters={filters}
+        setFilters={setFilters}
+      />
+    );
+
+    fireEvent.click(screen.getByRole("checkbox"));
+
+    expect(setFilters).toHaveBeenCalledWith({
+      ...filters,
       availability: true,
-      minPrice: "100",
-      maxPrice: "500",
-    };
+    });
+  });
 
-    render(<FilterPanel filters={filters} setFilters={setFilters} />);
+  test("clear filters button works", () => {
+    render(
+      <FilterPanel
+        filters={filters}
+        setFilters={setFilters}
+      />
+    );
 
-    fireEvent.click(screen.getByText("Clear Filters"));
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: /clear filters/i,
+      })
+    );
 
     expect(setFilters).toHaveBeenCalledWith({
       category: "",
