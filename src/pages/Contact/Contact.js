@@ -1,10 +1,5 @@
 import React, { useState } from "react";
-import {
-  FaPhoneAlt,
-  FaEnvelope,
-  FaMapMarkerAlt,
-  FaClock,
-} from "react-icons/fa";
+import { FaPhoneAlt, FaEnvelope, FaMapMarkerAlt, FaClock, } from "react-icons/fa";
 
 import Footer from "../../components/Footer/Footer";
 import "./Contact.css";

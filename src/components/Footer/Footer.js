@@ -1,8 +1,7 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
-import "./Footer.css";
 import React from "react";
-
+import { Link } from "react-router-dom";
 import { FaFacebookF, FaTwitter, FaInstagram, FaLinkedinIn, FaPhoneAlt, FaEnvelope, FaMapMarkerAlt, } from "react-icons/fa";
+
 import "./Footer.css";
 
 const Footer = () => {
@@ -15,45 +14,69 @@ const Footer = () => {
           <h2 className="footer-logo">
             Medi<span>Kart</span>
           </h2>
+
           <p>
-            Your trusted online pharmacy for medicines, healthcare products,
-            wellness essentials, and medical devices delivered to your doorstep.
+            Your trusted online pharmacy for medicines,
+            healthcare products, wellness essentials,
+            and medical devices delivered to your doorstep.
           </p>
+
+          <div className="social-icons">
+            <a href="https://facebook.com" target="_blank" rel="noreferrer">
+              <FaFacebookF />
+            </a>
+
+            <a href="https://twitter.com" target="_blank" rel="noreferrer">
+              <FaTwitter />
+            </a>
+
+            <a href="https://instagram.com" target="_blank" rel="noreferrer">
+              <FaInstagram />
+            </a>
+
+            <a href="https://linkedin.com" target="_blank" rel="noreferrer">
+              <FaLinkedinIn />
+            </a>
+          </div>
         </div>
 
         {/* Quick Links */}
         <div className="footer-section">
           <h3>Quick Links</h3>
+
           <ul>
-            <li><a href="/">Home</a></li>
-            <li><a href="/products">Products</a></li>
-            <li><a href="/categories">Categories</a></li>
-            <li><a href="/offers">Offers</a></li>
-            <li><a href="/contact">Contact</a></li>
+            <li><Link to="/">Home</Link></li>
+            <li><Link to="/shop">Shop</Link></li>
+            <li><Link to="/categories">Categories</Link></li>
+            <li><Link to="/about">About Us</Link></li>
+            <li><Link to="/contact">Contact</Link></li>
           </ul>
         </div>
 
-        {/* Categories */}
+        {/* Customer Services */}
         <div className="footer-section">
-          <h3>Categories</h3>
+          <h3>Customer Services</h3>
+
           <ul>
-            <li>Medicines</li>
-            <li>Healthcare</li>
-            <li>Personal Care</li>
-            <li>Supplements</li>
-            <li>Medical Devices</li>
+            <li><Link to="/track-order">Track Order</Link></li>
+            <li><Link to="/order-history">Order History</Link></li>
+            <li><Link to="/reviews">Reviews</Link></li>
+            <li><Link to="/compare-products">Compare Products</Link></li>
+            <li><Link to="/faq">FAQ</Link></li>
           </ul>
         </div>
 
-        {/* Customer Support */}
+        {/* Information */}
         <div className="footer-section">
-          <h3>Customer Support</h3>
+          <h3>Information</h3>
+
           <ul>
-            <li>FAQs</li>
-            <li>Shipping Policy</li>
-            <li>Return Policy</li>
-            <li>Privacy Policy</li>
-            <li>Terms & Conditions</li>
+            <li><Link to="/privacy-policy">Privacy Policy</Link></li>
+            <li><Link to="/terms-conditions">Terms & Conditions</Link></li>
+            <li><Link to="/shipping-policy">Shipping Policy</Link></li>
+            <li><Link to="/careers">Careers</Link></li>
+            <li><Link to="/blog">Blog</Link></li>
+            <li><Link to="/gallery">Gallery</Link></li>
           </ul>
         </div>
 
@@ -75,21 +98,14 @@ const Footer = () => {
             <FaEnvelope className="icon" />
             support@medikart.com
           </p>
-
-          <div className="social-icons">
-            <a href="#"><FaFacebookF /></a>
-            <a href="#"><FaTwitter /></a>
-            <a href="#"><FaInstagram /></a>
-            <a href="#"><FaLinkedinIn /></a>
-          </div>
         </div>
 
       </div>
 
       <div className="footer-bottom">
         <p>
-          © {new Date().getFullYear()} <strong>MediKart</strong>. All Rights
-          Reserved.
+          © {new Date().getFullYear()} <strong>MediKart</strong>.
+          All Rights Reserved.
         </p>
       </div>
     </footer>

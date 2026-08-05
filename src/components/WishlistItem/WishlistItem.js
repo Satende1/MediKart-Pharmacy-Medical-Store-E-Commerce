@@ -12,16 +12,16 @@ const WishlistItem = ({ item, onMoveToCart, onRemove, }) => {
 
       {/* Product Details */}
       <div className={styles.details}>
-        <h3 className={styles.name}> {item.name} </h3>
+        <h3 className={styles.name} title={item.name}> {item.name} </h3>
 
-        <p className={styles.category}> {item.category} </p>
+        <div className={styles.meta}>
+          <div className={styles.rating} aria-label={`Rating ${item.rating}`}>
+            <FaStar />
+            <span>{item.rating}</span>
+          </div>
 
-        <div className={styles.rating}>
-          <FaStar />
-          <span>{item.rating}</span>
+          <p className={styles.price}> ₹{Number(item.price).toLocaleString()} </p>
         </div>
-
-        <p className={styles.price}> ₹{Number(item.price).toLocaleString()} </p>
       </div>
 
       {/* Buttons */}

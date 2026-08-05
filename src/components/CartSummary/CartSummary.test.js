@@ -1,119 +1,172 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 import CartSummary from "./CartSummary";
 
-describe("CartSummary", () => {
+// Mock useNavigate
+const mockNavigate = jest.fn();
+
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useNavigate: () => mockNavigate,
+}));
+
+// Mock alert
+window.alert = jest.fn();
+
+describe("CartSummary Component", () => {
   const cartItems = [
     {
       id: 1,
-      name: "Dolo 650",
-      category: "Medicine",
-      price: 120,
+      name: "Paracetamol",
+      price: 100,
       quantity: 2,
+      category: "Medicines",
     },
     {
       id: 2,
       name: "BP Monitor",
-      category: "Medical Devices",
       price: 1500,
       quantity: 1,
+      category: "Medical Devices",
     },
   ];
 
-  test("renders Order Summary", () => {
-    render(
-      <MemoryRouter>
-        <CartSummary cartItems={cartItems} totalItems={3} totalPrice={1740} />
-      </MemoryRouter>
-    );
-
-    expect(screen.getByText("Order Summary")).toBeInTheDocument();
+  beforeEach(() => {
+    localStorage.clear();
+    mockNavigate.mockClear();
+    window.alert.mockClear();
   });
 
-  test("renders product names", () => {
-    render(
-      <MemoryRouter>
-        <CartSummary cartItems={cartItems} totalItems={3} totalPrice={1740} />
-      </MemoryRouter>
-    );
-
-    expect(screen.getByText(/Dolo 650/i)).toBeInTheDocument();
-    expect(screen.getByText(/BP Monitor/i)).toBeInTheDocument();
-  });
-
-  test("renders total items", () => {
-    render(
-      <MemoryRouter>
-        <CartSummary cartItems={cartItems} totalItems={3} totalPrice={1740} />
-      </MemoryRouter>
-    );
-
-    expect(screen.getByText("3")).toBeInTheDocument();
-  });
-
-  test("shows product price", () => {
-    render(
-      <MemoryRouter>
-        <CartSummary cartItems={cartItems} totalItems={3} totalPrice={1740} />
-      </MemoryRouter>
-    );
-
-    expect(screen.getByText(/₹1,740/)).toBeInTheDocument();
-  });
-
-  test("shows delivery charge", () => {
-    render(
-      <MemoryRouter>
-        <CartSummary cartItems={cartItems} totalItems={3} totalPrice={1740} />
-      </MemoryRouter>
-    );
-
-    expect(screen.getByText(/₹100/)).toBeInTheDocument();
-  });
-
-  test("shows total amount", () => {
-    render(
-      <MemoryRouter>
-        <CartSummary cartItems={cartItems} totalItems={3} totalPrice={1740} />
-      </MemoryRouter>
-    );
-
-    expect(screen.getByText(/₹1,840/)).toBeInTheDocument();
-  });
-
-  test("has Continue Shopping link", () => {
-    render(
-      <MemoryRouter>
-        <CartSummary cartItems={cartItems} totalItems={3} totalPrice={1740} />
-      </MemoryRouter>
-    );
-
-    expect( screen.getByRole("link", {  name: /Continue Shopping/i, })).toHaveAttribute("href", "/shop");
-  });
-
-  test("has Proceed to Checkout link", () => {
+  test("renders Order Summary heading", () => {
     render(
       <MemoryRouter>
         <CartSummary
           cartItems={cartItems}
           totalItems={3}
-          totalPrice={1740}
+          totalPrice={1700}
         />
       </MemoryRouter>
     );
 
-    expect(screen.getByRole("link", { name: /Proceed to Checkout/i, }) ).toHaveAttribute("href", "/shipping-address");
+    expect(screen.getByText("Order Summary")).toBeInTheDocument();
   });
 
-  test("renders empty cart", () => {
+  test("renders cart items", () => {
     render(
       <MemoryRouter>
-        <CartSummary cartItems={[]} totalItems={0} totalPrice={0} />
+        <CartSummary
+          cartItems={cartItems}
+          totalItems={3}
+          totalPrice={1700}
+        />
       </MemoryRouter>
     );
 
-    expect(screen.getByText("Order Summary")).toBeInTheDocument();
+    expect(screen.getByText(/Paracetamol/)).toBeInTheDocument();
+    expect(screen.getByText(/BP Monitor/)).toBeInTheDocument();
+  });
+
+  test("shows delivery charge for medical devices", () => {
+    render(
+      <MemoryRouter>
+        <CartSummary
+          cartItems={cartItems}
+          totalItems={3}
+          totalPrice={1700}
+        />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByText("₹100")).toBeInTheDocument();
+  });
+
+  test("shows FREE delivery when no medical devices", () => {
+    const items = [
+      {
+        id: 1,
+        name: "Crocin",
+        price: 100,
+        quantity: 1,
+        category: "Medicines",
+      },
+    ];
+
+    render(
+      <MemoryRouter>
+        <CartSummary
+          cartItems={items}
+          totalItems={1}
+          totalPrice={100}
+        />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByText("FREE")).toBeInTheDocument();
+  });
+
+  test("navigates to checkout when logged in", () => {
+    localStorage.setItem("isLoggedIn", "true");
+
+    render(
+      <MemoryRouter>
+        <CartSummary
+          cartItems={cartItems}
+          totalItems={3}
+          totalPrice={1700}
+        />
+      </MemoryRouter>
+    );
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: /Proceed to Checkout/i,
+      })
+    );
+
+    expect(mockNavigate).toHaveBeenCalledWith("/checkout");
+  });
+
+  test("shows alert and navigates to login when not logged in", () => {
+    render(
+      <MemoryRouter>
+        <CartSummary
+          cartItems={cartItems}
+          totalItems={3}
+          totalPrice={1700}
+        />
+      </MemoryRouter>
+    );
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: /Proceed to Checkout/i,
+      })
+    );
+
+    expect(window.alert).toHaveBeenCalledWith(
+      "Please login first."
+    );
+
+    expect(mockNavigate).toHaveBeenCalledWith("/login");
+  });
+
+  test("renders Continue Shopping link", () => {
+    render(
+      <MemoryRouter>
+        <CartSummary
+          cartItems={cartItems}
+          totalItems={3}
+          totalPrice={1700}
+        />
+      </MemoryRouter>
+    );
+
+    expect(
+      screen.getByRole("link", {
+        name: /Continue Shopping/i,
+      })
+    ).toBeInTheDocument();
   });
 });

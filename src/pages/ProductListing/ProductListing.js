@@ -1,11 +1,33 @@
 import React, { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import FilterPanel from "../../components/FilterPanel/FilterPanel";
 import SortDropdown from "../../components/SortDropdown/SortDropdown";
 import productsData from "../../data/products";
 import "./ProductListings.css";
 
+const categorySlugMap = {
+  medicines: ["medicine", "medicines", "tablets", "tablet"],
+  vitamins: ["vitamin", "vitamins", "supplement", "supplements"],
+  "personal-care": ["personal care", "personal-care", "skincare", "face wash"],
+  "baby-care": ["baby", "baby care"],
+  "medical-devices": ["device", "devices", "monitor", "thermometer"],
+  healthcare: ["healthcare", "medical"],
+};
+
+const matchesCategory = (product, selectedCategory) => {
+  if (!selectedCategory) return true;
+
+  const keywords = categorySlugMap[selectedCategory] || [selectedCategory];
+  const haystack = [product.category, product.name, product.description]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+
+  return keywords.some((keyword) => haystack.includes(keyword.toLowerCase()));
+};
+
 const ProductListing = () => {
+  const { category } = useParams();
   const [filters, setFilters] = useState({
     category: "",
     brand: "",
@@ -16,15 +38,15 @@ const ProductListing = () => {
   });
 
   const [sortBy, setSortBy] = useState("");
+  const selectedCategory = category ? category.toLowerCase() : "";
 
   const filteredProducts = useMemo(() => {
     let products = [...productsData];
 
-    // Category
-    if (filters.category) {
-      products = products.filter(
-        (p) => p.category === filters.category
-      );
+    const activeCategory = filters.category || selectedCategory;
+
+    if (activeCategory) {
+      products = products.filter((p) => matchesCategory(p, activeCategory));
     }
 
     // Brand
@@ -86,7 +108,7 @@ const ProductListing = () => {
     }
 
     return products;
-  }, [filters, sortBy]);
+  }, [filters, sortBy, selectedCategory]);
 
   return (
     <div className="listing-page">

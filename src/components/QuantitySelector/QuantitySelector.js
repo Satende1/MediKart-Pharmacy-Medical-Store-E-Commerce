@@ -21,8 +21,9 @@ const QuantitySelector = ({
       <div className="quantity-selector">
 
         <button
-          className="qty-btn"
+          className="qty-btn minus"
           onClick={decrease}
+          aria-label="Decrease quantity"
         >
           -
         </button>
@@ -32,8 +33,9 @@ const QuantitySelector = ({
         </span>
 
         <button
-          className="qty-btn"
+          className="qty-btn plus"
           onClick={increase}
+          aria-label="Increase quantity"
         >
           +
         </button>

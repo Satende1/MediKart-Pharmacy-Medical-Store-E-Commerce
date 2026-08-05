@@ -8,71 +8,100 @@ import vitamins from "../../assets/categories/vitamins.png";
 import personalcare from "../../assets/categories/personalcare.png";
 import babycare from "../../assets/categories/babycare.png";
 import medicaldevices from "../../assets/categories/medicaldevices.png";
+import eyecare from "../../assets/categories/eye-care.png";
+import premiumHealthcare from "../../assets/categories/premium-healthcare.png";
+import haircare from "../../assets/categories/hair-care.png";
+import labtests from "../../assets/categories/lab-tests.png";
 
+
+import "./Categories.css";
 const categories = [
   {
     id: 1,
     name: "Medicines",
     image: medicines,
-    path: "/category/medicines",
+    link: "/data/medicines",
   },
   {
     id: 2,
     name: "Healthcare",
     image: healthcare,
-    path: "/category/healthcare",
+    link: "/shop/healthcare",
   },
   {
     id: 3,
-    name: "Vitamins",
+    name: "Vitamins & Supplements",
     image: vitamins,
-    path: "/category/vitamins",
+    link: "/shop/vitamins",
   },
   {
     id: 4,
     name: "Personal Care",
     image: personalcare,
-    path: "/category/personal-care",
+    link: "/shop/personal-care",
   },
   {
     id: 5,
     name: "Baby Care",
     image: babycare,
-    path: "/category/baby-care",
+    link: "/shop/baby-care",
   },
   {
     id: 6,
     name: "Medical Devices",
     image: medicaldevices,
-    path: "/category/medical-devices",
+    link: "/shop/medical-devices",
+  },
+  {
+    id: 7,
+    name: "Eye Care",
+    image: eyecare,
+    link: "/shop/eye-care",
+  },
+  {
+    id: 8,
+    name: "Premium Healthcare",
+    image: premiumHealthcare,
+    link: "/shop/premium-healthcare",
+  },
+  {
+    id: 9,
+    name: "Hair Care",
+    image: haircare,
+    link: "/shop/hair-care",
+  },
+  {
+    id: 10,
+    name: "Lab Tests",
+    image: labtests,
+    link: "/shop/lab-tests",
   },
 ];
 
 function Categories() {
   return (
-    <section className="categories-section">
-      <div className="container">
-        <h2 className="categories-title">Shop by Category</h2>
-
-        <div className="categories-grid">
-          {categories.map((category) => (
-            <Link
-              key={category.id}
-              to={category.path}
-              className="category-card"
-            >
-              <img
-                src={category.image}
-                alt={category.name}
-                className="category-image"
-              />
-
-              <h3 className="category-name">{category.name}</h3>
-            </Link>
-          ))}
-        </div>
+    <div className="categories-page">
+      <div className="categories-header">
+        <h1>Shop by Category</h1>
+        <p>Choose a category to explore healthcare products.</p>
       </div>
-    </section>
+
+      <div className="categories-grid">
+        {categories.map((category) => (
+          <Link
+            key={category.id}
+            to={category.link}
+            className="category-card"
+          >
+            <div className="category-image">
+              <img src={category.image} alt={category.name} />
+            </div>
+
+            <h3>{category.name}</h3>
+          </Link>
+        ))}
+      </div>
+    </div>
   );
 }
 

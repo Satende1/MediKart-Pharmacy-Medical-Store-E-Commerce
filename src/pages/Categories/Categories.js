@@ -1,12 +1,13 @@
 import React from "react";
-import "./Categories.modules.css";
+import ShopByCategory from "../../components/ShopByCategory/ShopByCategory";
+import "./Categories.modules.css"
 function Categories() {
-  return (
-    <div>
-      <h1>Categories</h1>
-      <p>Explore medicine categories.</p>
-    </div>
-  );
+
+    return (
+        <div>
+            <ShopByCategory showMoreButton={true} />
+        </div>
+    );
 }
 
 export default Categories;

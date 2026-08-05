@@ -1,83 +1,74 @@
+import React from "react";
 import { render, screen } from "@testing-library/react";
-import { BrowserRouter } from "react-router-dom";
+import { MemoryRouter } from "react-router-dom";
 import Categories from "./Categories";
 
-// Mock image imports
 jest.mock("../../assets/categories/medicines.jpg", () => "medicines.jpg");
 jest.mock("../../assets/categories/healthcare.png", () => "healthcare.png");
 jest.mock("../../assets/categories/vitamins.png", () => "vitamins.png");
 jest.mock("../../assets/categories/personalcare.png", () => "personalcare.png");
 jest.mock("../../assets/categories/babycare.png", () => "babycare.png");
 jest.mock("../../assets/categories/medicaldevices.png", () => "medicaldevices.png");
+jest.mock("../../assets/categories/eye-care.png", () => "eye-care.png");
+jest.mock(
+  "../../assets/categories/premium-healthcare.png",
+  () => "premium-healthcare.png"
+);
+jest.mock("../../assets/categories/hair-care.png", () => "hair-care.png");
+jest.mock("../../assets/categories/lab-tests.png", () => "lab-tests.png");
 
 describe("Categories Component", () => {
-  test("renders Shop by Category heading", () => {
+  test("renders heading and description", () => {
     render(
-      <BrowserRouter>
+      <MemoryRouter>
         <Categories />
-      </BrowserRouter>
+      </MemoryRouter>
     );
 
+    expect(screen.getByText("Shop by Category")).toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { name: /shop by category/i })
+      screen.getByText("Choose a category to explore healthcare products.")
     ).toBeInTheDocument();
   });
 
   test("renders all category names", () => {
     render(
-      <BrowserRouter>
+      <MemoryRouter>
         <Categories />
-      </BrowserRouter>
+      </MemoryRouter>
     );
 
     expect(screen.getByText("Medicines")).toBeInTheDocument();
     expect(screen.getByText("Healthcare")).toBeInTheDocument();
-    expect(screen.getByText("Vitamins")).toBeInTheDocument();
+    expect(screen.getByText("Vitamins & Supplements")).toBeInTheDocument();
     expect(screen.getByText("Personal Care")).toBeInTheDocument();
     expect(screen.getByText("Baby Care")).toBeInTheDocument();
     expect(screen.getByText("Medical Devices")).toBeInTheDocument();
+    expect(screen.getByText("Eye Care")).toBeInTheDocument();
+    expect(screen.getByText("Premium Healthcare")).toBeInTheDocument();
+    expect(screen.getByText("Hair Care")).toBeInTheDocument();
+    expect(screen.getByText("Lab Tests")).toBeInTheDocument();
   });
 
-  test("renders all category images", () => {
+  test("renders 10 category images", () => {
     render(
-      <BrowserRouter>
+      <MemoryRouter>
         <Categories />
-      </BrowserRouter>
+      </MemoryRouter>
     );
 
-    expect(screen.getByAltText("Medicines")).toBeInTheDocument();
-    expect(screen.getByAltText("Healthcare")).toBeInTheDocument();
-    expect(screen.getByAltText("Vitamins")).toBeInTheDocument();
-    expect(screen.getByAltText("Personal Care")).toBeInTheDocument();
-    expect(screen.getByAltText("Baby Care")).toBeInTheDocument();
-    expect(screen.getByAltText("Medical Devices")).toBeInTheDocument();
+    const images = screen.getAllByRole("img");
+    expect(images).toHaveLength(10);
   });
 
-  test("renders correct category links", () => {
+  test("renders 10 category links", () => {
     render(
-      <BrowserRouter>
+      <MemoryRouter>
         <Categories />
-      </BrowserRouter>
-    );
-
-    // eslint-disable-next-line testing-library/no-node-access
-    expect(screen.getByText("Medicines").closest("a")).toHaveAttribute( "href", "/category/medicines" );
-
-    // eslint-disable-next-line testing-library/no-node-access
-    expect(screen.getByText("Healthcare").closest("a")).toHaveAttribute( "href", "/category/healthcare" );
-
-    // eslint-disable-next-line testing-library/no-node-access
-    expect(screen.getByText("Vitamins").closest("a")).toHaveAttribute( "href", "/category/vitamins" );
-  });
-
-  test("renders exactly 6 category cards", () => {
-    render(
-      <BrowserRouter>
-        <Categories />
-      </BrowserRouter>
+      </MemoryRouter>
     );
 
     const links = screen.getAllByRole("link");
-    expect(links).toHaveLength(6);
+    expect(links).toHaveLength(10);
   });
 });

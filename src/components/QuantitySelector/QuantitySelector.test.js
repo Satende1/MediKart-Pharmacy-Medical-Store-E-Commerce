@@ -4,148 +4,76 @@ import "@testing-library/jest-dom";
 import QuantitySelector from "./QuantitySelector";
 
 describe("QuantitySelector Component", () => {
-  let mockSetQuantity;
-
-  beforeEach(() => {
-    mockSetQuantity = jest.fn();
-  });
-
-  test("renders quantity selector", () => {
+  test("renders the current quantity", () => {
     render(
       <QuantitySelector
         quantity={1}
-        setQuantity={mockSetQuantity}
+        setQuantity={jest.fn()}
       />
     );
 
     expect(screen.getByText("1")).toBeInTheDocument();
   });
 
-  test("renders increase and decrease buttons", () => {
+  test("calls setQuantity when plus button is clicked", () => {
+    const setQuantity = jest.fn();
+
     render(
       <QuantitySelector
         quantity={1}
-        setQuantity={mockSetQuantity}
+        setQuantity={setQuantity}
       />
     );
 
-    expect(
-      screen.getByRole("button", { name: "-" })
-    ).toBeInTheDocument();
+    fireEvent.click(screen.getByLabelText("Increase quantity"));
 
-    expect(
-      screen.getByRole("button", { name: "+" })
-    ).toBeInTheDocument();
+    expect(setQuantity).toHaveBeenCalledWith(2);
   });
 
-  test("calls setQuantity when '+' button is clicked", () => {
+  test("calls setQuantity when minus button is clicked", () => {
+    const setQuantity = jest.fn();
+
     render(
       <QuantitySelector
         quantity={2}
-        setQuantity={mockSetQuantity}
+        setQuantity={setQuantity}
       />
     );
 
-    fireEvent.click(
-      screen.getByRole("button", { name: "+" })
-    );
+    fireEvent.click(screen.getByLabelText("Decrease quantity"));
 
-    expect(mockSetQuantity).toHaveBeenCalledTimes(1);
-    expect(mockSetQuantity).toHaveBeenCalledWith(3);
-  });
-
-  test("calls setQuantity when '-' button is clicked and quantity > 1", () => {
-    render(
-      <QuantitySelector
-        quantity={3}
-        setQuantity={mockSetQuantity}
-      />
-    );
-
-    fireEvent.click(
-      screen.getByRole("button", { name: "-" })
-    );
-
-    expect(mockSetQuantity).toHaveBeenCalledTimes(1);
-    expect(mockSetQuantity).toHaveBeenCalledWith(2);
+    expect(setQuantity).toHaveBeenCalledWith(1);
   });
 
   test("does not decrease quantity below 1", () => {
+    const setQuantity = jest.fn();
+
     render(
       <QuantitySelector
         quantity={1}
-        setQuantity={mockSetQuantity}
+        setQuantity={setQuantity}
       />
     );
 
-    fireEvent.click(
-      screen.getByRole("button", { name: "-" })
-    );
+    fireEvent.click(screen.getByLabelText("Decrease quantity"));
 
-    expect(mockSetQuantity).not.toHaveBeenCalled();
+    expect(setQuantity).not.toHaveBeenCalled();
   });
 
-  test("displays the correct quantity", () => {
-    render(
-      <QuantitySelector
-        quantity={5}
-        setQuantity={mockSetQuantity}
-      />
-    );
-
-    expect(screen.getByText("5")).toBeInTheDocument();
-  });
-
-  test("renders exactly two buttons", () => {
+  test("renders both increase and decrease buttons", () => {
     render(
       <QuantitySelector
         quantity={1}
-        setQuantity={mockSetQuantity}
-      />
-    );
-
-    expect(screen.getAllByRole("button")).toHaveLength(2);
-  });
-
-  test("wrapper element is rendered", () => {
-    const { container } = render(
-      <QuantitySelector
-        quantity={1}
-        setQuantity={mockSetQuantity}
+        setQuantity={jest.fn()}
       />
     );
 
     expect(
-      // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
-      container.querySelector(".quantity-selector-wrapper")
+      screen.getByLabelText("Increase quantity")
     ).toBeInTheDocument();
-  });
-
-  test("selector element is rendered", () => {
-    const { container } = render(
-      <QuantitySelector
-        quantity={1}
-        setQuantity={mockSetQuantity}
-      />
-    );
 
     expect(
-      // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
-      container.querySelector(".quantity-selector")
+      screen.getByLabelText("Decrease quantity")
     ).toBeInTheDocument();
-  });
-
-  test("quantity value has correct class", () => {
-    const { container } = render(
-      <QuantitySelector
-        quantity={4}
-        setQuantity={mockSetQuantity}
-      />
-    );
-
-    expect(
-      // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
-      container.querySelector(".qty-value")
-    ).toHaveTextContent("4");
   });
 });

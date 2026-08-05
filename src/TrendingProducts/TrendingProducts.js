@@ -121,8 +121,6 @@ function TrendingProducts() {
               />
 
               <div className="product-info">
-                <span className="category">{product.category}</span>
-
                 <h3>{product.name}</h3>
 
                 <p className="price">

@@ -5,6 +5,29 @@ import ProductCard from "../components/ProductCard/ProductCard";
 import products from "../data/products";
 import "./ProductListingPage.css";
 
+const categorySlugMap = {
+  medicines: ["medicine", "medicines", "tablets", "tablet"],
+  vitamins: ["vitamin", "vitamins", "supplement", "supplements"],
+  "personal-care": ["personal care", "personal-care", "skincare", "face wash"],
+  "baby-care": ["baby", "baby care"],
+  "medical-devices": ["device", "devices", "monitor", "thermometer"],
+  healthcare: ["healthcare", "medical"],
+  "premium-healthcare": ["premium", "premium healthcare"],
+  "hair-care": ["hair", "hair care"]
+};
+
+const matchesCategory = (product, selectedCategory) => {
+  if (!selectedCategory) return true;
+
+  const keywords = categorySlugMap[selectedCategory] || [selectedCategory];
+  const haystack = [product.category, product.name, product.description]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+
+  return keywords.some((keyword) => haystack.includes(keyword.toLowerCase()));
+};
+
 const ProductListing = () => {
   const { category } = useParams();
   const [search, setSearch] = useState("");
@@ -19,13 +42,11 @@ const ProductListing = () => {
         item.name.toLowerCase().includes(search.toLowerCase()) ||
         item.category.toLowerCase().includes(search.toLowerCase());
 
-      const categoryMatch = normalizedCategory
-        ? item.category.toLowerCase() === normalizedCategory
-        : true;
+      const categoryMatch = matchesCategory(item, category?.toLowerCase());
 
       return keywordMatch && categoryMatch;
     });
-  }, [search, normalizedCategory]);
+  }, [search, category]);
 
   return (
     <div className="container">

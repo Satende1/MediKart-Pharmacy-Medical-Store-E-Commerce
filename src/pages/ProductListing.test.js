@@ -131,6 +131,21 @@ describe("ProductListing", () => {
     expect(screen.queryByText("Thermometer")).not.toBeInTheDocument();
   });
 
+  test("maps shop category slugs to matching products", () => {
+    useParams.mockReturnValue({
+      category: "medicines",
+    });
+
+    render(
+      <MemoryRouter>
+        <ProductListing />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByText("Paracetamol")).toBeInTheDocument();
+    expect(screen.queryByText("Vitamin C")).not.toBeInTheDocument();
+  });
+
   test("shows no products found", () => {
     useParams.mockReturnValue({});
 

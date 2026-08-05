@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
+import { FaHome, FaShoppingCart, FaThLarge, FaHeart, FaInfoCircle, FaPhone, FaSignOutAlt, FaSignInAlt, FaBars, FaTimes, } from "react-icons/fa";
 import "./MobileMenu.css";
 import logo from "../../assets/Medikart-logo.png";
 
@@ -7,24 +8,23 @@ function MobileMenu() {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
 
+  const user = JSON.parse(localStorage.getItem("user"));
+
   const menuItems = [
-    { name: "Home", icon: "🏠", path: "/" },
-    { name: "Shop", icon: "🛒", path: "/shop" },
-    { name: "Categories", icon: "📦", path: "/categories" },
-    { name: "Wishlist", icon: "❤️", path: "/wishlist" },
-    { name: "Cart", icon: "🛍️", path: "/cart" },
-    { name: "About", icon: "ℹ️", path: "/about" },
-    { name: "Contact", icon: "📞", path: "/contact" },
+    { name: "Home", icon: <FaHome />, path: "/" },
+    { name: "Shop", icon: <FaShoppingCart />, path: "/shop" },
+    { name: "Categories", icon: <FaThLarge />, path: "/categories" },
+    { name: "Wishlist", icon: <FaHeart />, path: "/wishlist" },
+    { name: "Cart", icon: <FaShoppingCart />, path: "/cart" },
+    { name: "About", icon: <FaInfoCircle />, path: "/about" },
+    { name: "Contact", icon: <FaPhone />, path: "/contact" },
   ];
 
+  const closeMenu = () => setIsOpen(false);
+
   const handleLogout = () => {
-    // Remove user data
     localStorage.removeItem("user");
-
-    // Close sidebar
-    setIsOpen(false);
-
-    // Redirect to Login page
+    closeMenu();
     navigate("/login");
   };
 
@@ -34,22 +34,22 @@ function MobileMenu() {
         className="mobile-menu-btn"
         onClick={() => setIsOpen(true)}
       >
-        ☰
+        <FaBars />
       </button>
 
       {isOpen && (
         <div
           className="mobile-overlay"
-          onClick={() => setIsOpen(false)}
+          onClick={closeMenu}
         ></div>
       )}
 
       <div className={`mobile-sidebar ${isOpen ? "open" : ""}`}>
         <button
           className="close-btn"
-          onClick={() => setIsOpen(false)}
+          onClick={closeMenu}
         >
-          ✕
+          <FaTimes />
         </button>
 
         <div className="sidebar-header">
@@ -58,7 +58,7 @@ function MobileMenu() {
             alt="Medikart Logo"
             className="sidebar-logo"
           />
-          <h2>MediKart</h2>
+          <h2>MEDIKART</h2>
         </div>
 
         <ul className="mobile-nav-links">
@@ -66,7 +66,7 @@ function MobileMenu() {
             <li key={item.name}>
               <NavLink
                 to={item.path}
-                onClick={() => setIsOpen(false)}
+                onClick={closeMenu}
                 className={({ isActive }) =>
                   isActive ? "active" : ""
                 }
@@ -79,12 +79,24 @@ function MobileMenu() {
         </ul>
 
         <div className="logout-container">
-          <button
-            className="logout-btn"
-            onClick={handleLogout}
-          >
-            🚪 Logout
-          </button>
+          {user ? (
+            <button
+              className="logout-btn"
+              onClick={handleLogout}
+            >
+              <FaSignOutAlt /> Logout
+            </button>
+          ) : (
+            <button
+              className="logout-btn"
+              onClick={() => {
+                closeMenu();
+                navigate("/login");
+              }}
+            >
+              <FaSignInAlt /> Login
+            </button>
+          )}
         </div>
       </div>
     </>

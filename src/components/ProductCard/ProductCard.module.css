@@ -47,6 +47,7 @@
   align-items: center;
   background: #fff;
   padding: 10px;
+  border-bottom: none;
 }
 
 .image {

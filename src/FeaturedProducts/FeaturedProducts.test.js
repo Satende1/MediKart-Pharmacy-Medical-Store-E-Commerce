@@ -24,12 +24,12 @@ describe("FeaturedProducts", () => {
   });
 
   test("renders Featured Products heading", () => {
-    render( <MemoryRouter> <FeaturedProducts /> </MemoryRouter> );
-    expect(screen.getByText("Featured Products") ).toBeInTheDocument();
+    render(<MemoryRouter> <FeaturedProducts /> </MemoryRouter>);
+    expect(screen.getByText("Featured Products")).toBeInTheDocument();
   });
 
   test("renders all products", () => {
-    render( <MemoryRouter> <FeaturedProducts /> </MemoryRouter> );
+    render(<MemoryRouter> <FeaturedProducts /> </MemoryRouter>);
     expect(screen.getByText("Paracetamol Tablets")).toBeInTheDocument();
     expect(screen.getByText("Vitamin D Capsules")).toBeInTheDocument();
     expect(screen.getByText("Blood Pressure Monitor")).toBeInTheDocument();
@@ -37,18 +37,18 @@ describe("FeaturedProducts", () => {
   });
 
   test("renders View Details buttons", () => {
-    render( <MemoryRouter> <FeaturedProducts /> </MemoryRouter> );
+    render(<MemoryRouter> <FeaturedProducts /> </MemoryRouter>);
     expect(screen.getAllByText("View Details")).toHaveLength(4);
   });
 
   test("renders Add to Cart buttons", () => {
-    render( <MemoryRouter> <FeaturedProducts /> </MemoryRouter> );
+    render(<MemoryRouter> <FeaturedProducts /> </MemoryRouter>);
 
     expect(screen.getAllByText("Add to Cart")).toHaveLength(4);
   });
 
   test("adds product to localStorage cart", () => {
-    render( <MemoryRouter> <FeaturedProducts /> </MemoryRouter> );
+    render(<MemoryRouter> <FeaturedProducts /> </MemoryRouter>);
 
     fireEvent.click(screen.getAllByText("Add to Cart")[0]);
 
@@ -60,14 +60,14 @@ describe("FeaturedProducts", () => {
   });
 
   test("calls toast.success when Add to Cart is clicked", () => {
-    render( <MemoryRouter> <FeaturedProducts /> </MemoryRouter> );
+    render(<MemoryRouter> <FeaturedProducts /> </MemoryRouter>);
 
     fireEvent.click(screen.getAllByText("Add to Cart")[0]);
     expect(toast.success).toHaveBeenCalled();
   });
 
   test("dispatches cartUpdated event", () => {
-    render( <MemoryRouter> <FeaturedProducts /> </MemoryRouter> );
+    render(<MemoryRouter> <FeaturedProducts /> </MemoryRouter>);
 
     fireEvent.click(screen.getAllByText("Add to Cart")[0]);
 
@@ -75,14 +75,14 @@ describe("FeaturedProducts", () => {
   });
 
   test("changes button text to Added", () => {
-    render( <MemoryRouter> <FeaturedProducts /> </MemoryRouter> );
+    render(<MemoryRouter> <FeaturedProducts /> </MemoryRouter>);
 
     fireEvent.click(screen.getAllByText("Add to Cart")[0]);
     expect(screen.getByText("✓ Added")).toBeInTheDocument();
   });
 
   test("renders ToastContainer", () => {
-    render(<MemoryRouter> <FeaturedProducts /> </MemoryRouter> );
+    render(<MemoryRouter> <FeaturedProducts /> </MemoryRouter>);
 
     expect(screen.getByText("ToastContainer")).toBeInTheDocument();
   });

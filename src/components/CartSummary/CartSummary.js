@@ -1,15 +1,23 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import {FaShoppingCart,FaTruck,FaCreditCard,FaTag,FaRupeeSign,} from "react-icons/fa";
+import { Link, useNavigate } from "react-router-dom";
+import {
+  FaShoppingCart,
+  FaTruck,
+  FaCreditCard,
+  FaTag,
+  FaRupeeSign,
+} from "react-icons/fa";
 
 import styles from "./CartSummary.module.css";
 
 const CartSummary = ({
   cartItems = [],
-  totalItems,
-  totalPrice,
+  totalItems = 0,
+  totalPrice = 0,
 }) => {
-  // Delivery charge only for medical devices
+  const navigate = useNavigate();
+
+  // Delivery charge only for Medical Devices
   const hasDevice = cartItems.some(
     (item) =>
       item.category === "Medical Devices" ||
@@ -19,6 +27,18 @@ const CartSummary = ({
   const deliveryCharge = hasDevice ? 100 : 0;
 
   const finalAmount = totalPrice + deliveryCharge;
+
+  // Checkout Button
+  const handleCheckout = () => {
+    const isLoggedIn = localStorage.getItem("isLoggedIn");
+
+    if (isLoggedIn === "true") {
+      navigate("/checkout");
+    } else {
+      alert("Please login first.");
+      navigate("/login");
+    }
+  };
 
   return (
     <div className={styles.summary}>
@@ -91,8 +111,8 @@ const CartSummary = ({
           ₹{finalAmount.toLocaleString()}
         </span>
       </div>
+            <div className={styles.buttons}>
 
-      <div className={styles.buttons}>
         {/* Continue Shopping */}
         <Link
           to="/shop"
@@ -102,13 +122,15 @@ const CartSummary = ({
         </Link>
 
         {/* Proceed to Checkout */}
-        <Link
-          to="/shipping-address"
+        <button
+          type="button"
           className={styles.checkoutBtn}
+          onClick={handleCheckout}
         >
           <FaCreditCard />
           &nbsp; Proceed to Checkout
-        </Link>
+        </button>
+
       </div>
     </div>
   );

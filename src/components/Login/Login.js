@@ -1,13 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import {
-  FaUser,
-  FaLock,
-  FaGoogle,
-  FaFacebookF,
-  FaApple,
-  FaEnvelope,
-} from "react-icons/fa";
+import { FaUser, FaLock, FaGoogle, FaFacebookF, FaApple, FaEnvelope, } from "react-icons/fa";
 
 import "./Login.css";
 import banner from "../../assets/Login pages.png";

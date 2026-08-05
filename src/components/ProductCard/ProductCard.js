@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaHeart } from "react-icons/fa";
+//import { FaHeart } from "react-icons/fa";
 import { toast } from "react-toastify";
 import styles from "./ProductCard.module.css";
 
@@ -46,7 +46,7 @@ const ProductCard = ({ product }) => {
   };
 
   // Wishlist
-  const handleWishlist = () => {
+  /*const handleWishlist = () => {
     const wishlist =
       JSON.parse(localStorage.getItem("wishlist")) || [];
 
@@ -69,18 +69,18 @@ const ProductCard = ({ product }) => {
     window.dispatchEvent(new Event("wishlistUpdated"));
 
     toast.success(`${product.name} added to Wishlist!`);
-  };
+  };*/
 
   return (
     <div className={styles.card}>
 
       {/* Wishlist Button */}
-      <button
+      {/* <button
         className={styles.wishlist}
         onClick={handleWishlist}
       >
         <FaHeart />
-      </button>
+      </button> */}
 
       <div className={styles.imageContainer}>
         <img

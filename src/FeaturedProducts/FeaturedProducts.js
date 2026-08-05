@@ -56,9 +56,9 @@ function FeaturedProducts() {
       updatedCart = cart.map((item) =>
         item.id === product.id
           ? {
-              ...item,
-              quantity: (item.quantity || 1) + 1,
-            }
+            ...item,
+            quantity: (item.quantity || 1) + 1,
+          }
           : item
       );
     } else {
@@ -144,11 +144,10 @@ function FeaturedProducts() {
                     </Link>
 
                     <button
-                      className={`cart-btn ${
-                        addedItems[product.id]
+                      className={`cart-btn ${addedItems[product.id]
                           ? "added"
                           : ""
-                      }`}
+                        }`}
                       onClick={() =>
                         handleAddToCart(product)
                       }

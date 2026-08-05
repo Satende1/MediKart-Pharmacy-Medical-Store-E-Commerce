@@ -51,53 +51,54 @@ const ProductDetails = () => {
   const discount = Number(product.discount);
   const discountPrice = rawPrice - (rawPrice * discount) / 100;
   const totalAmount = discountPrice * quantity;
-  const productImages = product.images?.length ? product.images : [ product.image ];
+  const productImages = product.images?.length ? product.images : [product.image];
 
   // ADD TO CART FUNCTION
 
   const handleAddToCart = () => {
 
-    const cart = JSON.parse(localStorage.getItem("cart") ) || [];
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-    const existingProduct = cart.find( item => item.id === product.id);
+    const existingProduct = cart.find(item => item.id === product.id);
 
     let updatedCart;
 
-    if (existingProduct) { 
+    if (existingProduct) {
       updatedCart = cart.map(item =>
-          item.id === product.id ? 
-          { ...item,
+        item.id === product.id ?
+          {
+            ...item,
             quantity: (item.quantity || 1) + quantity
           } : item
-        );
-    }else {
-      updatedCart = 
-      [ ...cart, { ...product, price: discountPrice, quantity: quantity }];
+      );
+    } else {
+      updatedCart =
+        [...cart, { ...product, price: discountPrice, quantity: quantity }];
     }
 
-    localStorage.setItem( "cart", JSON.stringify(updatedCart) );
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
 
     // Update Navbar Count
 
-    window.dispatchEvent( new Event( "cartUpdated"));
+    window.dispatchEvent(new Event("cartUpdated"));
     setIsAdded(true);
-    setTimeout(() => { setIsAdded(false);}, 2000);
+    setTimeout(() => { setIsAdded(false); }, 2000);
   };
   // ADD TO WISHLIST
 
   const handleWishlist = () => {
-    const wishlistData = JSON.parse( localStorage.getItem("wishlist")) || [];
+    const wishlistData = JSON.parse(localStorage.getItem("wishlist")) || [];
     const exists = wishlistData.find(item => item.id === product.id);
     if (!exists) {
       wishlistData.push(product);
       localStorage.setItem("wishlist",
         JSON.stringify(wishlistData));
-      window.dispatchEvent( new Event( "wishlistUpdated"));
+      window.dispatchEvent(new Event("wishlistUpdated"));
     }
     setWishlist(true);
   };
 
-  const relatedProducts = products.filter( item => item.id !== product.id );
+  const relatedProducts = products.filter(item => item.id !== product.id);
   return (
     <div className="product-page">
       <div className="product-topbar">
@@ -105,7 +106,7 @@ const ProductDetails = () => {
       </div>
       <div className="product-wrapper">
         <div className="left-column">
-          <ProductGallery images={productImages}/>
+          <ProductGallery images={productImages} />
         </div>
         <div className="right-column">
           <h1 className="product-name"> {product.name} </h1>
@@ -126,7 +127,7 @@ const ProductDetails = () => {
           </div>
           <div className="quantity-area">
             <h3>Quantity</h3>
-            <QuantitySelector quantity={quantity} setQuantity={setQuantity}/>
+            <QuantitySelector quantity={quantity} setQuantity={setQuantity} />
           </div>
           <div className="total-box">
             <div className="row">
@@ -143,14 +144,14 @@ const ProductDetails = () => {
             </div>
           </div>
           <div className="button-group">
-            <button className={`cart-btn ${isAdded ? "added" : "" }`} 
+            <button className={`cart-btn ${isAdded ? "added" : ""}`}
               onClick={handleAddToCart}>
               <FaShoppingCart />
-              { isAdded ? "✓ Added" : "Add to Cart" } 
+              {isAdded ? "✓ Added" : "Add to Cart"}
             </button>
             <button className="buy-btn"> <FaBolt /> Buy Now </button>
             <button
-              className={`wish-btn ${wishlist ? "active" : "" }`}
+              className={`wish-btn ${wishlist ? "active" : ""}`}
               onClick={handleWishlist}>
               <FaHeart />
             </button>

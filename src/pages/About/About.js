@@ -1,12 +1,5 @@
 import React from "react";
-import {
-  FaHeartbeat,
-  FaShieldAlt,
-  FaTruck,
-  FaUsers,
-  FaAward,
-  FaPhoneAlt,
-} from "react-icons/fa";
+import { FaHeartbeat, FaShieldAlt, FaTruck, FaUsers, FaAward, FaPhoneAlt, } from "react-icons/fa";
 
 import Footer from "../../components/Footer/Footer";
 import "./About.css";

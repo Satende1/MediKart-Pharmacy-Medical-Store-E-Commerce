@@ -90,7 +90,7 @@
 
   .button-group {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     gap: 6px;
     margin-top: 10px;
   }
@@ -99,6 +99,7 @@
   .cart-btn,
   .added {
     width: 100%;
+    min-height: 42px;
     padding: 8px;
     font-size: 11px;
     text-align: center;
@@ -139,21 +140,29 @@
 
 .button-group {
   display: flex;
-  gap: 10px;
+  gap: 8px;
+  align-items: stretch;
+  flex-wrap: nowrap;
+  margin-top: 12px;
 }
 
 .view-btn,
 .cart-btn {
   flex: 1;
-  padding:  12px;
+  min-height: 46px;
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   text-align: center;
-  border-radius: 6px;
-  font-size: 14px;
+  border-radius: 8px;
+  font-size: 13px;
   font-weight: 600;
   text-decoration: none;
   cursor: pointer;
   transition: 0.3s ease;
   min-width: 0;
+  white-space: nowrap;
 }
 
 /* Blue View Details button */
