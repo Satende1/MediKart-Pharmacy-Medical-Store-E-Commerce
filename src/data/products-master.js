@@ -10,7 +10,7 @@
  * - Medical Devices (50 products, ID: 1-50)
  * - Personal Care (50 products, ID: 1-50)
  * - Premium Healthcare (50 products, ID: 1501-1550)
- * - Lab Tests (50 products, ID: 1401-1450)
+ * - Women's Health (50 products, ID: 1401-1450)
  * - Baby Care (50+ products, ID: 1-100)
  * - Eye Care (50 products, ID: 1001-1050)
  * 
@@ -24,9 +24,11 @@ import healthcareData from "./healthcare";
 import medicalDevicesData from "./medicalDevices";
 import personalCareData from "./personalCare";
 import premiumHealthcareData from "./premium-healthcare";
-import labTestsData from "./LabTests";
+import womensHealthData from "./womensHealth";
 import babyCareData from "./babyCare";
 import eyeCareData from "./eye-care";
+import womensHealthDara from "./womensHealth";
+import premiumHealthcareData from "./premiumHealthcare";
 
 /**
  * Master products array combining all categories
@@ -43,9 +45,10 @@ const products = [
   ...medicalDevicesData,
   ...personalCareData,
   ...premiumHealthcareData,
-  ...labTestsData,
+  ...womensHealthData,
   ...babyCareData,
   ...eyeCareData,
+  ...premiumHealthcareData,
 ];
 
 /**
@@ -109,7 +112,7 @@ const products = [
  *    - Products: Premium devices, wellness kits, etc.
  *    - Rating: 4.8 - 5.0
  * 
- * 8. LAB TESTS (IDs: 1401-1450)
+ * 8. Women's Health (IDs: 1401-1450)
  *    - Price Range: ₹199 - ₹4999
  *    - Products: CBC, Blood Sugar, HbA1c, Wellness Packages, etc.
  *    - Rating: 4.7 - 5.0

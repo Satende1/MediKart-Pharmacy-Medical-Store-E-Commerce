@@ -10,34 +10,35 @@ import product8 from "../assets/products/product8.png";
 
 const trendingProducts = [
   {
-    id: 4,
+    id: 9004,
     name: "Digital Thermometer",
     price: 299,
     rating: 4.8,
     image: product5,
   },
   {
-    id: 5,
+    id: 9005,
     name: "Protein Powder",
     price: 10000,
     rating: 4.7,
     image: product6,
   },
   {
-    id: 6,
+    id: 9006,
     name: "Face Wash",
     price: 70,
     rating: 4.9,
     image: product7,
   },
   {
-    id: 7,
+    id: 9007,
     name: "Vitamin D Capsules",
     price: 300,
     rating: 4.6,
     image: product8,
   },
 ];
+
 
 function TrendingProducts() {
   const [addedItems, setAddedItems] = useState({});

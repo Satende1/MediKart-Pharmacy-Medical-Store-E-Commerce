@@ -1,223 +1,398 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+
 import {
   FaUser,
   FaEnvelope,
   FaPhone,
   FaLock,
+  FaEye,
+  FaEyeSlash,
+  FaShoppingCart,
+  FaPlus,
 } from "react-icons/fa";
-import "./Register.css";
-import logo from "../../assets/Medikart-logo.png";
 
-function Register() {
+import "./Register.css";
+
+import registerImage from "../../assets/Medikart-logo.png";
+
+const Register = () => {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     name: "",
+    username: "",
     email: "",
-    mobile: "",
+    phone: "",
     password: "",
     confirmPassword: "",
-    terms: false,
   });
 
-  const [errors, setErrors] = useState({});
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] =
+    useState(false);
 
   const handleChange = (e) => {
-    const { name, value, checked, type } = e.target;
+    const { name, value } = e.target;
 
-    setFormData({
-      ...formData,
-      [name]: type === "checkbox" ? checked : value,
-    });
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
-  const handleSubmit = (e) => {
+  const handleRegister = (e) => {
     e.preventDefault();
 
-    let validationErrors = {};
-
-    if (!formData.name.trim()) {
-      validationErrors.name = "Full Name is required";
+    // Check password
+    if (formData.password !== formData.confirmPassword) {
+      alert("Passwords do not match.");
+      return;
     }
 
-    if (!formData.email.trim()) {
-      validationErrors.email = "Email is required";
-    } else if (
-      !/\S+@\S+\.\S+/.test(formData.email)
-    ) {
-      validationErrors.email = "Invalid email address";
-    }
+    // Check existing user
+    const existingUser = JSON.parse(
+      localStorage.getItem("registeredUser")
+    );
 
-    if (!formData.mobile.trim()) {
-      validationErrors.mobile = "Mobile Number is required";
-    } else if (!/^[0-9]{10}$/.test(formData.mobile)) {
-      validationErrors.mobile =
-        "Enter a valid 10-digit mobile number";
-    }
-
-    if (!formData.password) {
-      validationErrors.password = "Password is required";
-    } else if (formData.password.length < 6) {
-      validationErrors.password =
-        "Password must be at least 6 characters";
-    }
-
-    if (
-      formData.password !== formData.confirmPassword
-    ) {
-      validationErrors.confirmPassword =
-        "Passwords do not match";
-    }
-
-    if (!formData.terms) {
-      validationErrors.terms =
-        "Accept Terms & Conditions";
-    }
-
-    setErrors(validationErrors);
-
-    if (Object.keys(validationErrors).length === 0) {
-      localStorage.setItem(
-        "medikartUser",
-        JSON.stringify(formData)
-      );
-
-      alert("Registration Successful!");
-
+    if (existingUser) {
+      alert("User is already registered. Please login.");
       navigate("/login");
+      return;
     }
+
+    // Store user
+    const user = {
+      name: formData.name,
+      username: formData.username,
+      email: formData.email,
+      phone: formData.phone,
+      password: formData.password,
+    };
+
+    localStorage.setItem(
+      "registeredUser",
+      JSON.stringify(user)
+    );
+
+    // Automatically login after registration
+    localStorage.setItem("isLoggedIn", "true");
+
+    localStorage.setItem(
+      "user",
+      JSON.stringify(user)
+    );
+
+    alert("Registration successful!");
+
+    navigate("/");
   };
 
   return (
     <div className="register-page">
 
-      <div className="register-card">
+      <div className="register-container">
 
-        <img
-          src={logo}
-          alt="MEDIKART"
-          className="register-logo"
-        />
+        {/* =================================================
+            LEFT SIDE
+        ================================================= */}
 
-        <h2>Create Account</h2>
+        <div className="register-left">
 
-        <p>Join MEDIKART Today</p>
+          <img
+            src={registerImage}
+            alt="Medikart Healthcare"
+            className="register-image"
+          />
 
-        <form onSubmit={handleSubmit}>
+          <div className="register-overlay"></div>
 
-          <div className="input-box">
-            <FaUser className="input-icon" />
-            <input
-              type="text"
-              name="name"
-              placeholder="Full Name"
-              value={formData.name}
-              onChange={handleChange}
-            />
+          <div className="register-left-content">
+
+            <h2>
+              Your Health,
+              <br />
+              <strong>Our Priority</strong>
+            </h2>
+
+            <p>
+              Join Medikart today and get
+              <br />
+              access to genuine medicines,
+              <br />
+              healthcare products and
+              <br />
+              wellness essentials.
+            </p>
+
           </div>
 
-          <span className="error">
-            {errors.name}
-          </span>
+        </div>
 
-          <div className="input-box">
-            <FaEnvelope className="input-icon" />
-            <input
-              type="email"
-              name="email"
-              placeholder="Email Address"
-              value={formData.email}
-              onChange={handleChange}
-            />
+        {/* =================================================
+            RIGHT SIDE
+        ================================================= */}
+
+        <div className="register-right">
+
+          <div className="register-content">
+
+            {/* =================================================
+                LOGO
+            ================================================= */}
+
+            <div className="register-logo">
+
+              <div className="register-logo-icon">
+
+                <FaShoppingCart />
+
+                <FaPlus className="register-logo-plus" />
+
+              </div>
+
+              <div className="register-logo-details">
+
+                <h1>MEDIKART</h1>
+
+                <p>
+                  Your Trusted Healthcare Partner
+                </p>
+
+              </div>
+
+            </div>
+
+            {/* =================================================
+                HEADER
+            ================================================= */}
+
+            <div className="register-header">
+
+              <h2>Create Account</h2>
+
+              <p>
+                Register to start your healthcare journey
+              </p>
+
+            </div>
+
+            {/* =================================================
+                FORM
+            ================================================= */}
+
+            <form
+              className="register-form"
+              onSubmit={handleRegister}
+            >
+
+              {/* NAME */}
+
+              <div className="register-input-box">
+
+                <FaUser className="register-input-icon" />
+
+                <input
+                  type="text"
+                  name="name"
+                  placeholder="Full Name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  required
+                />
+
+              </div>
+
+              {/* USERNAME */}
+
+              <div className="register-input-box">
+
+                <FaUser className="register-input-icon" />
+
+                <input
+                  type="text"
+                  name="username"
+                  placeholder="Username"
+                  value={formData.username}
+                  onChange={handleChange}
+                  required
+                />
+
+              </div>
+
+              {/* EMAIL */}
+
+              <div className="register-input-box">
+
+                <FaEnvelope className="register-input-icon" />
+
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="Email Address"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                />
+
+              </div>
+
+              {/* PHONE */}
+
+              <div className="register-input-box">
+
+                <FaPhone className="register-input-icon" />
+
+                <input
+                  type="tel"
+                  name="phone"
+                  placeholder="Phone Number"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  required
+                />
+
+              </div>
+
+              {/* PASSWORD */}
+
+              <div className="register-input-box">
+
+                <FaLock className="register-input-icon" />
+
+                <input
+                  type={
+                    showPassword
+                      ? "text"
+                      : "password"
+                  }
+                  name="password"
+                  placeholder="Password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                />
+
+                <button
+                  type="button"
+                  className="register-eye-button"
+                  onClick={() =>
+                    setShowPassword(!showPassword)
+                  }
+                >
+                  {showPassword ? (
+                    <FaEyeSlash />
+                  ) : (
+                    <FaEye />
+                  )}
+                </button>
+
+              </div>
+
+              {/* CONFIRM PASSWORD */}
+
+              <div className="register-input-box">
+
+                <FaLock className="register-input-icon" />
+
+                <input
+                  type={
+                    showConfirmPassword
+                      ? "text"
+                      : "password"
+                  }
+                  name="confirmPassword"
+                  placeholder="Confirm Password"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  required
+                />
+
+                <button
+                  type="button"
+                  className="register-eye-button"
+                  onClick={() =>
+                    setShowConfirmPassword(
+                      !showConfirmPassword
+                    )
+                  }
+                >
+                  {showConfirmPassword ? (
+                    <FaEyeSlash />
+                  ) : (
+                    <FaEye />
+                  )}
+                </button>
+
+              </div>
+
+              {/* TERMS */}
+
+              <label className="terms">
+
+                <input
+                  type="checkbox"
+                  required
+                />
+
+                <span>
+                  I agree to the Terms & Conditions
+                </span>
+
+              </label>
+
+              {/* REGISTER BUTTON */}
+
+              <button
+                type="submit"
+                className="register-submit"
+              >
+                Create Account
+              </button>
+
+            </form>
+
+
+
+            <div className="register-or">
+
+              <div></div>
+
+              <span>Or register with</span>
+
+              <div></div>
+
+            </div>
+
+
+
+            {/* =================================================
+                LOGIN LINK
+            ================================================= */}
+
+            <div className="already-account">
+
+              <span>
+                Already have an account?
+              </span>
+
+              <button
+                type="button"
+                onClick={() => navigate("/login")}
+              >
+                Login
+              </button>
+
+            </div>
+
           </div>
 
-          <span className="error">
-            {errors.email}
-          </span>
-
-          <div className="input-box">
-            <FaPhone className="input-icon" />
-            <input
-              type="tel"
-              name="mobile"
-              placeholder="Mobile Number"
-              value={formData.mobile}
-              onChange={handleChange}
-            />
-          </div>
-
-          <span className="error">
-            {errors.mobile}
-          </span>
-
-          <div className="input-box">
-            <FaLock className="input-icon" />
-            <input
-              type="password"
-              name="password"
-              placeholder="Password"
-              value={formData.password}
-              onChange={handleChange}
-            />
-          </div>
-
-          <span className="error">
-            {errors.password}
-          </span>
-
-          <div className="input-box">
-            <FaLock className="input-icon" />
-            <input
-              type="password"
-              name="confirmPassword"
-              placeholder="Confirm Password"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-            />
-          </div>
-
-          <span className="error">
-            {errors.confirmPassword}
-          </span>
-
-          <div className="terms">
-            <label>
-              <input
-                type="checkbox"
-                name="terms"
-                checked={formData.terms}
-                onChange={handleChange}
-              />
-              I accept Terms & Conditions
-            </label>
-          </div>
-
-          <span className="error">
-            {errors.terms}
-          </span>
-
-          <button
-            type="submit"
-            className="register-btn"
-          >
-            Register
-          </button>
-
-        </form>
-
-        <p className="login-text">
-          Already have an account?
-          <Link to="/login">
-            {" "}
-            Login
-          </Link>
-        </p>
+        </div>
 
       </div>
 
     </div>
   );
-}
+};
 
 export default Register;

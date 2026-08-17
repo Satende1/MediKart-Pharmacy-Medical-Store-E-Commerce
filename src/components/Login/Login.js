@@ -1,200 +1,391 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { FaUser, FaLock, FaGoogle, FaFacebookF, FaApple, FaEnvelope, } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+
+import {
+  FaUser,
+  FaLock,
+  FaEye,
+  FaEyeSlash,
+  FaGoogle,
+  FaFacebookF,
+  FaTwitter,
+  FaShoppingCart,
+  FaApple,
+  FaPlus,
+} from "react-icons/fa";
 
 import "./Login.css";
-import banner from "../../assets/Login pages.png";
-import ForgotPassword from "../ForgotPassword/ForgotPassword";
 
-function Login({ onLoginSuccess }) {
+// Put your image inside:
+// src/assets/login-image.png
+import loginImage from "../../assets/Login pages.png";
+
+const Login = ({ onLoginSuccess }) => {
   const navigate = useNavigate();
 
-  const [showForgot, setShowForgot] = useState(false);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
 
-  const [formData, setFormData] = useState({
-    username: "",
-    password: "",
-    remember: false,
-  });
+  const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
 
-  const [errors, setErrors] = useState({});
+  // ==========================================
+  // LOGIN
+  // ==========================================
 
-  const handleChange = (e) => {
-    const { name, value, checked, type } = e.target;
-
-    setFormData({
-      ...formData,
-      [name]: type === "checkbox" ? checked : value,
-    });
-  };
-
-  const handleSubmit = (e) => {
+  const handleLogin = (e) => {
     e.preventDefault();
 
-    let newErrors = {};
+    // Get registered user
+    const registeredUser = JSON.parse(
+      localStorage.getItem("registeredUser")
+    );
 
-    if (!formData.username.trim()) {
-      newErrors.username = "Username is required";
+    // User is not registered
+    if (!registeredUser) {
+      alert("You are not registered. Please register first.");
+      navigate("/register");
+      return;
     }
 
-    if (!formData.password.trim()) {
-      newErrors.password = "Password is required";
-    }
+    // Check username/email/name
+    const usernameMatch =
+      username === registeredUser.username ||
+      username === registeredUser.email ||
+      username === registeredUser.name;
 
-    setErrors(newErrors);
+    // Check password
+    const passwordMatch =
+      password === registeredUser.password;
 
-    if (Object.keys(newErrors).length === 0) {
-      localStorage.setItem("username", formData.username);
+    // Correct login
+    if (usernameMatch && passwordMatch) {
       localStorage.setItem("isLoggedIn", "true");
 
+      localStorage.setItem(
+        "user",
+        JSON.stringify(registeredUser)
+      );
+
+      const displayName =
+        registeredUser.username ||
+        registeredUser.name ||
+        registeredUser.email ||
+        "User";
+
+      localStorage.setItem("username", displayName);
+
+      // notify other components to update (Navbar/UserActions)
       window.dispatchEvent(new Event("userUpdated"));
 
-      if (onLoginSuccess) {
-        onLoginSuccess();
+      if (rememberMe) {
+        localStorage.setItem("rememberMe", "true");
+      } else {
+        localStorage.removeItem("rememberMe");
       }
 
+      if (onLoginSuccess) onLoginSuccess();
+
       navigate("/");
+    } else {
+      alert("Invalid username/email or password.");
     }
   };
 
+  // ==========================================
+  // RETURN
+  // ==========================================
+
   return (
-    <>
+    <div className="login-page">
+
       <div className="login-container">
 
+        {/* =================================================
+            LEFT SIDE
+        ================================================= */}
+
         <div className="login-left">
+
           <img
-            src={banner}
-            alt="Banner"
-            className="banner-image"
+            src={loginImage}
+            alt="Medikart Healthcare"
+            className="login-image"
           />
+
+          {/* IMAGE OVERLAY */}
+
+          <div className="left-overlay"></div>
+
+          {/* LEFT TEXT */}
+
+          <div className="left-content">
+
+            <h2>
+              Your Health,
+              <br />
+              <strong>Our Priority</strong>
+            </h2>
+
+            <p>
+              Medikart is your trusted
+              <br />
+              online pharmacy for genuine
+              <br />
+              medicines and healthcare
+              <br />
+              essentials.
+            </p>
+
+          </div>
+
         </div>
+
+        {/* =================================================
+            RIGHT SIDE
+        ================================================= */}
 
         <div className="login-right">
 
-          <div className="login-card">
+          <div className="login-content">
 
-            <h1>Welcome Back!</h1>
+            {/* =================================================
+                MEDIKART LOGO
+            ================================================= */}
 
-            <p className="subtitle">
-              Login to continue to
-              <span> MEDIKART</span>
-            </p>
+            <div className="medikart-logo">
 
-            <form onSubmit={handleSubmit}>
+              <div className="logo-icon">
+
+                <FaShoppingCart />
+
+                <FaPlus className="logo-plus" />
+
+              </div>
+
+              <div className="logo-details">
+
+                <h1>MEDIKART</h1>
+
+                <p>
+                  Your Trusted Healthcare Partner
+                </p>
+
+              </div>
+
+            </div>
+
+            {/* =================================================
+                HEADER
+            ================================================= */}
+
+            <div className="login-header">
+
+              <h2>Welcome Back!</h2>
+
+              <p>
+                Login to your account and continue
+              </p>
+
+            </div>
+
+            {/* =================================================
+                LOGIN FORM
+            ================================================= */}
+
+            <form onSubmit={handleLogin}>
+
+              {/* USERNAME */}
 
               <div className="input-box">
-                <FaUser className="icon" />
+
+                <FaUser className="input-icon" />
 
                 <input
                   type="text"
-                  name="username"
                   placeholder="Username"
-                  value={formData.username}
-                  onChange={handleChange}
+                  value={username}
+                  onChange={(e) =>
+                    setUsername(e.target.value)
+                  }
+                  required
                 />
+
               </div>
 
-              {errors.username && (
-                <small className="error">
-                  {errors.username}
-                </small>
-              )}
+              {/* PASSWORD */}
 
               <div className="input-box">
-                <FaLock className="icon" />
+
+                <FaLock className="input-icon" />
 
                 <input
-                  type="password"
-                  name="password"
+                  type={
+                    showPassword
+                      ? "text"
+                      : "password"
+                  }
                   placeholder="Password"
-                  value={formData.password}
-                  onChange={handleChange}
+                  value={password}
+                  onChange={(e) =>
+                    setPassword(e.target.value)
+                  }
+                  required
                 />
-              </div>
-
-              {errors.password && (
-                <small className="error">
-                  {errors.password}
-                </small>
-              )}
-
-              <div className="options">
-
-                <label>
-                  <input
-                    type="checkbox"
-                    name="remember"
-                    checked={formData.remember}
-                    onChange={handleChange}
-                  />
-                  Remember Me
-                </label>
 
                 <button
                   type="button"
-                  className="forgot-link"
-                  onClick={() => setShowForgot(true)}
+                  className="eye-button"
+                  onClick={() =>
+                    setShowPassword(!showPassword)
+                  }
+                  aria-label={
+                    showPassword
+                      ? "Hide password"
+                      : "Show password"
+                  }
+                >
+                  {showPassword ? (
+                    <FaEyeSlash />
+                  ) : (
+                    <FaEye />
+                  )}
+                </button>
+
+              </div>
+
+              {/* =================================================
+                  REMEMBER ME + FORGOT PASSWORD
+              ================================================= */}
+
+              <div className="login-options">
+
+                {/* REMEMBER ME */}
+
+                <label className="remember">
+
+                  <input
+                    type="checkbox"
+                    checked={rememberMe}
+                    onChange={(e) =>
+                      setRememberMe(e.target.checked)
+                    }
+                  />
+
+                  <span className="custom-checkbox">
+                    {rememberMe ? "✓" : ""}
+                  </span>
+
+                  <span>
+                    Remember me
+                  </span>
+
+                </label>
+
+                {/* FORGOT PASSWORD */}
+
+                <button
+                  type="button"
+                  className="forgot"
+                  onClick={() =>
+                    navigate("/forgot-password")
+                  }
                 >
                   Forgot Password?
                 </button>
 
               </div>
 
+              {/* =================================================
+                  LOGIN BUTTON
+              ================================================= */}
+
               <button
-                className="login-btn"
                 type="submit"
+                className="login-button"
               >
                 Login
               </button>
 
             </form>
 
-            <div className="divider">
-              <span>OR</span>
+            {/* =================================================
+                OR LOGIN WITH
+            ================================================= */}
+
+            <div className="or-login">
+
+              <div className="line"></div>
+
+              <span>Or login with</span>
+
+              <div className="line"></div>
+
             </div>
 
-            <div className="social-login">
+            {/* =================================================
+                SOCIAL MEDIA ICONS
+            ================================================= */}
 
-              <a
-                href="https://accounts.google.com"
-                target="_blank"
-                rel="noreferrer"
-                className="google"
+            <div className="social-icons">
+
+              {/* Google */}
+              <button
+                type="button"
+                className="social google"
+                aria-label="Login with Google"
               >
                 <FaGoogle />
-                <span>Google</span>
-              </a>
+              </button>
 
-              <a
-                href="https://facebook.com"
-                target="_blank"
-                rel="noreferrer"
-                className="facebook"
+              {/* Facebook */}
+              <button
+                type="button"
+                className="social facebook"
+                aria-label="Login with Facebook"
               >
                 <FaFacebookF />
-                <span>Facebook</span>
-              </a>
+              </button>
 
-              <a
-                href="https://appleid.apple.com"
-                target="_blank"
-                rel="noreferrer"
-                className="apple"
+              {/* Twitter */}
+              <button
+                type="button"
+                className="social twitter"
+                aria-label="Login with Twitter"
+              >
+                <FaTwitter />
+              </button>
+
+              {/* Apple */}
+              <button
+                type="button"
+                className="social apple"
+                aria-label="Login with Apple"
               >
                 <FaApple />
-                <span>Apple</span>
-              </a>
+              </button>
 
             </div>
 
-            <p className="signup-text">
-              Don't have an account?
-              <Link to="/register"> Sign Up</Link>
-            </p>
+            {/* =================================================
+                REGISTER
+            ================================================= */}
 
-            <div className="support">
-              <FaEnvelope />
-              <span>support@medikart.com</span>
+            <div className="register">
+
+              <span>
+                Don't have an account?
+              </span>
+
+              <button
+                type="button"
+                onClick={() =>
+                  navigate("/register")
+                }
+              >
+                Register
+              </button>
+
             </div>
 
           </div>
@@ -203,29 +394,8 @@ function Login({ onLoginSuccess }) {
 
       </div>
 
-      {showForgot && (
-        <div
-          className="popup-overlay"
-          onClick={() => setShowForgot(false)}
-        >
-          <div
-            className="popup-box"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              className="close-popup"
-              onClick={() => setShowForgot(false)}
-            >
-              ✕
-            </button>
-
-            <ForgotPassword />
-
-          </div>
-        </div>
-      )}
-    </>
+    </div>
   );
-}
+};
 
 export default Login;

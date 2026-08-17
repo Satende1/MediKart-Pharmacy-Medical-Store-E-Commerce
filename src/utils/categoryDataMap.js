@@ -8,7 +8,7 @@ import healthcare from "../data/healthcare";
 import eyeCare from "../data/eye-care";
 import premiumHealthcare from "../data/premium-healthcare";
 import hairCare from "../data/HairCare";
-import labTests from "../data/LabTests";
+import womensHealth from "../data/womensHealth";
 
 // Map category slugs to their corresponding data and display names
 export const categoryDataMap = {
@@ -48,9 +48,9 @@ export const categoryDataMap = {
     data: hairCare,
     name: "Hair Care"
   },
-  "lab-tests": {
-    data: labTests,
-    name: "Lab Tests"
+  "women-care": {
+    data: womensHealth,
+    name: "Women's Health"
   }
 };
 

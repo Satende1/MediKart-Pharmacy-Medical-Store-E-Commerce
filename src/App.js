@@ -48,6 +48,18 @@ import AccessDenied from "./pages/AccessDenied/AccessDenied";
 import Maintenance from "./pages/Maintenance/Maintenance";
 import EmptyState from "./pages/EmptyState/EmptyState";
 
+import Account from "./pages/Account/Account";
+import Profile from "./pages/Profile/Profile";
+import Orders from "./pages/Orders/Orders";
+import Payments from "./pages/Payments/Payments";
+import Addresses from "./pages/Addresses/Addresses";
+import UploadPrescription from "./pages/UploadPrescription/UploadPrescription";
+import HealthRecords from "./pages/HealthRecords/HealthRecords";
+import Offers from "./pages/Offers/Offers";
+import Notifications from "./pages/Notifications/Notifications";
+import Settings from "./pages/Settings/Settings";
+import TrackOrderPage from "./pages/TrackOrderPage";
+
 function Layout() {
   const location = useLocation();
 
@@ -126,8 +138,25 @@ function Layout() {
         <Route path="/maintenance" element={<Maintenance />} />
         <Route path="/empty" element={<EmptyState />} />
 
+        <Route path="/account" element={<Account />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/orders" element={<Orders />} />
+        <Route path="/wishlist" element={<Wishlist />} />
+        <Route path="/cart" element={<Cart />} />
+        <Route path="/payments" element={<Payments />} />
+        <Route path="/addresses" element={<Addresses />} />
+        <Route path="/upload-prescription" element={<UploadPrescription />} />
+        <Route path="/health-records" element={<HealthRecords />} />
+        <Route path="/offers" element={<Offers />} />
+        <Route path="/notifications" element={<Notifications />} />
+        <Route path="/settings" element={<Settings />} />
+
         {/* Keep this LAST */}
         <Route path="*" element={<Error404 />} />
+        <Route
+          path="/track-order"
+          element={<TrackOrderPage />}
+        />
       </Routes>
 
       <ToastContainer position="top-right" autoClose={2000} theme="colored" />

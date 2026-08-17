@@ -21,7 +21,7 @@ import BabyGiftKit from "../assets/BabyCare/baby-gift-kit.png";
 
 const babyCare = [
   {
-    id: 1001,
+    id: 101,
     name: "Johnson's Baby Lotion",
     brand: "Johnson's",
     category: "Baby Care",
@@ -40,7 +40,7 @@ const babyCare = [
   },
 
   {
-    id: 1002,
+    id: 102,
     name: "Himalaya Baby Shampoo",
     brand: "Himalaya",
     category: "Baby Care",
@@ -59,7 +59,7 @@ const babyCare = [
   },
 
   {
-    id: 1003,
+    id: 103,
     name: "Baby Soap",
     brand: "Dove",
     category: "Baby Care",
@@ -78,7 +78,7 @@ const babyCare = [
   },
 
   {
-    id: 1004,
+    id: 104,
     name: "Johnson's Baby Oil",
     brand: "Johnson's",
     category: "Baby Care",
@@ -97,7 +97,7 @@ const babyCare = [
   },
 
   {
-    id: 1005,
+    id: 105,
     name: "Baby Powder",
     brand: "Johnson's",
     category: "Baby Care",
@@ -116,7 +116,7 @@ const babyCare = [
   },
 
   {
-    id: 1006,
+    id: 106,
     name: "Baby Wet Wipes",
     brand: "Pampers",
     category: "Baby Care",
@@ -135,7 +135,7 @@ const babyCare = [
   },
 
   {
-    id: 1007,
+    id: 107,
     name: "Pampers Baby Diapers",
     brand: "Pampers",
     category: "Baby Care",
@@ -154,7 +154,7 @@ const babyCare = [
   },
 
   {
-    id: 1008,
+    id: 108,
     name: "Baby Body Wash",
     brand: "Mamaearth",
     category: "Baby Care",
@@ -173,7 +173,7 @@ const babyCare = [
   },
 
   {
-    id: 1009,
+    id: 109,
     name: "Baby Rash Cream",
     brand: "Sebamed",
     category: "Baby Care",
@@ -192,7 +192,7 @@ const babyCare = [
   },
 
   {
-    id: 1010,
+    id: 110,
     name: "Baby Toothpaste",
     brand: "Chicco",
     category: "Baby Care",
@@ -209,8 +209,9 @@ const babyCare = [
     stock: true,
     description: "Safe fluoride-free toothpaste for babies.",
   },
+
   {
-    id: 1011,
+    id: 111,
     name: "Baby Feeding Bottle",
     brand: "Philips Avent",
     category: "Baby Care",
@@ -225,12 +226,11 @@ const babyCare = [
     delivery: "2-3 Business Days",
     returnPolicy: "7 Days Return Eligible",
     stock: true,
-    description:
-      "BPA-free feeding bottle with anti-colic technology."
+    description: "BPA-free feeding bottle with anti-colic technology.",
   },
 
   {
-    id: 1012,
+    id: 112,
     name: "Baby Feeding Spoon Set",
     brand: "Mee Mee",
     category: "Baby Care",
@@ -245,12 +245,11 @@ const babyCare = [
     delivery: "2-3 Business Days",
     returnPolicy: "7 Days Return Eligible",
     stock: true,
-    description:
-      "Soft-tip feeding spoon set for babies."
+    description: "Soft-tip feeding spoon set for babies.",
   },
 
   {
-    id: 1013,
+    id: 113,
     name: "Baby Bib",
     brand: "LuvLap",
     category: "Baby Care",
@@ -265,12 +264,11 @@ const babyCare = [
     delivery: "2-3 Business Days",
     returnPolicy: "7 Days Return Eligible",
     stock: true,
-    description:
-      "Waterproof baby bib for mess-free feeding."
+    description: "Waterproof baby bib for mess-free feeding.",
   },
 
   {
-    id: 1014,
+    id: 114,
     name: "Baby Nail Clipper",
     brand: "Chicco",
     category: "Baby Care",
@@ -285,12 +283,11 @@ const babyCare = [
     delivery: "2-3 Business Days",
     returnPolicy: "7 Days Return Eligible",
     stock: true,
-    description:
-      "Rounded-edge nail clipper specially designed for babies."
+    description: "Rounded-edge nail clipper specially designed for babies.",
   },
 
   {
-    id: 1015,
+    id: 115,
     name: "Baby Comb & Brush Set",
     brand: "Mee Mee",
     category: "Baby Care",
@@ -305,12 +302,11 @@ const babyCare = [
     delivery: "2-3 Business Days",
     returnPolicy: "7 Days Return Eligible",
     stock: true,
-    description:
-      "Soft comb and brush set for baby's delicate hair."
+    description: "Soft comb and brush set for baby's delicate hair.",
   },
 
   {
-    id: 1016,
+    id: 116,
     name: "Baby Laundry Detergent",
     brand: "Mee Mee",
     category: "Baby Care",
@@ -325,12 +321,11 @@ const babyCare = [
     delivery: "2-3 Business Days",
     returnPolicy: "7 Days Return Eligible",
     stock: true,
-    description:
-      "Gentle detergent specially formulated for baby clothes."
+    description: "Gentle detergent specially formulated for baby clothes.",
   },
 
   {
-    id: 1017,
+    id: 117,
     name: "Baby Mosquito Patch",
     brand: "Mamaearth",
     category: "Baby Care",
@@ -345,12 +340,11 @@ const babyCare = [
     delivery: "2-3 Business Days",
     returnPolicy: "7 Days Return Eligible",
     stock: true,
-    description:
-      "Natural mosquito repellent patches for babies."
+    description: "Natural mosquito repellent patches for babies.",
   },
 
   {
-    id: 1018,
+    id: 118,
     name: "Baby Cotton Buds",
     brand: "Johnson's",
     category: "Baby Care",
@@ -365,12 +359,11 @@ const babyCare = [
     delivery: "2-3 Business Days",
     returnPolicy: "7 Days Return Eligible",
     stock: true,
-    description:
-      "Soft cotton buds specially designed for babies."
+    description: "Soft cotton buds specially designed for babies.",
   },
 
   {
-    id: 1019,
+    id: 119,
     name: "Baby Silicone Pacifier",
     brand: "Philips Avent",
     category: "Baby Care",
@@ -385,12 +378,11 @@ const babyCare = [
     delivery: "2-3 Business Days",
     returnPolicy: "7 Days Return Eligible",
     stock: true,
-    description:
-      "Orthodontic silicone pacifier for newborn babies."
+    description: "Orthodontic silicone pacifier for newborn babies.",
   },
 
   {
-    id: 1020,
+    id: 120,
     name: "Baby Gift Care Kit",
     brand: "Johnson's",
     category: "Baby Care",
@@ -405,10 +397,8 @@ const babyCare = [
     delivery: "2-3 Business Days",
     returnPolicy: "7 Days Return Eligible",
     stock: true,
-    description:
-      "Complete baby care gift kit containing essential baby products."
+    description: "Complete baby care gift kit containing essential baby products.",
   },
-
 ];
 
 export default babyCare;

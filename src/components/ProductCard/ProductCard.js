@@ -1,95 +1,116 @@
-import React from "react";
-import { Link, useNavigate } from "react-router-dom";
-//import { FaHeart } from "react-icons/fa";
-import { toast } from "react-toastify";
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { FaHeart } from "react-icons/fa";
 import styles from "./ProductCard.module.css";
 
-const ProductCard = ({ product }) => {
-  const navigate = useNavigate();
+const ProductCard = ({ product, showWishlist = true }) => {
+  const [isWishlisted, setIsWishlisted] = useState(false);
+
+  useEffect(() => {
+    const wishlist =
+      JSON.parse(localStorage.getItem("wishlist")) || [];
+
+    setIsWishlisted(
+      wishlist.some((item) => item.id === product.id)
+    );
+  }, [product.id]);
 
   // Add to Cart
   const handleAddToCart = () => {
-    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
     const existingProduct = cart.find(
       (item) => item.id === product.id
     );
 
-    let updatedCart;
-
     if (existingProduct) {
-      updatedCart = cart.map((item) =>
-        item.id === product.id
-          ? {
-              ...item,
-              quantity: (item.quantity || 1) + 1,
-            }
-          : item
-      );
+      existingProduct.quantity += 1;
     } else {
-      updatedCart = [
-        ...cart,
-        {
-          ...product,
-          quantity: 1,
-        },
-      ];
+      cart.push({
+        ...product,
+        quantity: 1,
+      });
     }
 
-    localStorage.setItem("cart", JSON.stringify(updatedCart));
+    localStorage.setItem("cart", JSON.stringify(cart));
 
     window.dispatchEvent(new Event("cartUpdated"));
 
-    toast.success(`${product.name} added to Cart!`);
-
-    navigate("/cart");
+    alert(`${product.name} added to cart!`);
   };
 
   // Wishlist
-  /*const handleWishlist = () => {
-    const wishlist =
+  const handleWishlist = () => {
+    let wishlist =
       JSON.parse(localStorage.getItem("wishlist")) || [];
 
-    const existingProduct = wishlist.find(
+    const exists = wishlist.find(
       (item) => item.id === product.id
     );
 
-    if (existingProduct) {
-      toast.info("Already in Wishlist");
-      return;
+    if (exists) {
+      wishlist = wishlist.filter(
+        (item) => item.id !== product.id
+      );
+      setIsWishlisted(false);
+    } else {
+      wishlist.push(product);
+      setIsWishlisted(true);
     }
-
-    wishlist.push(product);
 
     localStorage.setItem(
       "wishlist",
       JSON.stringify(wishlist)
     );
 
-    window.dispatchEvent(new Event("wishlistUpdated"));
-
-    toast.success(`${product.name} added to Wishlist!`);
-  };*/
+    window.dispatchEvent(
+      new Event("wishlistUpdated")
+    );
+  };
 
   return (
     <div className={styles.card}>
+      {/* Wishlist */}
+      {showWishlist && (
+        <button
+          className={`${styles.wishlist} ${isWishlisted ? styles.active : ""}`}
+          onClick={handleWishlist}
+          aria-pressed={isWishlisted}
+          aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+        >
+          <FaHeart />
+        </button>
+      )}
 
-      {/* Wishlist Button */}
-      {/* <button
-        className={styles.wishlist}
-        onClick={handleWishlist}
-      >
-        <FaHeart />
-      </button> */}
-
+      {/* Product Image */}
       <div className={styles.imageContainer}>
-        <img
-          src={product.image}
-          alt={product.name}
-          className={styles.image}
-        />
+        {(() => {
+          let imgSrc = product.image;
+
+          if (typeof imgSrc === "string" && imgSrc.startsWith("/images/")) {
+            try {
+              imgSrc = require("../../assets/images/" + imgSrc.split("/").pop());
+            } catch (err) {
+              imgSrc = null;
+            }
+          }
+
+          const fallback = require("../../assets/images/Mediction.png");
+
+          return (
+            <img
+              src={imgSrc || fallback}
+              alt={product.name}
+              className={styles.image}
+              onError={(e) => {
+                e.target.src = fallback;
+              }}
+            />
+          );
+        })()}
       </div>
 
+      {/* Product Details */}
       <div className={styles.info}>
         <span className={styles.category}>
           {product.category}

@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import "./Categories.css";
 
+// Category Images
 import medicines from "../../assets/categories/medicines.jpg";
 import healthcare from "../../assets/categories/healthcare.png";
 import vitamins from "../../assets/categories/vitamins.png";
@@ -11,16 +12,14 @@ import medicaldevices from "../../assets/categories/medicaldevices.png";
 import eyecare from "../../assets/categories/eye-care.png";
 import premiumHealthcare from "../../assets/categories/premium-healthcare.png";
 import haircare from "../../assets/categories/hair-care.png";
-import labtests from "../../assets/categories/lab-tests.png";
+import womencare from "../../assets/categories/womencare.png";
 
-
-import "./Categories.css";
 const categories = [
   {
     id: 1,
     name: "Medicines",
     image: medicines,
-    link: "/data/medicines",
+    link: "/shop/medicines",
   },
   {
     id: 2,
@@ -72,18 +71,21 @@ const categories = [
   },
   {
     id: 10,
-    name: "Lab Tests",
-    image: labtests,
-    link: "/shop/lab-tests",
+    name: "Women's Health",
+    image: womencare,
+    link: "/shop/womencare",
   },
 ];
 
-function Categories() {
+const Categories = () => {
   return (
     <div className="categories-page">
       <div className="categories-header">
         <h1>Shop by Category</h1>
-        <p>Choose a category to explore healthcare products.</p>
+
+        <p>
+          Choose a category to explore healthcare products.
+        </p>
       </div>
 
       <div className="categories-grid">
@@ -94,7 +96,10 @@ function Categories() {
             className="category-card"
           >
             <div className="category-image">
-              <img src={category.image} alt={category.name} />
+              <img
+                src={category.image}
+                alt={category.name}
+              />
             </div>
 
             <h3>{category.name}</h3>
@@ -103,6 +108,6 @@ function Categories() {
       </div>
     </div>
   );
-}
+};
 
 export default Categories;

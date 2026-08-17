@@ -8,7 +8,7 @@ import vitamins from "../../assets/categories/vitamins.png";
 import eyecare from "../../assets/categories/eye-care.png";
 import haircare from "../../assets/categories/hair-care.png";
 import premiumhealthcare from "../../assets/categories/premium-healthcare.png";
-import labtests from "../../assets/categories/lab-tests.png";
+import labtests from "../../assets/categories/womenCare.png";
 
 
 const categories = [
@@ -74,9 +74,9 @@ const categories = [
   },
   {
     id: 11,
-    name: "Lab Tests",
+    name: "Women's Health",
     image: labtests,
-    path: "/data/LabTests",
+    path: "/category/women-care",
   },
 ];
 

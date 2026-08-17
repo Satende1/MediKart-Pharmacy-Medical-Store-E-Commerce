@@ -1,156 +1,119 @@
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
-
+import { render, screen, fireEvent, cleanup } from "@testing-library/react";
+import { BrowserRouter } from "react-router-dom";
 import ProductCard from "./ProductCard";
 
+afterEach(() => {
+  cleanup();
+  localStorage.clear();
+});
 
-// Mock useNavigate
-const mockNavigate = jest.fn();
+const product = {
+  id: 9001,
+  name: "Paracetamol",
+  category: "Tablets",
+  price: 96,
+  rating: 4.8,
+  image: "/images/product1.png",
+};
 
-jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
-  useNavigate: () => mockNavigate,
-}));
-
+const renderProductCard = (props = {}) => {
+  return render(
+    <BrowserRouter>
+      <ProductCard product={product} {...props} />
+    </BrowserRouter>
+  );
+};
 
 describe("ProductCard Component", () => {
+  test("renders product name", () => {
+    renderProductCard();
 
-  const product = {
-    id: 1,
-    name: "Paracetamol 500mg",
-    category: "Medicine",
-    price: 100,
-    rating: 4.8,
-    image: "/product.png",
-  };
-
-
-  beforeEach(() => {
-    localStorage.clear();
-    jest.clearAllMocks();
+    expect(
+      screen.getByText("Paracetamol")
+    ).toBeInTheDocument();
   });
 
-
-  test("renders product details", () => {
-
-    render(
-      <MemoryRouter>
-        <ProductCard product={product} />
-      </MemoryRouter>
-    );
-
+  test("renders product category", () => {
+    renderProductCard();
 
     expect(
-      screen.getByText("Paracetamol 500mg")
+      screen.getByText("Tablets")
     ).toBeInTheDocument();
+  });
 
+  test("renders product price", () => {
+    renderProductCard();
 
     expect(
-      screen.getByText("Medicine")
+      screen.getByText("₹96")
     ).toBeInTheDocument();
+  });
 
-
-    expect(
-      screen.getByText("₹100")
-    ).toBeInTheDocument();
-
+  test("renders product rating", () => {
+    renderProductCard();
 
     expect(
       screen.getByText("⭐ 4.8")
     ).toBeInTheDocument();
-
   });
 
+  test("renders View Details button", () => {
+    renderProductCard();
 
-
-  test("renders product image", () => {
-
-    render(
-      <MemoryRouter>
-        <ProductCard product={product} />
-      </MemoryRouter>
-    );
-
-
-    const image =
-      screen.getByAltText(
-        "Paracetamol 500mg"
-      );
-
-
-    expect(image).toBeInTheDocument();
-
-
-    expect(image.src).toContain(
-      "product.png"
-    );
-
+    expect(
+      screen.getByText("View Details")
+    ).toBeInTheDocument();
   });
 
+  test("View Details has correct link", () => {
+    renderProductCard();
 
-
-  test("View Details link has correct path", () => {
-
-    render(
-      <MemoryRouter>
-        <ProductCard product={product} />
-      </MemoryRouter>
-    );
-
-
-    const link =
-      screen.getByText(
-        "View Details"
-      );
-
+    const link = screen.getByText("View Details");
 
     expect(link).toHaveAttribute(
       "href",
-      "/product/1"
+      "/product/9001"
     );
-
   });
 
+  test("renders Add to Cart button", () => {
+    renderProductCard();
 
+    expect(
+      screen.getByRole("button", {
+        name: "Add to Cart",
+      })
+    ).toBeInTheDocument();
+  });
 
   test("adds product to cart", () => {
+    window.alert = jest.fn();
 
-    render(
-      <MemoryRouter>
-        <ProductCard product={product} />
-      </MemoryRouter>
+    renderProductCard();
+
+    const cartButton = screen.getByRole("button", {
+      name: "Add to Cart",
+    });
+
+    fireEvent.click(cartButton);
+
+    const cart = JSON.parse(
+      localStorage.getItem("cart")
     );
-
-
-    fireEvent.click(
-      screen.getByText(
-        "Add to Cart"
-      )
-    );
-
-
-    const cart =
-      JSON.parse(
-        localStorage.getItem("cart")
-      );
-
 
     expect(cart).toHaveLength(1);
+    expect(cart[0].id).toBe(9001);
+    expect(cart[0].name).toBe("Paracetamol");
+    expect(cart[0].quantity).toBe(1);
 
-
-    expect(cart[0].name)
-      .toBe("Paracetamol 500mg");
-
-
-    expect(cart[0].quantity)
-      .toBe(1);
-
+    expect(window.alert).toHaveBeenCalledWith(
+      "Paracetamol added to cart!"
+    );
   });
 
-
-
-  test("increases quantity if product already exists", () => {
+  test("increases quantity when product already exists in cart", () => {
+    window.alert = jest.fn();
 
     localStorage.setItem(
       "cart",
@@ -162,96 +125,93 @@ describe("ProductCard Component", () => {
       ])
     );
 
-
-    render(
-      <MemoryRouter>
-        <ProductCard product={product} />
-      </MemoryRouter>
-    );
-
+    renderProductCard();
 
     fireEvent.click(
-      screen.getByText(
-        "Add to Cart"
-      )
+      screen.getByRole("button", {
+        name: "Add to Cart",
+      })
     );
 
+    const cart = JSON.parse(
+      localStorage.getItem("cart")
+    );
 
-    const cart =
-      JSON.parse(
-        localStorage.getItem("cart")
-      );
-
-
-    expect(
-      cart[0].quantity
-    ).toBe(3);
-
+    expect(cart).toHaveLength(1);
+    expect(cart[0].quantity).toBe(3);
   });
 
+  test("adds product to wishlist", () => {
+    renderProductCard();
 
-
-  test("navigates to cart after adding product", () => {
-
-    render(
-      <MemoryRouter>
-        <ProductCard product={product} />
-      </MemoryRouter>
+    const wishlistButton = screen.getByRole(
+      "button",
+      {
+        name: "Add to wishlist",
+      }
     );
 
+    fireEvent.click(wishlistButton);
 
-    fireEvent.click(
-      screen.getByText(
-        "Add to Cart"
-      )
+    const wishlist = JSON.parse(
+      localStorage.getItem("wishlist")
     );
 
+    expect(wishlist).toHaveLength(1);
+    expect(wishlist[0].id).toBe(9001);
 
     expect(
-      mockNavigate
-    ).toHaveBeenCalledWith(
-      "/cart"
-    );
-
+      screen.getByRole("button", {
+        name: "Remove from wishlist",
+      })
+    ).toBeInTheDocument();
   });
 
-
-
-  test("dispatches cartUpdated event", () => {
-
-    const eventHandler = jest.fn();
-
-
-    window.addEventListener(
-      "cartUpdated",
-      eventHandler
+  test("removes product from wishlist", () => {
+    localStorage.setItem(
+      "wishlist",
+      JSON.stringify([product])
     );
 
+    renderProductCard();
 
-    render(
-      <MemoryRouter>
-        <ProductCard product={product} />
-      </MemoryRouter>
+    const wishlistButton = screen.getByRole(
+      "button",
+      {
+        name: "Remove from wishlist",
+      }
     );
 
+    fireEvent.click(wishlistButton);
 
-    fireEvent.click(
-      screen.getByText(
-        "Add to Cart"
-      )
+    const wishlist = JSON.parse(
+      localStorage.getItem("wishlist")
     );
 
+    expect(wishlist).toHaveLength(0);
 
     expect(
-      eventHandler
-    ).toHaveBeenCalled();
-
-
-    window.removeEventListener(
-      "cartUpdated",
-      eventHandler
-    );
-
+      screen.getByRole("button", {
+        name: "Add to wishlist",
+      })
+    ).toBeInTheDocument();
   });
 
+  test("does not show wishlist button when showWishlist is false", () => {
+    renderProductCard({
+      showWishlist: false,
+    });
+
+    expect(
+      screen.queryByRole("button", {
+        name: "Add to wishlist",
+      })
+    ).not.toBeInTheDocument();
+
+    expect(
+      screen.queryByRole("button", {
+        name: "Remove from wishlist",
+      })
+    ).not.toBeInTheDocument();
+  });
 });

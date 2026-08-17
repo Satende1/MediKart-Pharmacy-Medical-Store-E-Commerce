@@ -40,7 +40,20 @@ const RelatedProducts = ({ products }) => {
           products.map((product) => (
             <div key={product.id} className={styles.relatedCard} >
               <div className={styles.imageBox} onClick={() => navigate(`/product/${product.id}`)} >
-                <img src={product.image} alt={product.name} className={styles.productImage} />
+                {(() => {
+                  let img = product.image;
+                  if (typeof img === "string" && img.startsWith("/images/")) {
+                    try {
+                      img = require("../../assets/images/" + img.split("/").pop());
+                    } catch (err) {
+                      img = require("../../assets/images/Mediction.png");
+                    }
+                  }
+
+                  return (
+                    <img src={img} alt={product.name} className={styles.productImage} onError={(e) => { e.target.src = require("../../assets/images/Mediction.png"); }} />
+                  );
+                })()}
               </div>
 
               <div className={styles.productInfo}>

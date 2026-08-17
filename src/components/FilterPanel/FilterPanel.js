@@ -1,132 +1,475 @@
-import React from "react";
+import React, { useState } from "react";
+import {
+  FaFilter,
+  FaChevronDown,
+  FaStar,
+  FaTimes,
+} from "react-icons/fa";
+
 import "./FilterPanel.css";
 
-function FilterPanel({ filters, setFilters }) {
-  const handleChange = (e) => {
-    const { name, value, checked, type } = e.target;
+const FilterPanel = ({
+  selectedCategory = "all",
+  setSelectedCategory,
 
-    setFilters({
-      ...filters,
-      [name]: type === "checkbox" ? checked : value,
-    });
-  };
+  priceRange = "all",
+  setPriceRange,
 
-  const clearFilters = () => {
-    setFilters({
-      category: "",
-      brand: "",
-      rating: "",
-      availability: false,
-      minPrice: "",
-      maxPrice: "",
-    });
-  };
+  selectedRating = "all",
+  setSelectedRating,
+
+  selectedBrand = "all",
+  setSelectedBrand,
+
+  brands = [],
+
+  onReset,
+}) => {
+  const [openCategory, setOpenCategory] =
+    useState(true);
+
+  const [openPrice, setOpenPrice] =
+    useState(true);
+
+  const [openRating, setOpenRating] =
+    useState(true);
+
+  const [openBrand, setOpenBrand] =
+    useState(true);
+
+  const categories = [
+    {
+      value: "all",
+      label: "All Products",
+    },
+    {
+      value: "medicines",
+      label: "Medicines",
+    },
+    {
+      value: "healthcare",
+      label: "Healthcare",
+    },
+    {
+      value: "vitamins",
+      label: "Vitamins & Supplements",
+    },
+    {
+      value: "personal-care",
+      label: "Personal Care",
+    },
+    {
+      value: "baby-care",
+      label: "Baby Care",
+    },
+    {
+      value: "medical-devices",
+      label: "Medical Devices",
+    },
+    {
+      value: "eye-care",
+      label: "Eye Care",
+    },
+    {
+      value: "hair-care",
+      label: "Hair Care",
+    },
+    {
+      value: "women-care",
+      label: "Women's Health",
+    },
+    {
+      value: "premium-healthcare",
+      label: "Premium Healthcare",
+    },
+  ];
+
+  const priceOptions = [
+    {
+      value: "all",
+      label: "All Prices",
+    },
+    {
+      value: "0-199",
+      label: "Under ₹200",
+    },
+    {
+      value: "200-499",
+      label: "₹200 - ₹499",
+    },
+    {
+      value: "500-999",
+      label: "₹500 - ₹999",
+    },
+    {
+      value: "1000-1999",
+      label: "₹1,000 - ₹1,999",
+    },
+    {
+      value: "2000",
+      label: "₹2,000 & Above",
+    },
+  ];
+
+  const ratingOptions = [
+    {
+      value: "all",
+      label: "All Ratings",
+    },
+    {
+      value: "4",
+      label: "4★ & Above",
+    },
+    {
+      value: "3",
+      label: "3★ & Above",
+    },
+    {
+      value: "2",
+      label: "2★ & Above",
+    },
+    {
+      value: "1",
+      label: "1★ & Above",
+    },
+  ];
 
   return (
     <div className="filter-panel">
 
-      <h2>Filter Products</h2>
+      {/* ==================================================
+          HEADER
+      ================================================== */}
 
-      {/* Category */}
-      <div className="filter-group">
-        <label>Category</label>
+      <div className="filter-header">
 
-        <select
-          name="category"
-          value={filters.category}
-          onChange={handleChange}
+        <div className="filter-title">
+          <FaFilter />
+
+          <h3>
+            Filters
+          </h3>
+        </div>
+
+        <button
+          type="button"
+          className="clear-filter-btn"
+          onClick={onReset}
         >
-          <option value="">All Categories</option>
-          <option value="Medicine">Medicine</option>
-          <option value="Vitamin">Vitamin</option>
-          <option value="Equipment">Equipment</option>
-          <option value="Personal Care">Personal Care</option>
-        </select>
+          Clear All
+        </button>
+
       </div>
 
-      {/* Brand */}
-      <div className="filter-group">
-        <label>Brand</label>
+      {/* ==================================================
+          CATEGORY
+      ================================================== */}
 
-        <select
-          name="brand"
-          value={filters.brand}
-          onChange={handleChange}
+      <div className="filter-section">
+
+        <button
+          type="button"
+          className="filter-section-title"
+          onClick={() =>
+            setOpenCategory(
+              !openCategory
+            )
+          }
         >
-          <option value="">All Brands</option>
-          <option value="Dolo">Dolo</option>
-          <option value="Crocin">Crocin</option>
-          <option value="Revital">Revital</option>
-          <option value="Himalaya">Himalaya</option>
-          <option value="Omron">Omron</option>
-          <option value="Accu-Chek">Accu-Chek</option>
-        </select>
+          <span>
+            Category
+          </span>
+
+          <FaChevronDown
+            className={
+              openCategory
+                ? "rotate"
+                : ""
+            }
+          />
+        </button>
+
+        {openCategory && (
+          <div className="filter-options">
+
+            {categories.map(
+              (category) => (
+                <label
+                  key={category.value}
+                  className="filter-option"
+                >
+
+                  <input
+                    type="radio"
+                    name="category"
+                    value={
+                      category.value
+                    }
+                    checked={
+                      selectedCategory ===
+                      category.value
+                    }
+                    onChange={() =>
+                      setSelectedCategory(
+                        category.value
+                      )
+                    }
+                  />
+
+                  <span>
+                    {category.label}
+                  </span>
+
+                </label>
+              )
+            )}
+
+          </div>
+        )}
       </div>
 
-      {/* Price */}
-      <div className="filter-group">
-        <label>Minimum Price</label>
+      {/* ==================================================
+          PRICE
+      ================================================== */}
 
-        <input
-          type="number"
-          name="minPrice"
-          placeholder="₹0"
-          value={filters.minPrice}
-          onChange={handleChange}
-        />
-      </div>
+      <div className="filter-section">
 
-      <div className="filter-group">
-        <label>Maximum Price</label>
-
-        <input
-          type="number"
-          name="maxPrice"
-          placeholder="₹5000"
-          value={filters.maxPrice}
-          onChange={handleChange}
-        />
-      </div>
-
-      {/* Rating */}
-      <div className="filter-group">
-        <label>Rating</label>
-
-        <select
-          name="rating"
-          value={filters.rating}
-          onChange={handleChange}
+        <button
+          type="button"
+          className="filter-section-title"
+          onClick={() =>
+            setOpenPrice(!openPrice)
+          }
         >
-          <option value="">All Ratings</option>
-          <option value="4">4★ & Above</option>
-          <option value="3">3★ & Above</option>
-          <option value="2">2★ & Above</option>
-        </select>
+          <span>
+            Price
+          </span>
+
+          <FaChevronDown
+            className={
+              openPrice
+                ? "rotate"
+                : ""
+            }
+          />
+        </button>
+
+        {openPrice && (
+          <div className="filter-options">
+
+            {priceOptions.map(
+              (option) => (
+                <label
+                  key={option.value}
+                  className="filter-option"
+                >
+
+                  <input
+                    type="radio"
+                    name="price"
+                    value={option.value}
+                    checked={
+                      priceRange ===
+                      option.value
+                    }
+                    onChange={() =>
+                      setPriceRange(
+                        option.value
+                      )
+                    }
+                  />
+
+                  <span>
+                    {option.label}
+                  </span>
+
+                </label>
+              )
+            )}
+
+          </div>
+        )}
       </div>
 
-      {/* Availability */}
-      <div className="stock">
+      {/* ==================================================
+          RATING
+      ================================================== */}
 
-        <input
-          type="checkbox"
-          name="availability"
-          checked={filters.availability}
-          onChange={handleChange}
-        />
+      <div className="filter-section">
 
-        <label>In Stock Only</label>
+        <button
+          type="button"
+          className="filter-section-title"
+          onClick={() =>
+            setOpenRating(
+              !openRating
+            )
+          }
+        >
+          <span>
+            Rating
+          </span>
 
+          <FaChevronDown
+            className={
+              openRating
+                ? "rotate"
+                : ""
+            }
+          />
+        </button>
+
+        {openRating && (
+          <div className="filter-options">
+
+            {ratingOptions.map(
+              (option) => (
+                <label
+                  key={option.value}
+                  className="filter-option rating-option"
+                >
+
+                  <input
+                    type="radio"
+                    name="rating"
+                    value={option.value}
+                    checked={
+                      selectedRating ===
+                      option.value
+                    }
+                    onChange={() =>
+                      setSelectedRating(
+                        option.value
+                      )
+                    }
+                  />
+
+                  <span>
+                    {option.value !==
+                      "all" && (
+                        <FaStar />
+                      )}
+
+                    {option.label}
+                  </span>
+
+                </label>
+              )
+            )}
+
+          </div>
+        )}
       </div>
+
+      {/* ==================================================
+          BRAND
+      ================================================== */}
+
+      <div className="filter-section">
+
+        <button
+          type="button"
+          className="filter-section-title"
+          onClick={() =>
+            setOpenBrand(
+              !openBrand
+            )
+          }
+        >
+          <span>
+            Brand
+          </span>
+
+          <FaChevronDown
+            className={
+              openBrand
+                ? "rotate"
+                : ""
+            }
+          />
+        </button>
+
+        {openBrand && (
+          <div className="filter-options brand-options">
+
+            <label className="filter-option">
+
+              <input
+                type="radio"
+                name="brand"
+                value="all"
+                checked={
+                  selectedBrand ===
+                  "all"
+                }
+                onChange={() =>
+                  setSelectedBrand(
+                    "all"
+                  )
+                }
+              />
+
+              <span>
+                All Brands
+              </span>
+
+            </label>
+
+            {brands.map(
+              (brand) => (
+                <label
+                  key={brand}
+                  className="filter-option"
+                >
+
+                  <input
+                    type="radio"
+                    name="brand"
+                    value={brand}
+                    checked={
+                      selectedBrand ===
+                      brand
+                    }
+                    onChange={() =>
+                      setSelectedBrand(
+                        brand
+                      )
+                    }
+                  />
+
+                  <span>
+                    {brand}
+                  </span>
+
+                </label>
+              )
+            )}
+
+            {brands.length === 0 && (
+              <p className="no-brands">
+                No brands available
+              </p>
+            )}
+
+          </div>
+        )}
+      </div>
+
+      {/* ==================================================
+          RESET BUTTON
+      ================================================== */}
 
       <button
-        className="clear-btn"
-        onClick={clearFilters}
+        type="button"
+        className="filter-reset-button"
+        onClick={onReset}
       >
-        Clear Filters
+        <FaTimes />
+        Reset Filters
       </button>
 
     </div>
   );
-}
+};
 
 export default FilterPanel;

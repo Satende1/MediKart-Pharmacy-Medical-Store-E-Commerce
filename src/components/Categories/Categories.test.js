@@ -1,34 +1,34 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
+
 import Categories from "./Categories";
 
-jest.mock("../../assets/categories/medicines.jpg", () => "medicines.jpg");
-jest.mock("../../assets/categories/healthcare.png", () => "healthcare.png");
-jest.mock("../../assets/categories/vitamins.png", () => "vitamins.png");
-jest.mock("../../assets/categories/personalcare.png", () => "personalcare.png");
-jest.mock("../../assets/categories/babycare.png", () => "babycare.png");
-jest.mock("../../assets/categories/medicaldevices.png", () => "medicaldevices.png");
-jest.mock("../../assets/categories/eye-care.png", () => "eye-care.png");
-jest.mock(
-  "../../assets/categories/premium-healthcare.png",
-  () => "premium-healthcare.png"
-);
-jest.mock("../../assets/categories/hair-care.png", () => "hair-care.png");
-jest.mock("../../assets/categories/lab-tests.png", () => "lab-tests.png");
-
-describe("Categories Component", () => {
-  test("renders heading and description", () => {
+describe("Categories", () => {
+  test("renders the Categories page", () => {
     render(
       <MemoryRouter>
         <Categories />
       </MemoryRouter>
     );
 
-    expect(screen.getByText("Shop by Category")).toBeInTheDocument();
     expect(
-      screen.getByText("Choose a category to explore healthcare products.")
-    ).toBeInTheDocument();
+      screen.getByText("Shop by Category")
+    ).toBeTruthy();
+  });
+
+  test("renders the description", () => {
+    render(
+      <MemoryRouter>
+        <Categories />
+      </MemoryRouter>
+    );
+
+    expect(
+      screen.getByText(
+        "Choose a category to explore healthcare products."
+      )
+    ).toBeTruthy();
   });
 
   test("renders all category names", () => {
@@ -38,27 +38,22 @@ describe("Categories Component", () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByText("Medicines")).toBeInTheDocument();
-    expect(screen.getByText("Healthcare")).toBeInTheDocument();
-    expect(screen.getByText("Vitamins & Supplements")).toBeInTheDocument();
-    expect(screen.getByText("Personal Care")).toBeInTheDocument();
-    expect(screen.getByText("Baby Care")).toBeInTheDocument();
-    expect(screen.getByText("Medical Devices")).toBeInTheDocument();
-    expect(screen.getByText("Eye Care")).toBeInTheDocument();
-    expect(screen.getByText("Premium Healthcare")).toBeInTheDocument();
-    expect(screen.getByText("Hair Care")).toBeInTheDocument();
-    expect(screen.getByText("Lab Tests")).toBeInTheDocument();
-  });
+    const categories = [
+      "Medicines",
+      "Healthcare",
+      "Vitamins & Supplements",
+      "Personal Care",
+      "Baby Care",
+      "Medical Devices",
+      "Eye Care",
+      "Premium Healthcare",
+      "Hair Care",
+      "Women's Health",
+    ];
 
-  test("renders 10 category images", () => {
-    render(
-      <MemoryRouter>
-        <Categories />
-      </MemoryRouter>
-    );
-
-    const images = screen.getAllByRole("img");
-    expect(images).toHaveLength(10);
+    categories.forEach((category) => {
+      expect(screen.getByText(category)).toBeTruthy();
+    });
   });
 
   test("renders 10 category links", () => {
@@ -69,6 +64,19 @@ describe("Categories Component", () => {
     );
 
     const links = screen.getAllByRole("link");
-    expect(links).toHaveLength(10);
+
+    expect(links.length).toBe(10);
+  });
+
+  test("renders 10 category images", () => {
+    render(
+      <MemoryRouter>
+        <Categories />
+      </MemoryRouter>
+    );
+
+    const images = screen.getAllByRole("img");
+
+    expect(images.length).toBe(10);
   });
 });

@@ -7,7 +7,7 @@ import EmptyState from "../../components/EmptyState/EmptyState";
 import Footer from "../../components/Footer/Footer";
 
 import emptyCart from "../../assets/empty-cart.png";
-import AddressSection from "../../components/AddressSection/AddressSection";
+import Address from "../../components/Address/Address";
 const Cart = () => {
   const [cartItems, setCartItems] = useState([]);
 
@@ -142,7 +142,7 @@ const Cart = () => {
           </div>
         </div>
       </div>
-      <AddressSection />
+      <Address />
       <Footer />
     </>
   );

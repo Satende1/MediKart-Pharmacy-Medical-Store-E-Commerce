@@ -1,34 +1,51 @@
 import React from "react";
 import { useParams } from "react-router-dom";
-import medicines from "../data/medicines/medicines";
+import medicines from "../../data/medicines";
 
 function CategoryProducts() {
   const { categoryName } = useParams();
 
   let products = [];
 
+  // Load products according to category
   if (categoryName === "medicines") {
     products = medicines;
   }
 
   return (
     <div className="container">
-      <h2>{categoryName.toUpperCase()}</h2>
+      <h2>
+        {categoryName
+          ? categoryName.toUpperCase()
+          : "CATEGORY"}
+      </h2>
 
       <div className="product-grid">
-        {products.map((item) => (
-          <div key={item.id} className="product-card">
-            <img src={item.image} alt={item.name} />
+        {products.length > 0 ? (
+          products.map((item) => (
+            <div
+              key={item.id}
+              className="product-card"
+            >
+              <img
+                src={item.image}
+                alt={item.name}
+              />
 
-            <h3>{item.name}</h3>
+              <h3>{item.name}</h3>
 
-            <p>{item.brand}</p>
+              <p>{item.brand}</p>
 
-            <h4>₹{item.price}</h4>
+              <h4>₹{item.price}</h4>
 
-            <p>⭐ {item.rating}</p>
-          </div>
-        ))}
+              <p>⭐ {item.rating}</p>
+            </div>
+          ))
+        ) : (
+          <p className="no-products">
+            No products available in this category.
+          </p>
+        )}
       </div>
     </div>
   );

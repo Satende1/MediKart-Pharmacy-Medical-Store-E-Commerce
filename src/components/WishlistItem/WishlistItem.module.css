@@ -126,6 +126,14 @@
   font-size: 22px;
 }
 
+/* Force SVG icons to use the container color */
+.heart svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+  color: inherit;
+}
+
 @media (max-width: 768px) {
   .imageContainer {
     width: 140px;

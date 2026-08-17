@@ -1,167 +1,606 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { FaHeart, FaShoppingCart, FaBolt, FaStar } from "react-icons/fa";
+
+import {
+  FaHeart,
+  FaShoppingCart,
+  FaBolt,
+  FaStar,
+} from "react-icons/fa";
+
 import products from "../../data/products";
+
 import ProductGallery from "../../components/ProductGallery/ProductGallery";
 import QuantitySelector from "../../components/QuantitySelector/QuantitySelector";
 import ProductSpecifications from "../../components/ProductSpecifications/ProductSpecifications";
 import RelatedProducts from "../../components/RelatedProducts/RelatedProducts";
 import Footer from "../../components/Footer/Footer";
+
 import "./ProductDetails.css";
 
 const ProductDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const product = products.find((item) => item.id === Number(id));
+
+  // ==========================================
+  // FIND PRODUCT
+  // ==========================================
+
+  const product = products.find(
+    (item) => Number(item.id) === Number(id)
+  );
+
+  // ==========================================
+  // STATES
+  // ==========================================
 
   const [quantity, setQuantity] = useState(1);
   const [wishlist, setWishlist] = useState(false);
   const [isAdded, setIsAdded] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  // ==========================================
+  // PRODUCT CHANGE
+  // ==========================================
+
   useEffect(() => {
     setQuantity(1);
-    window.scrollTo({ top: 0, behavior: "smooth" });
     setLoading(true);
-    const timer = setTimeout(() => { setLoading(false); }, 700);
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 700);
 
     return () => clearTimeout(timer);
   }, [id]);
 
+  // ==========================================
+  // CHECK WISHLIST
+  // ==========================================
+
+  useEffect(() => {
+    if (!product) return;
+
+    const wishlistData =
+      JSON.parse(localStorage.getItem("wishlist")) || [];
+
+    const exists = wishlistData.some(
+      (item) =>
+        Number(item.id) === Number(product.id)
+    );
+
+    setWishlist(exists);
+  }, [product]);
+
+  // ==========================================
+  // LOADING
+  // ==========================================
+
   if (loading) {
-
     return (
-
       <div className="loadingContainer">
         <div className="loader"></div>
+
         <h2>Loading Product...</h2>
       </div>
     );
   }
 
+  // ==========================================
+  // PRODUCT NOT FOUND
+  // ==========================================
+
   if (!product) {
     return (
       <div className="not-found">
-        <h2> Product Not Found </h2>
+
+        <h2>Product Not Found</h2>
+
+        <button
+          className="back-shop-btn"
+          onClick={() => navigate("/shop")}
+        >
+          Go to Shop
+        </button>
+
       </div>
     );
   }
 
-  const rawPrice = Number(product.price);
-  const discount = Number(product.discount);
-  const discountPrice = rawPrice - (rawPrice * discount) / 100;
-  const totalAmount = discountPrice * quantity;
-  const productImages = product.images?.length ? product.images : [product.image];
+  // ==========================================
+  // PRICE
+  // ==========================================
+  //
+  // originalPrice = MRP
+  // price         = FINAL SELLING PRICE
+  // discount      = DISCOUNT PERCENTAGE
+  //
+  // Example:
+  //
+  // originalPrice: 45
+  // price: 35
+  // discount: 22
+  //
+  // Product Details:
+  // ₹35   ₹45   22% OFF
+  //
+  // ==========================================
 
-  // ADD TO CART FUNCTION
+  const originalPrice = Number(
+    product.originalPrice ?? product.price
+  );
+
+  const sellingPrice = Number(product.price);
+
+  const discount = Number(
+    product.discount || 0
+  );
+
+  // ==========================================
+  // TOTAL AMOUNT
+  // ==========================================
+
+  const totalAmount =
+    sellingPrice * quantity;
+
+  // ==========================================
+  // PRODUCT IMAGES
+  // ==========================================
+
+  const productImages =
+    product.images &&
+    product.images.length > 0
+      ? product.images
+      : product.image
+      ? [product.image]
+      : [];
+
+  // ==========================================
+  // ADD TO CART
+  // ==========================================
 
   const handleAddToCart = () => {
+    const cart =
+      JSON.parse(localStorage.getItem("cart")) || [];
 
-    const cart = JSON.parse(localStorage.getItem("cart")) || [];
-
-    const existingProduct = cart.find(item => item.id === product.id);
+    const existingProduct = cart.find(
+      (item) =>
+        Number(item.id) === Number(product.id)
+    );
 
     let updatedCart;
 
+    // Product already exists
     if (existingProduct) {
-      updatedCart = cart.map(item =>
-        item.id === product.id ?
-          {
+      updatedCart = cart.map((item) => {
+
+        if (
+          Number(item.id) ===
+          Number(product.id)
+        ) {
+          return {
             ...item,
-            quantity: (item.quantity || 1) + quantity
-          } : item
-      );
-    } else {
-      updatedCart =
-        [...cart, { ...product, price: discountPrice, quantity: quantity }];
+
+            // Keep original selling price
+            price: sellingPrice,
+
+            quantity:
+              (item.quantity || 1) +
+              quantity,
+          };
+        }
+
+        return item;
+      });
     }
 
-    localStorage.setItem("cart", JSON.stringify(updatedCart));
+    // New product
+    else {
+      updatedCart = [
+        ...cart,
 
-    // Update Navbar Count
+        {
+          ...product,
 
-    window.dispatchEvent(new Event("cartUpdated"));
+          // Use product price directly
+          price: sellingPrice,
+
+          quantity: quantity,
+        },
+      ];
+    }
+
+    // Save cart
+    localStorage.setItem(
+      "cart",
+      JSON.stringify(updatedCart)
+    );
+
+    // Update navbar cart count
+    window.dispatchEvent(
+      new Event("cartUpdated")
+    );
+
+    // Show added state
     setIsAdded(true);
-    setTimeout(() => { setIsAdded(false); }, 2000);
+
+    setTimeout(() => {
+      setIsAdded(false);
+    }, 2000);
   };
-  // ADD TO WISHLIST
+
+  // ==========================================
+  // WISHLIST
+  // ==========================================
 
   const handleWishlist = () => {
-    const wishlistData = JSON.parse(localStorage.getItem("wishlist")) || [];
-    const exists = wishlistData.find(item => item.id === product.id);
-    if (!exists) {
-      wishlistData.push(product);
-      localStorage.setItem("wishlist",
-        JSON.stringify(wishlistData));
-      window.dispatchEvent(new Event("wishlistUpdated"));
+    let wishlistData =
+      JSON.parse(
+        localStorage.getItem("wishlist")
+      ) || [];
+
+    const exists = wishlistData.some(
+      (item) =>
+        Number(item.id) === Number(product.id)
+    );
+
+    // Remove from wishlist
+    if (exists) {
+      wishlistData = wishlistData.filter(
+        (item) =>
+          Number(item.id) !==
+          Number(product.id)
+      );
+
+      setWishlist(false);
     }
-    setWishlist(true);
+
+    // Add to wishlist
+    else {
+      wishlistData.push(product);
+
+      setWishlist(true);
+    }
+
+    localStorage.setItem(
+      "wishlist",
+      JSON.stringify(wishlistData)
+    );
+
+    window.dispatchEvent(
+      new Event("wishlistUpdated")
+    );
   };
 
-  const relatedProducts = products.filter(item => item.id !== product.id);
+  // ==========================================
+  // BUY NOW
+  // ==========================================
+
+  const handleBuyNow = () => {
+    const buyNowProduct = {
+      ...product,
+
+      // Use exact product price
+      price: sellingPrice,
+
+      quantity: quantity,
+    };
+
+    localStorage.setItem(
+      "buyNow",
+      JSON.stringify(buyNowProduct)
+    );
+
+    navigate("/checkout");
+  };
+
+  // ==========================================
+  // RELATED PRODUCTS
+  // ==========================================
+
+  const relatedProducts = products
+    .filter(
+      (item) =>
+        Number(item.id) !==
+        Number(product.id)
+    )
+    .filter(
+      (item) =>
+        item.category === product.category
+    )
+    .slice(0, 8);
+
+  // ==========================================
+  // RETURN UI
+  // ==========================================
+
   return (
     <div className="product-page">
+
+      {/* ======================================
+          TOP BAR
+      ====================================== */}
+
       <div className="product-topbar">
-        <button className="back-btn" onClick={() => navigate(-1)}> ← Back</button>
+
+        <button
+          className="back-btn"
+          onClick={() => navigate(-1)}
+        >
+          ← Back
+        </button>
+
       </div>
+
+      {/* ======================================
+          PRODUCT MAIN SECTION
+      ====================================== */}
+
       <div className="product-wrapper">
+
+        {/* ====================================
+            LEFT COLUMN
+        ==================================== */}
+
         <div className="left-column">
-          <ProductGallery images={productImages} />
+
+          <ProductGallery
+            images={productImages}
+          />
+
         </div>
+
+        {/* ====================================
+            RIGHT COLUMN
+        ==================================== */}
+
         <div className="right-column">
-          <h1 className="product-name"> {product.name} </h1>
+
+          {/* PRODUCT NAME */}
+
+          <h1 className="product-name">
+            {product.name}
+          </h1>
+
+          {/* BRAND */}
+
+          {product.brand && (
+            <p className="product-brand">
+              Brand:{" "}
+
+              <strong>
+                {product.brand}
+              </strong>
+            </p>
+          )}
+
+          {/* =================================
+              RATING
+          ================================= */}
+
           <div className="rating-box">
+
             <div className="rating-badge">
-              <FaStar />{product.rating}
+
+              <FaStar />
+
+              {product.rating}
+
             </div>
-            <span> {product.reviews} Ratings</span>
+
+            <span>
+              {product.reviews || 0} Ratings
+            </span>
+
           </div>
+
+          {/* =================================
+              PRICE
+          ================================= */}
+
           <div className="price-box">
-            <span className="discount-price"> ₹{discountPrice.toFixed(2)} </span>
-            <span className="actual-price"> ₹{rawPrice} </span>
-            <span className="discount"> {discount}% OFF </span>
+
+            {/* FINAL PRICE */}
+
+            <span className="discount-price">
+              ₹{sellingPrice.toFixed(2)}
+            </span>
+
+            {/* ORIGINAL PRICE */}
+
+            {originalPrice >
+              sellingPrice && (
+              <span className="actual-price">
+                ₹{originalPrice.toFixed(2)}
+              </span>
+            )}
+
+            {/* DISCOUNT */}
+
+            {discount > 0 && (
+              <span className="discount">
+                {discount}% OFF
+              </span>
+            )}
+
           </div>
+
+          {/* =================================
+              DESCRIPTION
+          ================================= */}
+
           <div className="description">
-            <h3> Description </h3>
-            <p>{product.description}</p>
+
+            <h3>
+              Description
+            </h3>
+
+            <p>
+              {product.description ||
+                "No description available for this product."}
+            </p>
+
           </div>
+
+          {/* =================================
+              PRODUCT DETAILS
+          ================================= */}
+
+          
+
+          {/* =================================
+              QUANTITY
+          ================================= */}
+
           <div className="quantity-area">
-            <h3>Quantity</h3>
-            <QuantitySelector quantity={quantity} setQuantity={setQuantity} />
+
+            <h3>
+              Quantity
+            </h3>
+
+            <QuantitySelector
+              quantity={quantity}
+              setQuantity={setQuantity}
+            />
+
           </div>
+
+          {/* =================================
+              TOTAL PRICE
+          ================================= */}
+
           <div className="total-box">
+
+            {/* UNIT PRICE */}
+
             <div className="row">
-              <span>Unit Price</span>
-              <strong> ₹{discountPrice} </strong>
+
+              <span>
+                Unit Price
+              </span>
+
+              <strong>
+                ₹{sellingPrice.toFixed(2)}
+              </strong>
+
             </div>
+
+            {/* QUANTITY */}
+
             <div className="row">
-              <span>Quantity</span>
-              <strong> {quantity} </strong>
+
+              <span>
+                Quantity
+              </span>
+
+              <strong>
+                {quantity}
+              </strong>
+
             </div>
+
+            {/* TOTAL */}
+
             <div className="row total">
-              <span> Total Amount </span>
-              <strong> ₹{totalAmount.toFixed(2)} </strong>
+
+              <span>
+                Total Amount
+              </span>
+
+              <strong>
+                ₹{totalAmount.toFixed(2)}
+              </strong>
+
             </div>
+
           </div>
+
+          {/* =================================
+              BUTTON GROUP
+          ================================= */}
+
           <div className="button-group">
-            <button className={`cart-btn ${isAdded ? "added" : ""}`}
-              onClick={handleAddToCart}>
-              <FaShoppingCart />
-              {isAdded ? "✓ Added" : "Add to Cart"}
-            </button>
-            <button className="buy-btn"> <FaBolt /> Buy Now </button>
+
+            {/* ADD TO CART */}
+
             <button
-              className={`wish-btn ${wishlist ? "active" : ""}`}
-              onClick={handleWishlist}>
-              <FaHeart />
+              className={`cart-btn ${
+                isAdded ? "added" : ""
+              }`}
+              onClick={handleAddToCart}
+            >
+
+              <FaShoppingCart />
+
+              {isAdded
+                ? "✓ Added"
+                : "Add to Cart"}
+
             </button>
+
+            {/* BUY NOW */}
+
+            <button
+              className="buy-btn"
+              onClick={handleBuyNow}
+            >
+
+              <FaBolt />
+
+              Buy Now
+
+            </button>
+
+            {/* WISHLIST */}
+
+            <button
+              className={`wish-btn ${
+                wishlist ? "active" : ""
+              }`}
+              onClick={handleWishlist}
+            >
+
+              <FaHeart />
+
+            </button>
+
           </div>
+
         </div>
+
       </div>
-      <ProductSpecifications product={product} />
-      <RelatedProducts products={relatedProducts} />
+
+      {/* ======================================
+          SPECIFICATIONS
+      ====================================== */}
+
+      <ProductSpecifications
+        product={product}
+      />
+
+      {/* ======================================
+          RELATED PRODUCTS
+      ====================================== */}
+
+      {relatedProducts.length > 0 && (
+        <RelatedProducts
+          products={relatedProducts}
+        />
+      )}
+
+      {/* ======================================
+          FOOTER
+      ====================================== */}
+
       <Footer />
+
     </div>
   );
 };
+
 export default ProductDetails;

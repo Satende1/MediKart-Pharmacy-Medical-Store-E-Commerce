@@ -11,35 +11,34 @@ import product4 from "../assets/products/product4.png";
 
 const products = [
   {
-    id: 1,
+    id: 9001,
     name: "Paracetamol Tablets",
     price: 10,
     rating: 4.8,
     image: product1,
   },
   {
-    id: 7,
+    id: 9007,
     name: "Vitamin D Capsules",
     price: 300,
     rating: 4.7,
     image: product2,
   },
   {
-    id: 2,
+    id: 9002,
     name: "Blood Pressure Monitor",
     price: 1300,
     rating: 4.9,
     image: product3,
   },
   {
-    id: 3,
+    id: 9003,
     name: "Hand Sanitizer",
     price: 100,
     rating: 4.6,
     image: product4,
   },
 ];
-
 function FeaturedProducts() {
   const [addedItems, setAddedItems] = useState({});
 

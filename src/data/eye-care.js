@@ -21,7 +21,7 @@ import VisionCapsules from "../assets/EyeCare/eye20.png";
 
 const eyeCare = [
   {
-    id: 2001,
+    id: 150,
     name: "Refresh Tears Eye Drops",
     brand: "Refresh",
     category: "Eye Care",
@@ -39,7 +39,7 @@ const eyeCare = [
     description: "Lubricating eye drops for dry and irritated eyes."
   },
   {
-    id: 2002,
+    id: 151,
     name: "Lubricating Eye Drops",
     brand: "Optive",
     category: "Eye Care",
@@ -57,7 +57,7 @@ const eyeCare = [
     description: "Provides long-lasting moisture for dry eyes."
   },
   {
-    id: 2003,
+    id: 152,
     name: "Eye Wash Solution",
     brand: "Boroline",
     category: "Eye Care",
@@ -75,7 +75,7 @@ const eyeCare = [
     description: "Gentle eye cleansing solution."
   },
   {
-    id: 2004,
+    id: 153,
     name: "Artificial Tears",
     brand: "Systane",
     category: "Eye Care",
@@ -93,7 +93,7 @@ const eyeCare = [
     description: "Advanced artificial tears for dry eye relief."
   },
   {
-    id: 2005,
+    id: 154,
     name: "Eye Allergy Drops",
     brand: "Zaditor",
     category: "Eye Care",
@@ -111,7 +111,7 @@ const eyeCare = [
     description: "Relieves itchy and allergic eyes."
   },
   {
-    id: 2006,
+    id: 155,
     name: "Eye Cooling Gel",
     brand: "Himalaya",
     category: "Eye Care",
@@ -129,7 +129,7 @@ const eyeCare = [
     description: "Cooling gel for tired eyes."
   },
   {
-    id: 2007,
+    id: 156,
     name: "Eye Care Wipes",
     brand: "Clean Eyes",
     category: "Eye Care",
@@ -147,7 +147,7 @@ const eyeCare = [
     description: "Sterile wipes for eyelid hygiene."
   },
   {
-    id: 2008,
+    id: 157,
     name: "Eye Vitamin Capsules",
     brand: "HealthVit",
     category: "Eye Care",
@@ -165,7 +165,7 @@ const eyeCare = [
     description: "Supports healthy vision and retina."
   },
   {
-    id: 2009,
+    id: 158,
     name: "Blue Light Protection Glasses",
     brand: "VisionPro",
     category: "Eye Care",
@@ -183,7 +183,7 @@ const eyeCare = [
     description: "Blocks harmful blue light from screens."
   },
   {
-    id: 2010,
+    id: 159,
     name: "Eye Massage Roller",
     brand: "Relax",
     category: "Eye Care",
@@ -201,7 +201,7 @@ const eyeCare = [
     description: "Relieves eye strain and puffiness."
   },
   {
-    id: 2011,
+    id: 160,
     name: "Dry Eye Relief Drops",
     brand: "Refresh",
     category: "Eye Care",
@@ -219,7 +219,7 @@ const eyeCare = [
     description: "Fast relief from dry eye symptoms."
   },
   {
-    id: 2012,
+    id: 161,
     name: "Eye Cleansing Pads",
     brand: "Opticare",
     category: "Eye Care",
@@ -237,7 +237,7 @@ const eyeCare = [
     description: "Soft cleansing pads for eyelids."
   },
   {
-    id: 2013,
+    id: 162,
     name: "Eye Cooling Mask",
     brand: "CarePlus",
     category: "Eye Care",
@@ -255,7 +255,7 @@ const eyeCare = [
     description: "Reusable cooling mask for eye relaxation."
   },
   {
-    id: 2014,
+    id: 163,
     name: "Eye Lubricant Gel",
     brand: "Systane",
     category: "Eye Care",
@@ -273,7 +273,7 @@ const eyeCare = [
     description: "Long-lasting eye lubricant gel."
   },
   {
-    id: 2015,
+    id: 164,
     name: "Eye Infection Drops",
     brand: "Cipla",
     category: "Eye Care",
@@ -291,7 +291,7 @@ const eyeCare = [
     description: "Prescription eye drops for infections."
   },
   {
-    id: 2016,
+    id: 165,
     name: "Eye Wash Cup",
     brand: "HealthCare",
     category: "Eye Care",
@@ -309,7 +309,7 @@ const eyeCare = [
     description: "Convenient eye wash cup."
   },
   {
-    id: 2017,
+    id: 166,
     name: "Eye Protection Goggles",
     brand: "Safety",
     category: "Eye Care",
@@ -327,7 +327,7 @@ const eyeCare = [
     description: "Protective goggles for medical and industrial use."
   },
   {
-    id: 2018,
+    id: 167,
     name: "Eye Moisturizing Drops",
     brand: "Optive",
     category: "Eye Care",
@@ -345,7 +345,7 @@ const eyeCare = [
     description: "Hydrates and refreshes dry eyes."
   },
   {
-    id: 2019,
+    id: 168,
     name: "Eye Health Tablets",
     brand: "HealthAid",
     category: "Eye Care",
@@ -363,7 +363,7 @@ const eyeCare = [
     description: "Supports vision and eye health."
   },
   {
-    id: 2020,
+    id: 169,
     name: "Vision Support Capsules",
     brand: "VisionCare",
     category: "Eye Care",
