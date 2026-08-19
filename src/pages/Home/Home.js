@@ -6,7 +6,6 @@ import FlashSale from "../../FlashSale/FlashSale";
 import Newsletter from "../../components/Newsletter/Newsletter";
 import Footer from "../../components/Footer/Footer";
 import ShopByCategory from "../../components/ShopByCategory/ShopByCategory";
-
 import "./Home.css";
 function Home() {
   return (

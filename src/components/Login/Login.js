@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import {
   FaUser,
@@ -8,133 +8,161 @@ import {
   FaEyeSlash,
   FaGoogle,
   FaFacebookF,
-  FaTwitter,
-  FaShoppingCart,
   FaApple,
-  FaPlus,
+  FaTimes,
 } from "react-icons/fa";
 
 import "./Login.css";
 
-// Put your image inside:
-// src/assets/login-image.png
-import loginImage from "../../assets/Login pages.png";
-
-const Login = ({ onLoginSuccess }) => {
+const Login = ({ onClose }) => {
   const navigate = useNavigate();
 
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
+  const [remember, setRemember] = useState(false);
 
-  // ==========================================
-  // LOGIN
-  // ==========================================
+  /* =====================================================
+     CLOSE POPUP
+  ===================================================== */
+
+  const handleClose = () => {
+    if (onClose) {
+      onClose();
+    } else {
+      navigate("/");
+    }
+  };
+
+  /* =====================================================
+     LOGIN
+  ===================================================== */
 
   const handleLogin = (e) => {
     e.preventDefault();
 
-    // Get registered user
+    if (!email || !password) {
+      alert("Please enter email and password.");
+      return;
+    }
+
     const registeredUser = JSON.parse(
       localStorage.getItem("registeredUser")
     );
 
-    // User is not registered
-    if (!registeredUser) {
-      alert("You are not registered. Please register first.");
-      navigate("/register");
-      return;
-    }
+    /* ===================================================
+       REGISTERED USER
+    =================================================== */
 
-    // Check username/email/name
-    const usernameMatch =
-      username === registeredUser.username ||
-      username === registeredUser.email ||
-      username === registeredUser.name;
+    if (registeredUser) {
+      if (
+        email !== registeredUser.email &&
+        email !== registeredUser.username
+      ) {
+        alert("Email or username is incorrect.");
+        return;
+      }
 
-    // Check password
-    const passwordMatch =
-      password === registeredUser.password;
+      if (password !== registeredUser.password) {
+        alert("Incorrect password.");
+        return;
+      }
 
-    // Correct login
-    if (usernameMatch && passwordMatch) {
       localStorage.setItem("isLoggedIn", "true");
+
+      localStorage.setItem(
+        "username",
+        registeredUser.name || registeredUser.username
+      );
 
       localStorage.setItem(
         "user",
         JSON.stringify(registeredUser)
       );
 
-      const displayName =
-        registeredUser.username ||
-        registeredUser.name ||
-        registeredUser.email ||
-        "User";
-
-      localStorage.setItem("username", displayName);
-
-      // notify other components to update (Navbar/UserActions)
-      window.dispatchEvent(new Event("userUpdated"));
-
-      if (rememberMe) {
+      if (remember) {
         localStorage.setItem("rememberMe", "true");
       } else {
         localStorage.removeItem("rememberMe");
       }
 
-      if (onLoginSuccess) onLoginSuccess();
+      window.dispatchEvent(new Event("userUpdated"));
+
+      navigate("/");
+
+      return;
+    }
+
+    /* ===================================================
+       DEMO LOGIN
+    =================================================== */
+
+    if (
+      email === "admin@medikart.com" &&
+      password === "123456"
+    ) {
+      localStorage.setItem("isLoggedIn", "true");
+      localStorage.setItem("username", "Satender");
+
+      if (remember) {
+        localStorage.setItem("rememberMe", "true");
+      } else {
+        localStorage.removeItem("rememberMe");
+      }
+
+      window.dispatchEvent(new Event("userUpdated"));
 
       navigate("/");
     } else {
-      alert("Invalid username/email or password.");
+      alert("Invalid email/username or password.");
     }
   };
 
-  // ==========================================
-  // RETURN
-  // ==========================================
-
   return (
-    <div className="login-page">
+    <div
+      className="login-popup-overlay"
+      onClick={handleClose}
+    >
 
-      <div className="login-container">
+      <div
+        className="login-popup"
+        onClick={(e) => e.stopPropagation()}
+      >
 
         {/* =================================================
-            LEFT SIDE
+            CLOSE BUTTON
         ================================================= */}
 
-        <div className="login-left">
+        <button
+          type="button"
+          className="login-close-button"
+          onClick={handleClose}
+          aria-label="Close login"
+        >
+          <FaTimes />
+        </button>
+
+        {/* =================================================
+            LEFT IMAGE
+        ================================================= */}
+
+        <div className="auth-image-section">
 
           <img
-            src={loginImage}
-            alt="Medikart Healthcare"
-            className="login-image"
+            src="/images/login.png"
+            alt="MEDIKART Login"
+            className="auth-image"
           />
 
-          {/* IMAGE OVERLAY */}
+          <div className="image-overlay">
 
-          <div className="left-overlay"></div>
-
-          {/* LEFT TEXT */}
-
-          <div className="left-content">
-
-            <h2>
-              Your Health,
-              <br />
-              <strong>Our Priority</strong>
-            </h2>
+            <h1>
+              Welcome to MEDIKART
+            </h1>
 
             <p>
-              Medikart is your trusted
-              <br />
-              online pharmacy for genuine
-              <br />
-              medicines and healthcare
-              <br />
-              essentials.
+              Your trusted online healthcare
+              & pharmacy partner.
             </p>
 
           </div>
@@ -142,80 +170,55 @@ const Login = ({ onLoginSuccess }) => {
         </div>
 
         {/* =================================================
-            RIGHT SIDE
+            RIGHT LOGIN
         ================================================= */}
 
-        <div className="login-right">
+        <div className="auth-form-section">
 
-          <div className="login-content">
+          <div className="auth-form-box">
 
-            {/* =================================================
-                MEDIKART LOGO
-            ================================================= */}
+            {/* LOGO */}
 
-            <div className="medikart-logo">
-
-              <div className="logo-icon">
-
-                <FaShoppingCart />
-
-                <FaPlus className="logo-plus" />
-
-              </div>
-
-              <div className="logo-details">
-
-                <h1>MEDIKART</h1>
-
-                <p>
-                  Your Trusted Healthcare Partner
-                </p>
-
-              </div>
-
+            <div className="auth-logo">
+              <span>MEDI</span>
+              <strong>KART</strong>
             </div>
 
-            {/* =================================================
-                HEADER
-            ================================================= */}
+            <h2>
+              Login
+            </h2>
 
-            <div className="login-header">
-
-              <h2>Welcome Back!</h2>
-
-              <p>
-                Login to your account and continue
-              </p>
-
-            </div>
+            <p className="auth-subtitle">
+              Login to continue shopping with MEDIKART
+            </p>
 
             {/* =================================================
-                LOGIN FORM
+                FORM
             ================================================= */}
 
             <form onSubmit={handleLogin}>
 
-              {/* USERNAME */}
+              {/* EMAIL */}
 
-              <div className="input-box">
+              <div className="input-group">
 
                 <FaUser className="input-icon" />
 
                 <input
                   type="text"
-                  placeholder="Username"
-                  value={username}
+                  placeholder="Email or Username"
+                  value={email}
                   onChange={(e) =>
-                    setUsername(e.target.value)
+                    setEmail(e.target.value)
                   }
-                  required
+                  autoComplete="username"
                 />
 
               </div>
 
               {/* PASSWORD */}
 
-              <div className="input-box">
+              <div className="input-group">
 
                 <FaLock className="input-icon" />
 
@@ -230,12 +233,12 @@ const Login = ({ onLoginSuccess }) => {
                   onChange={(e) =>
                     setPassword(e.target.value)
                   }
-                  required
+                  autoComplete="current-password"
                 />
 
                 <button
                   type="button"
-                  className="eye-button"
+                  className="password-eye"
                   onClick={() =>
                     setShowPassword(!showPassword)
                   }
@@ -254,27 +257,21 @@ const Login = ({ onLoginSuccess }) => {
 
               </div>
 
-              {/* =================================================
-                  REMEMBER ME + FORGOT PASSWORD
-              ================================================= */}
+              {/* OPTIONS */}
 
               <div className="login-options">
 
-                {/* REMEMBER ME */}
-
-                <label className="remember">
+                <label>
 
                   <input
                     type="checkbox"
-                    checked={rememberMe}
+                    checked={remember}
                     onChange={(e) =>
-                      setRememberMe(e.target.checked)
+                      setRemember(
+                        e.target.checked
+                      )
                     }
                   />
-
-                  <span className="custom-checkbox">
-                    {rememberMe ? "✓" : ""}
-                  </span>
 
                   <span>
                     Remember me
@@ -282,111 +279,67 @@ const Login = ({ onLoginSuccess }) => {
 
                 </label>
 
-                {/* FORGOT PASSWORD */}
-
-                <button
-                  type="button"
-                  className="forgot"
-                  onClick={() =>
-                    navigate("/forgot-password")
-                  }
-                >
+                <Link to="/forgot-password">
                   Forgot Password?
-                </button>
+                </Link>
 
               </div>
 
-              {/* =================================================
-                  LOGIN BUTTON
-              ================================================= */}
+              {/* LOGIN */}
 
               <button
                 type="submit"
-                className="login-button"
+                className="auth-button"
               >
                 Login
               </button>
 
             </form>
 
-            {/* =================================================
-                OR LOGIN WITH
-            ================================================= */}
+            {/* OR */}
 
-            <div className="or-login">
-
-              <div className="line"></div>
-
-              <span>Or login with</span>
-
-              <div className="line"></div>
-
+            <div className="or-divider">
+              <span>OR</span>
             </div>
 
-            {/* =================================================
-                SOCIAL MEDIA ICONS
-            ================================================= */}
+            {/* SOCIAL */}
 
-            <div className="social-icons">
+            <div className="social-login">
 
-              {/* Google */}
               <button
                 type="button"
-                className="social google"
-                aria-label="Login with Google"
+                aria-label="Google login"
               >
                 <FaGoogle />
               </button>
 
-              {/* Facebook */}
               <button
                 type="button"
-                className="social facebook"
-                aria-label="Login with Facebook"
+                aria-label="Facebook login"
               >
                 <FaFacebookF />
               </button>
 
-              {/* Twitter */}
               <button
                 type="button"
-                className="social twitter"
-                aria-label="Login with Twitter"
-              >
-                <FaTwitter />
-              </button>
-
-              {/* Apple */}
-              <button
-                type="button"
-                className="social apple"
-                aria-label="Login with Apple"
+                aria-label="Apple login"
               >
                 <FaApple />
               </button>
 
             </div>
 
-            {/* =================================================
-                REGISTER
-            ================================================= */}
+            {/* REGISTER */}
 
-            <div className="register">
+            <p className="switch-auth">
 
-              <span>
-                Don't have an account?
-              </span>
+              Don't have an account?
 
-              <button
-                type="button"
-                onClick={() =>
-                  navigate("/register")
-                }
-              >
-                Register
-              </button>
+              <Link to="/register">
+                Create Account
+              </Link>
 
-            </div>
+            </p>
 
           </div>
 

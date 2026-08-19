@@ -1,264 +1,208 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import {
   FaUser,
   FaEnvelope,
-  FaPhone,
   FaLock,
   FaEye,
   FaEyeSlash,
-  FaShoppingCart,
-  FaPlus,
+  FaTimes,
 } from "react-icons/fa";
 
 import "./Register.css";
 
-import registerImage from "../../assets/Medikart-logo.png";
-
-const Register = () => {
+const Register = ({ onClose }) => {
   const navigate = useNavigate();
 
-  const [formData, setFormData] = useState({
-    name: "",
-    username: "",
-    email: "",
-    phone: "",
-    password: "",
-    confirmPassword: "",
-  });
+  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] =
     useState(false);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
+  /* ==========================================
+     CLOSE POPUP
+  ========================================== */
 
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+  const handleClose = () => {
+    if (onClose) {
+      onClose();
+    } else {
+      navigate("/");
+    }
   };
+
+  /* ==========================================
+     REGISTER
+  ========================================== */
 
   const handleRegister = (e) => {
     e.preventDefault();
 
-    // Check password
-    if (formData.password !== formData.confirmPassword) {
+    if (
+      !name ||
+      !username ||
+      !email ||
+      !password ||
+      !confirmPassword
+    ) {
+      alert("Please enter all required details.");
+      return;
+    }
+
+    if (password.length < 6) {
+      alert("Password must be at least 6 characters.");
+      return;
+    }
+
+    if (password !== confirmPassword) {
       alert("Passwords do not match.");
       return;
     }
 
-    // Check existing user
     const existingUser = JSON.parse(
       localStorage.getItem("registeredUser")
     );
 
     if (existingUser) {
-      alert("User is already registered. Please login.");
-      navigate("/login");
-      return;
+      if (existingUser.email === email) {
+        alert("Email is already registered.");
+        return;
+      }
+
+      if (existingUser.username === username) {
+        alert("Username is already registered.");
+        return;
+      }
     }
 
-    // Store user
-    const user = {
-      name: formData.name,
-      username: formData.username,
-      email: formData.email,
-      phone: formData.phone,
-      password: formData.password,
+    const newUser = {
+      name,
+      username,
+      email,
+      password,
     };
 
     localStorage.setItem(
       "registeredUser",
-      JSON.stringify(user)
+      JSON.stringify(newUser)
     );
 
-    // Automatically login after registration
-    localStorage.setItem("isLoggedIn", "true");
+    alert("Account created successfully!");
 
-    localStorage.setItem(
-      "user",
-      JSON.stringify(user)
-    );
-
-    alert("Registration successful!");
-
-    navigate("/");
+    navigate("/login");
   };
 
   return (
-    <div className="register-page">
+    <div
+      className="auth-page"
+      onClick={handleClose}
+    >
 
-      <div className="register-container">
+      <div
+        className="auth-container register-container"
+        onClick={(e) => e.stopPropagation()}
+      >
 
-        {/* =================================================
-            LEFT SIDE
-        ================================================= */}
+        {/* ==========================================
+            CLOSE BUTTON
+        ========================================== */}
 
-        <div className="register-left">
+        <button
+          type="button"
+          className="register-close-button"
+          onClick={handleClose}
+        >
+          <FaTimes />
+        </button>
 
-          <img
-            src={registerImage}
-            alt="Medikart Healthcare"
-            className="register-image"
-          />
+        {/* ==========================================
+            LEFT FORM
+        ========================================== */}
 
-          <div className="register-overlay"></div>
+        <div className="register-form-section">
 
-          <div className="register-left-content">
+          <div className="register-form-box">
 
-            <h2>
-              Your Health,
-              <br />
-              <strong>Our Priority</strong>
-            </h2>
+            {/* LOGO */}
 
-            <p>
-              Join Medikart today and get
-              <br />
-              access to genuine medicines,
-              <br />
-              healthcare products and
-              <br />
-              wellness essentials.
+            <div className="auth-logo">
+              <span>MEDI</span>
+              <strong>KART</strong>
+            </div>
+
+            {/* TITLE */}
+
+            <h2>Create Account</h2>
+
+            <p className="auth-subtitle">
+              Create your account to continue shopping
+              with MEDIKART
             </p>
 
-          </div>
-
-        </div>
-
-        {/* =================================================
-            RIGHT SIDE
-        ================================================= */}
-
-        <div className="register-right">
-
-          <div className="register-content">
-
-            {/* =================================================
-                LOGO
-            ================================================= */}
-
-            <div className="register-logo">
-
-              <div className="register-logo-icon">
-
-                <FaShoppingCart />
-
-                <FaPlus className="register-logo-plus" />
-
-              </div>
-
-              <div className="register-logo-details">
-
-                <h1>MEDIKART</h1>
-
-                <p>
-                  Your Trusted Healthcare Partner
-                </p>
-
-              </div>
-
-            </div>
-
-            {/* =================================================
-                HEADER
-            ================================================= */}
-
-            <div className="register-header">
-
-              <h2>Create Account</h2>
-
-              <p>
-                Register to start your healthcare journey
-              </p>
-
-            </div>
-
-            {/* =================================================
-                FORM
-            ================================================= */}
-
-            <form
-              className="register-form"
-              onSubmit={handleRegister}
-            >
+            <form onSubmit={handleRegister}>
 
               {/* NAME */}
 
-              <div className="register-input-box">
+              <div className="input-group">
 
-                <FaUser className="register-input-icon" />
+                <FaUser />
 
                 <input
                   type="text"
-                  name="name"
                   placeholder="Full Name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
+                  value={name}
+                  onChange={(e) =>
+                    setName(e.target.value)
+                  }
                 />
 
               </div>
 
               {/* USERNAME */}
 
-              <div className="register-input-box">
+              <div className="input-group">
 
-                <FaUser className="register-input-icon" />
+                <FaUser />
 
                 <input
                   type="text"
-                  name="username"
                   placeholder="Username"
-                  value={formData.username}
-                  onChange={handleChange}
-                  required
+                  value={username}
+                  onChange={(e) =>
+                    setUsername(e.target.value)
+                  }
                 />
 
               </div>
 
               {/* EMAIL */}
 
-              <div className="register-input-box">
+              <div className="input-group">
 
-                <FaEnvelope className="register-input-icon" />
+                <FaEnvelope />
 
                 <input
                   type="email"
-                  name="email"
                   placeholder="Email Address"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                />
-
-              </div>
-
-              {/* PHONE */}
-
-              <div className="register-input-box">
-
-                <FaPhone className="register-input-icon" />
-
-                <input
-                  type="tel"
-                  name="phone"
-                  placeholder="Phone Number"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  required
+                  value={email}
+                  onChange={(e) =>
+                    setEmail(e.target.value)
+                  }
                 />
 
               </div>
 
               {/* PASSWORD */}
 
-              <div className="register-input-box">
+              <div className="input-group">
 
-                <FaLock className="register-input-icon" />
+                <FaLock />
 
                 <input
                   type={
@@ -266,16 +210,16 @@ const Register = () => {
                       ? "text"
                       : "password"
                   }
-                  name="password"
                   placeholder="Password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  required
+                  value={password}
+                  onChange={(e) =>
+                    setPassword(e.target.value)
+                  }
                 />
 
                 <button
                   type="button"
-                  className="register-eye-button"
+                  className="password-eye"
                   onClick={() =>
                     setShowPassword(!showPassword)
                   }
@@ -291,9 +235,9 @@ const Register = () => {
 
               {/* CONFIRM PASSWORD */}
 
-              <div className="register-input-box">
+              <div className="input-group">
 
-                <FaLock className="register-input-icon" />
+                <FaLock />
 
                 <input
                   type={
@@ -301,16 +245,18 @@ const Register = () => {
                       ? "text"
                       : "password"
                   }
-                  name="confirmPassword"
                   placeholder="Confirm Password"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  required
+                  value={confirmPassword}
+                  onChange={(e) =>
+                    setConfirmPassword(
+                      e.target.value
+                    )
+                  }
                 />
 
                 <button
                   type="button"
-                  className="register-eye-button"
+                  className="password-eye"
                   onClick={() =>
                     setShowConfirmPassword(
                       !showConfirmPassword
@@ -326,64 +272,55 @@ const Register = () => {
 
               </div>
 
-              {/* TERMS */}
-
-              <label className="terms">
-
-                <input
-                  type="checkbox"
-                  required
-                />
-
-                <span>
-                  I agree to the Terms & Conditions
-                </span>
-
-              </label>
-
               {/* REGISTER BUTTON */}
 
               <button
                 type="submit"
-                className="register-submit"
+                className="auth-button"
               >
                 Create Account
               </button>
 
             </form>
 
+            {/* LOGIN */}
 
+            <p className="switch-auth">
 
-            <div className="register-or">
+              Already have an account?
 
-              <div></div>
-
-              <span>Or register with</span>
-
-              <div></div>
-
-            </div>
-
-
-
-            {/* =================================================
-                LOGIN LINK
-            ================================================= */}
-
-            <div className="already-account">
-
-              <span>
-                Already have an account?
-              </span>
-
-              <button
-                type="button"
-                onClick={() => navigate("/login")}
-              >
+              <Link to="/login">
                 Login
-              </button>
+              </Link>
 
-            </div>
+            </p>
+
+          </div>
+
+        </div>
+
+        {/* ==========================================
+            RIGHT IMAGE
+        ========================================== */}
+
+        <div className="auth-image-section">
+
+          <img
+            src="/images/register.png"
+            alt="MEDIKART Register"
+            className="auth-image"
+          />
+
+          <div className="image-overlay">
+
+            <h1>
+              Join MEDIKART
+            </h1>
+
+            <p>
+              Your trusted online healthcare
+              & pharmacy partner.
+            </p>
 
           </div>
 

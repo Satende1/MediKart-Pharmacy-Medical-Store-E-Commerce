@@ -203,7 +203,9 @@ function UserActions() {
           {username && showAccountDropdown && (
             <div className={styles.accountDropdown}>
 
-              {/* Account Header */}
+              {/* =========================================
+        ACCOUNT HEADER
+    ========================================= */}
 
               <div className={styles.accountHeader}>
 
@@ -218,13 +220,11 @@ function UserActions() {
 
               </div>
 
-              <div
-                className={
-                  styles.dropdownDivider
-                }
-              ></div>
+              <div className={styles.dropdownDivider}></div>
 
-              {/* My Account */}
+              {/* =========================================
+        MY ACCOUNT
+    ========================================= */}
 
               <Link
                 to="/account"
@@ -238,7 +238,9 @@ function UserActions() {
                 </span>
               </Link>
 
-              {/* My Orders */}
+              {/* =========================================
+        MY ORDERS
+    ========================================= */}
 
               <Link
                 to="/orders"
@@ -252,7 +254,25 @@ function UserActions() {
                 </span>
               </Link>
 
-              {/* Track Order */}
+              {/* =========================================
+        ORDER HISTORY
+    ========================================= */}
+
+              <Link
+                to="/order-history"
+                className={styles.dropdownItem}
+                onClick={closeDropdown}
+              >
+                📋
+
+                <span>
+                  Order History
+                </span>
+              </Link>
+
+              {/* =========================================
+        TRACK ORDER
+    ========================================= */}
 
               <Link
                 to="/track-order"
@@ -266,7 +286,9 @@ function UserActions() {
                 </span>
               </Link>
 
-              {/* My Wishlist */}
+              {/* =========================================
+        MY WISHLIST
+    ========================================= */}
 
               <Link
                 to="/wishlist"
@@ -280,7 +302,9 @@ function UserActions() {
                 </span>
               </Link>
 
-              {/* My Cart */}
+              {/* =========================================
+        MY CART
+    ========================================= */}
 
               <Link
                 to="/cart"
@@ -294,7 +318,9 @@ function UserActions() {
                 </span>
               </Link>
 
-              {/* Settings */}
+              {/* =========================================
+        SETTINGS
+    ========================================= */}
 
               <Link
                 to="/settings"
@@ -308,13 +334,11 @@ function UserActions() {
                 </span>
               </Link>
 
-              <div
-                className={
-                  styles.dropdownDivider
-                }
-              ></div>
+              <div className={styles.dropdownDivider}></div>
 
-              {/* Logout */}
+              {/* =========================================
+        LOGOUT
+    ========================================= */}
 
               <button
                 type="button"

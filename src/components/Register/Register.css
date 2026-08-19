@@ -1,18 +1,19 @@
-/* =========================================================
-   MEDIKART REGISTER PAGE
-========================================================= */
+/* =====================================================
+   REGISTER POPUP PAGE*/
 
 * {
   box-sizing: border-box;
 }
 
-/* =========================================================
-   PAGE
-========================================================= */
 
-.register-page {
+/* =========================POPUP BACKGROUND============================*/
+
+.auth-page {
+  position: fixed;
+  inset: 0;
+
   width: 100%;
-  min-height: 100vh;
+  height: 100vh;
 
   display: flex;
   align-items: center;
@@ -20,23 +21,27 @@
 
   padding: 20px;
 
-  background: rgba(0, 0, 0, 0.65);
+  background: rgba(0, 0, 0, 0.55);
 
-  overflow: hidden;
+  backdrop-filter: blur(3px);
+
+  z-index: 99999;
+
+  overflow-y: auto;
 }
-
-/* =========================================================
-   MAIN CONTAINER
-========================================================= */
+/* =======================REGISTER CONTAINER==============================*/
 
 .register-container {
-  width: min(900px, 95vw);
+  position: relative;
 
-  height: min(650px, 94vh);
+  width: 900px;
+  max-width: 100%;
 
-  display: grid;
+  height: 600px;
 
-  grid-template-columns: 1fr 1fr;
+  max-height: calc(100dvh - 40px);
+
+  display: flex;
 
   background: #ffffff;
 
@@ -45,483 +50,256 @@
   overflow: hidden;
 
   box-shadow:
-    0 10px 40px rgba(0, 0, 0, 0.25);
-}
+    0 20px 60px rgba(0, 0, 0, 0.35);
 
-/* =========================================================
-   LEFT SIDE
-========================================================= */
-
-.register-left {
-  position: relative;
-
-  width: 100%;
-  height: 100%;
-
-  min-width: 0;
-  min-height: 0;
-
-  overflow: hidden;
-
-  background: #e4f7f3;
-}
-
-/* =========================================================
-   IMAGE
-========================================================= */
-
-.register-image {
-  width: 100%;
-  height: 100%;
-
-  display: block;
-
-  object-fit: cover;
-
-  object-position: center;
-}
-
-/* =========================================================
-   OVERLAY
-========================================================= */
-
-.register-overlay {
-  position: absolute;
-
-  inset: 0;
-
-  background: linear-gradient(
-    90deg,
-    rgba(220, 247, 241, 0.88),
-    rgba(220, 247, 241, 0.40),
-    rgba(220, 247, 241, 0.05)
-  );
-}
-
-/* =========================================================
-   LEFT CONTENT
-========================================================= */
-
-.register-left-content {
-  position: absolute;
-
-  z-index: 2;
-
-  top: 120px;
-  left: 45px;
-
-  width: calc(100% - 80px);
-
-  max-width: 280px;
-}
-
-.register-left-content h2 {
-  margin: 0 0 15px;
-
-  color: #143f5d;
-
-  font-size: 28px;
-
-  line-height: 1.25;
-
-  font-weight: 400;
-}
-
-.register-left-content h2 strong {
-  font-weight: 800;
-}
-
-.register-left-content p {
-  margin: 0;
-
-  color: #28536d;
-
-  font-size: 13px;
-
-  line-height: 1.6;
-
-  font-weight: 500;
-}
-
-/* =========================================================
-   RIGHT SIDE
-========================================================= */
-
-.register-right {
-  width: 100%;
-  height: 100%;
-
-  min-width: 0;
-  min-height: 0;
-
-  display: flex;
-
-  align-items: center;
-  justify-content: center;
-
-  padding: 22px 45px;
-
-  overflow: hidden;
-
-  background: #ffffff;
-}
-
-/* =========================================================
-   CONTENT
-========================================================= */
-
-.register-content {
-  width: 100%;
-
-  max-width: 360px;
-
-  min-width: 0;
-}
-
-/* =========================================================
-   LOGO
-========================================================= */
-
-.register-logo {
-  width: 100%;
-
-  display: flex;
-
-  align-items: center;
-  justify-content: center;
-
-  gap: 7px;
-
-  margin-bottom: 12px;
-}
-
-.register-logo-icon {
-  position: relative;
-
-  width: 43px;
-  height: 43px;
-
-  display: flex;
-
-  align-items: center;
-  justify-content: center;
-
-  color: #2db97d;
-
-  font-size: 32px;
+  animation: registerPopup 0.25s ease;
 
   flex-shrink: 0;
 }
 
-.register-logo-plus {
+
+/* ========================POPUP ANIMATION=============================*/
+
+@keyframes registerPopup {
+
+  from {
+    opacity: 0;
+
+    transform:
+      scale(0.94) translateY(15px);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      scale(1) translateY(0);
+  }
+
+}
+
+
+/* =====================================================
+   CLOSE BUTTON*/
+
+.register-close-button {
   position: absolute;
 
-  top: 10px;
-  left: 15px;
+  top: 12px;
+  right: 12px;
 
-  color: #ffffff;
+  width: 40px;
+  height: 40px;
 
-  font-size: 10px;
-}
-
-.register-logo-details h1 {
-  margin: 0;
-
-  font-size: 27px;
-
-  line-height: 1;
-
-  font-weight: 800;
-
-  white-space: nowrap;
-
-  letter-spacing: 0.5px;
-
-  background: linear-gradient(
-    90deg,
-    #29b77b,
-    #1e4f71
-  );
-
-  -webkit-background-clip: text;
-
-  -webkit-text-fill-color: transparent;
-}
-
-.register-logo-details p {
-  margin: 4px 0 0;
-
-  color: #687781;
-
-  font-size: 9px;
-
-  white-space: nowrap;
-}
-
-/* =========================================================
-   HEADER
-========================================================= */
-
-.register-header {
-  text-align: center;
-
-  margin-bottom: 12px;
-}
-
-.register-header h2 {
-  margin: 0 0 4px;
-
-  color: #123e5d;
-
-  font-size: 23px;
-
-  font-weight: 800;
-}
-
-.register-header p {
-  margin: 0;
-
-  color: #778690;
-
-  font-size: 11px;
-}
-
-/* =========================================================
-   FORM
-========================================================= */
-
-.register-form {
-  width: 100%;
-}
-
-/* =========================================================
-   INPUT BOX
-========================================================= */
-
-.register-input-box {
-  position: relative;
-
-  width: 100%;
-
-  height: 39px;
-
-  margin-bottom: 8px;
-}
-
-/* =========================================================
-   INPUT
-========================================================= */
-
-.register-input-box input {
-  width: 100%;
-  height: 100%;
-
-  padding: 0 40px 0 43px;
-
-  border: 1px solid #d8e1e5;
-
-  border-radius: 6px;
-
-  outline: none;
-
-  background: #ffffff;
-
-  color: #263f50;
-
-  font-size: 12px;
-}
-
-.register-input-box input::placeholder {
-  color: #8a98a1;
-}
-
-.register-input-box input:focus {
-  border-color: #aebdc5;
-
-  box-shadow:
-    0 0 0 2px rgba(100, 120, 130, 0.07);
-}
-
-/* =========================================================
-   INPUT ICON
-========================================================= */
-
-.register-input-icon {
-  position: absolute;
-
-  left: 14px;
-  top: 50%;
-
-  transform: translateY(-50%);
-
-  color: #71818c !important;
-
-  font-size: 14px;
-
-  z-index: 2;
-
-  pointer-events: none;
-}
-
-/* =========================================================
-   EYE BUTTON
-========================================================= */
-
-.register-eye-button {
-  position: absolute;
-
-  right: 13px;
-  top: 50%;
-
-  transform: translateY(-50%);
-
-  width: auto !important;
-  height: auto !important;
-
-  min-width: 0 !important;
-
-  padding: 0 !important;
-  margin: 0 !important;
-
-  border: none !important;
-  border-radius: 0 !important;
-
-  background: transparent !important;
-
-  color: #71818c !important;
-
-  font-size: 14px;
-
-  cursor: pointer;
-
-  box-shadow: none !important;
-}
-
-.register-eye-button:hover {
-  background: transparent !important;
-
-  color: #4f626e !important;
-}
-
-/* =========================================================
-   TERMS
-========================================================= */
-
-.terms {
-  display: flex;
-
-  align-items: center;
-
-  gap: 7px;
-
-  margin: 5px 0 10px;
-
-  color: #667681;
-
-  font-size: 10px;
-
-  cursor: pointer;
-}
-
-.terms input {
-  width: 14px;
-  height: 14px;
-
-  accent-color: #32b97d;
-
-  cursor: pointer;
-}
-
-/* =========================================================
-   REGISTER BUTTON
-========================================================= */
-
-.register-submit {
-  display: block;
-
-  width: 100%;
-
-  height: 41px;
-
-  padding: 0 20px;
-
-  border: none;
-
-  border-radius: 6px;
-
-  background: #32b97d;
-
-  color: #ffffff;
-
-  font-size: 13px;
-
-  font-weight: 700;
-
-  cursor: pointer;
-
-  transition: 0.2s;
-}
-
-.register-submit:hover {
-  background: #28a96f;
-
-  transform: translateY(-1px);
-}
-
-/* =========================================================
-   OR REGISTER
-========================================================= */
-
-.register-or {
-  width: 100%;
-
-  display: flex;
-
-  align-items: center;
-
-  gap: 10px;
-
-  margin: 12px 0 9px;
-}
-
-.register-or div {
-  flex: 1;
-
-  height: 1px;
-
-  background: #e1e6e8;
-}
-
-.register-or span {
-  color: #667681;
-
-  font-size: 10px;
-
-  white-space: nowrap;
-}
-
-/* =========================================================
-   SOCIAL ICONS
-========================================================= */
-
-.register-social-icons {
   display: flex;
 
   align-items: center;
   justify-content: center;
 
-  gap: 14px;
+  border: none;
+
+  border-radius: 50%;
+
+  background: #ffffff;
+
+  color: #444444;
+
+  font-size: 17px;
+
+  cursor: pointer;
+
+  z-index: 20;
+
+  box-shadow:
+    0 3px 12px rgba(0, 0, 0, 0.18);
+
+  transition: all 0.2s ease;
 }
 
-/* =========================================================
-   SOCIAL
-========================================================= */
+.register-close-button:hover {
 
-.register-social-icons .register-social {
-  width: 37px;
-  height: 37px;
+  color: #ffffff;
 
-  min-width: 37px;
+  background: #2875e8;
+
+  transform: rotate(90deg);
+
+}
+
+
+/* =====================================================
+   LEFT REGISTER FORM*/
+
+.register-form-section {
+
+  width: 54%;
+
+  height: 100%;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  padding: 30px 45px;
+
+  background: #ffffff;
+
+  overflow-y: auto;
+}
+
+
+/* =====================================================
+   FORM BOX*/
+
+.register-form-box {
+
+  width: 100%;
+
+  max-width: 390px;
+}
+
+
+/* =====================================================
+   LOGO*/
+
+.auth-logo {
+
+  margin-bottom: 14px;
+
+  font-size: 28px;
+
+  font-weight: 700;
+
+  line-height: 1;
+}
+
+.auth-logo span {
+  color: #2875e8;
+}
+
+.auth-logo strong {
+  color: #ff9800;
+}
+
+
+/* =====================================================
+   HEADING*/
+
+.register-form-box h2 {
+
+  margin: 0 0 7px;
+
+  color: #111111;
+
+  font-size: 29px;
+
+  font-weight: 700;
+}
+
+
+/* =====================================================
+   SUBTITLE*/
+
+.auth-subtitle {
+
+  margin: 0 0 18px;
+
+  color: #777777;
+
+  font-size: 13px;
+
+  line-height: 1.5;
+}
+
+
+/* =====================================================
+   INPUT GROUP*/
+
+.input-group {
+
+  width: 100%;
+
+  height: 44px;
+
+  display: flex;
+
+  align-items: center;
+
+  padding: 0 13px;
+
+  margin-bottom: 10px;
+
+  border: 1px solid #d5d5d5;
+
+  border-radius: 8px;
+
+  background: #ffffff;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.input-group:focus-within {
+
+  border-color: #2875e8;
+
+  box-shadow:
+    0 0 0 3px rgba(40, 117, 232, 0.08);
+}
+
+
+/* =====================================================
+   INPUT ICON*/
+
+.input-group>svg {
+
+  flex-shrink: 0;
+
+  color: #999999;
+
+  font-size: 14px;
+}
+
+
+/* =====================================================
+   INPUT*/
+
+.input-group input {
+
+  flex: 1;
+
+  width: 100%;
+
+  height: 100%;
+
+  padding: 0 10px;
+
+  border: none;
+
+  outline: none;
+
+  background: transparent;
+
+  color: #333333;
+
+  font-size: 13px;
+}
+
+.input-group input::placeholder {
+  color: #999999;
+}
+
+
+/* =====================================================
+   PASSWORD EYE*/
+
+.password-eye {
+
+  width: 30px;
+
+  height: 30px;
 
   display: flex;
 
@@ -530,216 +308,372 @@
 
   padding: 0;
 
-  border: 1px solid #e0e6e9;
+  border: none;
 
-  border-radius: 50%;
+  background: transparent;
 
-  background: #ffffff;
+  color: #888888;
+
+  cursor: pointer;
+}
+
+.password-eye:hover {
+  color: #2875e8;
+}
+
+
+/* =====================================================
+   REGISTER BUTTON*/
+
+.auth-button {
+
+  width: 100%;
+
+  height: 46px;
+
+  margin-top: 4px;
+
+  border: none;
+
+  border-radius: 5px;
+
+  background:
+    linear-gradient(135deg,
+      #2875e8,
+      #1765d5);
+
+  color: #ffffff;
 
   font-size: 15px;
 
-  cursor: pointer;
-
-  box-shadow:
-    0 3px 10px rgba(0, 0, 0, 0.07);
-
-  transition: 0.2s;
-}
-
-.register-social-icons .register-social:hover {
-  transform: translateY(-2px);
-
-  box-shadow:
-    0 5px 13px rgba(0, 0, 0, 0.12);
-}
-
-/* GOOGLE */
-
-.register-social-icons .google {
-  color: #4285f4 !important;
-}
-
-/* FACEBOOK */
-
-.register-social-icons .facebook {
-  color: #1877f2 !important;
-}
-
-/* TWITTER */
-
-.register-social-icons .twitter {
-  color: #1da1f2 !important;
-}
-
-/* APPLE */
-
-.register-social-icons .apple {
-  color: #000000 !important;
-}
-
-/* =========================================================
-   ALREADY ACCOUNT
-========================================================= */
-
-.already-account {
-  display: flex;
-
-  align-items: center;
-  justify-content: center;
-
-  gap: 5px;
-
-  margin-top: 10px;
-}
-
-.already-account span {
-  color: #667681;
-
-  font-size: 10px;
-}
-
-.already-account button {
-  width: auto !important;
-  height: auto !important;
-
-  min-width: 0 !important;
-
-  padding: 0 !important;
-  margin: 0 !important;
-
-  border: none !important;
-  border-radius: 0 !important;
-
-  background: transparent !important;
-
-  color: #263f50 !important;
-
-  font-size: 10px;
-
-  font-weight: 800;
+  font-weight: 600;
 
   cursor: pointer;
 
-  box-shadow: none !important;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
-.already-account button:hover {
-  background: transparent !important;
+.auth-button:hover {
 
-  color: #123e5d !important;
+  transform: translateY(-1px);
 
+  box-shadow:
+    0 6px 18px rgba(40, 117, 232, 0.25);
+}
+
+
+/* =====================================================
+   LOGIN LINK*/
+
+.switch-auth {
+
+  margin: 17px 0 0;
+
+  color: #777777;
+
+  font-size: 13px;
+
+  text-align: center;
+}
+
+.switch-auth a {
+
+  margin-left: 5px;
+
+  color: #2875e8;
+
+  font-weight: 600;
+
+  text-decoration: none;
+}
+
+.switch-auth a:hover {
   text-decoration: underline;
 }
 
-/* =========================================================
-   TABLET
-========================================================= */
 
-@media (max-width: 900px) {
+/* =====================================================
+   RIGHT IMAGE*/
+
+.auth-image-section {
+
+  position: relative;
+
+  width: 46%;
+
+  height: 100%;
+
+  overflow: hidden;
+
+  background: #2875e8;
+}
+
+
+/* =====================================================
+   IMAGE*/
+
+.auth-image {
+
+  position: absolute;
+
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+
+  display: block;
+}
+
+
+/* =====================================================
+   IMAGE OVERLAY*/
+
+.auth-image-section::after {
+
+  content: "";
+
+  position: absolute;
+
+  inset: 0;
+
+  background:
+    linear-gradient(to bottom,
+      rgba(40, 117, 232, 0.05),
+      rgba(40, 117, 232, 0.35),
+      rgba(5, 55, 125, 0.92));
+
+  z-index: 1;
+}
+
+
+/* =====================================================
+   IMAGE TEXT*/
+
+.image-overlay {
+
+  position: absolute;
+
+  left: 0;
+  right: 0;
+
+  bottom: 0;
+
+  padding: 35px;
+
+  color: #ffffff;
+
+  z-index: 5;
+}
+
+.image-overlay h1 {
+
+  margin: 0 0 10px;
+
+  color: #ffffff;
+
+  font-size: 32px;
+
+  font-weight: 700;
+}
+
+.image-overlay p {
+
+  margin: 0;
+
+  max-width: 320px;
+
+  color: #ffffff;
+
+  font-size: 14px;
+
+  line-height: 1.5;
+}
+
+
+/* =====================================================
+   TABLET*/
+
+@media (max-width: 768px) {
+
+  .auth-page {
+    padding: 15px;
+  }
 
   .register-container {
-    width: 95vw;
 
-    height: min(650px, 94vh);
+    width: 100%;
+
+    height: min(580px,
+        calc(100dvh - 30px));
   }
 
-  .register-right {
-    padding: 20px 30px;
+  .register-form-section {
+
+    width: 55%;
+
+    padding: 25px;
   }
 
-  .register-left-content {
-    left: 30px;
+  .auth-image-section {
+
+    width: 45%;
   }
 
-  .register-left-content h2 {
+  .register-form-box h2 {
+    font-size: 26px;
+  }
+
+  .auth-logo {
     font-size: 25px;
   }
 
-  .register-left-content p {
-    font-size: 11px;
-  }
-
-  .register-logo-details h1 {
-    font-size: 24px;
-  }
 }
 
-/* =========================================================
-   MOBILE
-========================================================= */
 
-@media (max-width: 700px) {
+/* =====================================================
+   MOBILE*/
 
-  .register-page {
-    min-height: 100vh;
+@media (max-width: 600px) {
 
-    height: auto;
+  .auth-page {
+    padding: 10px;
+  }
 
-    padding: 0;
+  .register-container {
+
+    width: 100%;
+
+    height:
+      calc(100dvh - 20px);
+
+    max-height:
+      calc(100dvh - 20px);
+
+    flex-direction: column;
 
     overflow-y: auto;
   }
 
-  .register-container {
+
+  /* FORM TOP */
+
+  .register-form-section {
+
     width: 100%;
 
-    min-height: 100vh;
-
     height: auto;
 
-    grid-template-columns: 1fr;
+    min-height: 500px;
 
-    border-radius: 0;
-  }
+    padding: 25px 20px;
 
-  .register-left {
-    height: 230px;
-
-    min-height: 230px;
-  }
-
-  .register-right {
-    height: auto;
-
-    min-height: 600px;
-
-    padding: 25px 22px;
+    order: 1;
 
     overflow: visible;
   }
 
-  .register-left-content {
-    top: auto;
 
-    bottom: 25px;
+  /* IMAGE BOTTOM */
 
-    left: 25px;
+  .auth-image-section {
+
+    width: 100%;
+
+    height: 160px;
+
+    min-height: 160px;
+
+    order: 2;
   }
 
-  .register-left-content h2 {
+
+  .image-overlay {
+
+    padding: 20px 25px;
+  }
+
+  .image-overlay h1 {
+
     font-size: 23px;
+
+    margin-bottom: 5px;
   }
 
-  .register-left-content p {
-    display: none;
+  .image-overlay p {
+
+    font-size: 12px;
   }
+
+
+  .register-close-button {
+
+    width: 37px;
+
+    height: 37px;
+
+    top: 8px;
+
+    right: 8px;
+
+    font-size: 15px;
+  }
+
 }
 
-/* =========================================================
-   SMALL MOBILE
-========================================================= */
+
+/* =====================================================
+   SMALL MOBILE*/
 
 @media (max-width: 400px) {
 
-  .register-right {
-    padding: 22px 17px;
+  .auth-page {
+    padding: 7px;
   }
 
-  .register-logo-details h1 {
-    font-size: 22px;
+  .register-container {
+
+    height:
+      calc(100dvh - 14px);
   }
 
-  .register-header h2 {
-    font-size: 21px;
+  .register-form-section {
+
+    padding: 20px 16px;
+
+    min-height: 480px;
   }
+
+  .auth-logo {
+    font-size: 23px;
+  }
+
+  .register-form-box h2 {
+    font-size: 23px;
+  }
+
+  .auth-subtitle {
+    font-size: 11px;
+  }
+
+  .input-group {
+    height: 42px;
+
+    margin-bottom: 9px;
+  }
+
+  .auth-button {
+    height: 44px;
+  }
+
+  .auth-image-section {
+
+    height: 130px;
+
+    min-height: 130px;
+  }
+
 }

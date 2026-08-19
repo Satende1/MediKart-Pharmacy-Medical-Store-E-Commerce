@@ -1,12 +1,31 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-import { FaUserCircle, FaBoxOpen, FaTruck, FaHeart, FaShoppingCart, FaCreditCard, FaMapMarkerAlt, FaFileMedical, FaHeartbeat, FaGift, FaBell, FaCog, FaSignOutAlt, } from "react-icons/fa";
+import {
+  FaUserCircle,
+  FaBoxOpen,
+  FaHistory,
+  FaTruck,
+  FaHeart,
+  FaShoppingCart,
+  FaCreditCard,
+  FaMapMarkerAlt,
+  FaFileMedical,
+  FaHeartbeat,
+  FaGift,
+  FaBell,
+  FaCog,
+  FaSignOutAlt,
+} from "react-icons/fa";
 
 import "./AccountDropdown.css";
 
 const AccountDropdown = ({ username = "Satender" }) => {
   const navigate = useNavigate();
+
+  // ============================================
+  // LOGOUT
+  // ============================================
 
   const handleLogout = () => {
     localStorage.removeItem("username");
@@ -20,61 +39,123 @@ const AccountDropdown = ({ username = "Satender" }) => {
   return (
     <div className="account-dropdown">
 
-      {/* Account Header */}
+      {/* ============================================
+          ACCOUNT HEADER
+      ============================================ */}
+
       <div className="account-header">
+
         <FaUserCircle className="account-avatar" />
 
         <div className="account-user-info">
           <h3>My Account</h3>
           <p>Hi, {username} 👋</p>
         </div>
+
       </div>
 
       <div className="account-divider"></div>
 
-      {/* My Profile */}
-      <Link to="/profile" className="account-item">
+      {/* ============================================
+          MY PROFILE
+      ============================================ */}
+
+      <Link
+        to="/profile"
+        className="account-item"
+      >
         <FaUserCircle />
         <span>My Profile</span>
       </Link>
 
-      {/* My Orders */}
-      <Link to="/orders" className="account-item">
+      {/* ============================================
+          MY ORDERS
+      ============================================ */}
+
+      <Link
+        to="/orders"
+        className="account-item"
+      >
         <FaBoxOpen />
         <span>My Orders</span>
       </Link>
 
-      {/* Track Order */}
-      <Link to="/track-order" className="account-item">
+      {/* ============================================
+          ORDER HISTORY
+      ============================================ */}
+
+      <Link
+        to="/order-history"
+        className="account-item"
+      >
+        <FaHistory />
+        <span>Order History</span>
+      </Link>
+
+      {/* ============================================
+          TRACK ORDER
+      ============================================ */}
+
+      <Link
+        to="/track-order"
+        className="account-item"
+      >
         <FaTruck />
         <span>Track Order</span>
       </Link>
 
-      {/* Wishlist */}
-      <Link to="/wishlist" className="account-item">
+      {/* ============================================
+          WISHLIST
+      ============================================ */}
+
+      <Link
+        to="/wishlist"
+        className="account-item"
+      >
         <FaHeart />
         <span>Wishlist</span>
       </Link>
 
-      {/* My Cart */}
-      <Link to="/cart" className="account-item">
+      {/* ============================================
+          MY CART
+      ============================================ */}
+
+      <Link
+        to="/cart"
+        className="account-item"
+      >
         <FaShoppingCart />
         <span>My Cart</span>
       </Link>
 
-      {/* Saved Payments */}
-      <Link to="/payments" className="account-item">
+      {/* ============================================
+          SAVED PAYMENTS
+      ============================================ */}
+
+      <Link
+        to="/payments"
+        className="account-item"
+      >
         <FaCreditCard />
         <span>Saved Payments</span>
       </Link>
 
-      {/* Saved Addresses */}
-      <Link to="/addresses" className="account-item">
+      {/* ============================================
+          SAVED ADDRESSES
+      ============================================ */}
+
+      <Link
+        to="/addresses"
+        className="account-item"
+      >
         <FaMapMarkerAlt />
         <span>Saved Addresses</span>
       </Link>
 
-      {/* Upload Prescription */}
+      {/* ============================================
+          UPLOAD PRESCRIPTION
+      ============================================ */}
+
       <Link
         to="/upload-prescription"
         className="account-item"
@@ -83,7 +164,10 @@ const AccountDropdown = ({ username = "Satender" }) => {
         <span>Upload Prescription</span>
       </Link>
 
-      {/* Health Records */}
+      {/* ============================================
+          HEALTH RECORDS
+      ============================================ */}
+
       <Link
         to="/health-records"
         className="account-item"
@@ -92,7 +176,10 @@ const AccountDropdown = ({ username = "Satender" }) => {
         <span>Health Records</span>
       </Link>
 
-      {/* Offers */}
+      {/* ============================================
+          OFFERS
+      ============================================ */}
+
       <Link
         to="/offers"
         className="account-item"
@@ -101,7 +188,10 @@ const AccountDropdown = ({ username = "Satender" }) => {
         <span>Offers & Coupons</span>
       </Link>
 
-      {/* Notifications */}
+      {/* ============================================
+          NOTIFICATIONS
+      ============================================ */}
+
       <Link
         to="/notifications"
         className="account-item"
@@ -110,7 +200,10 @@ const AccountDropdown = ({ username = "Satender" }) => {
         <span>Notifications</span>
       </Link>
 
-      {/* Settings */}
+      {/* ============================================
+          SETTINGS
+      ============================================ */}
+
       <Link
         to="/settings"
         className="account-item"
@@ -121,7 +214,10 @@ const AccountDropdown = ({ username = "Satender" }) => {
 
       <div className="account-divider"></div>
 
-      {/* Logout */}
+      {/* ============================================
+          LOGOUT
+      ============================================ */}
+
       <button
         className="logout-btn"
         onClick={handleLogout}

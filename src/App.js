@@ -24,6 +24,7 @@ import Wishlist from "./pages/Wishlist/Wishlist";
 import Cart from "./pages/Cart/Cart";
 import OrderConfirmation from "./pages/OrderConfirmation/OrderConfirmation";
 
+import OrderHistory from "./pages/OrderHistory/OrderHistory";
 import QuantitySelector from "./components/QuantitySelector/QuantitySelector";
 import RelatedProducts from "./components/RelatedProducts/RelatedProducts";
 import ProductSpecifications from "./components/ProductSpecifications/ProductSpecifications";
@@ -34,13 +35,13 @@ import TermsConditions from "./pages/TermsConditions/TermsConditions";
 import ShippingPolicy from "./pages/ShippingPolicy/ShippingPolicy";
 import Careers from "./pages/Careers/Careers";
 import Blog from "./pages/Blog/Blog";
-import OrderHistory from "./pages/OrderHistory/OrderHistory";
+
 import TrackOrder from "./pages/TrackOrder/TrackOrder";
 import Reviews from "./pages/Reviews/Reviews";
 import CompareProducts from "./pages/CompareProducts/CompareProducts";
 import Gallery from "./pages/Gallery/Gallery";
 import FAQ from "./pages/FAQ/FAQ";
-
+import Feedback from "./components/Feedback/Feedback";
 import Error404 from "./pages/Error404/Error404";
 import Error500 from "./pages/Error500/Error500";
 import NoInternet from "./pages/NoInternet/NoInternet";
@@ -87,6 +88,7 @@ function Layout() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/feedback" element={<Feedback />} />
 
         {/* Main Pages */}
         <Route path="/about" element={<About />} />
@@ -143,6 +145,7 @@ function Layout() {
         <Route path="/orders" element={<Orders />} />
         <Route path="/wishlist" element={<Wishlist />} />
         <Route path="/cart" element={<Cart />} />
+        <Route path="/order-history" element={<OrderHistory />} />
         <Route path="/payments" element={<Payments />} />
         <Route path="/addresses" element={<Addresses />} />
         <Route path="/upload-prescription" element={<UploadPrescription />} />
@@ -150,6 +153,7 @@ function Layout() {
         <Route path="/offers" element={<Offers />} />
         <Route path="/notifications" element={<Notifications />} />
         <Route path="/settings" element={<Settings />} />
+
 
         {/* Keep this LAST */}
         <Route path="*" element={<Error404 />} />
