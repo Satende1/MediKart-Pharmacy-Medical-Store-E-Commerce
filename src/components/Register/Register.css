@@ -1,679 +1,493 @@
-/* =====================================================
-   REGISTER POPUP PAGE*/
+/* =========================================
+   REGISTER PAGE
+========================================= */
 
-* {
-  box-sizing: border-box;
-}
-
-
-/* =========================POPUP BACKGROUND============================*/
-
-.auth-page {
-  position: fixed;
-  inset: 0;
-
+.register-page {
+  min-height: 100vh;
   width: 100%;
-  height: 100vh;
+  background: #f1f3f6;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
   padding: 20px;
-
-  background: rgba(0, 0, 0, 0.55);
-
-  backdrop-filter: blur(3px);
-
-  z-index: 99999;
-
-  overflow-y: auto;
+  box-sizing: border-box;
 }
-/* =======================REGISTER CONTAINER==============================*/
+
+
+/* =========================================
+   MAIN CONTAINER
+========================================= */
 
 .register-container {
-  position: relative;
-
-  width: 900px;
-  max-width: 100%;
-
-  height: 600px;
-
-  max-height: calc(100dvh - 40px);
-
-  display: flex;
+  width: min(1050px, 100%);
+  height: 680px;
 
   background: #ffffff;
+  border-radius: 18px;
 
-  border-radius: 15px;
+  display: grid;
+  grid-template-columns: 48% 52%;
 
   overflow: hidden;
 
-  box-shadow:
-    0 20px 60px rgba(0, 0, 0, 0.35);
-
-  animation: registerPopup 0.25s ease;
-
-  flex-shrink: 0;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
 }
 
 
-/* ========================POPUP ANIMATION=============================*/
+/* =========================================
+   LEFT FORM SECTION
+========================================= */
 
-@keyframes registerPopup {
-
-  from {
-    opacity: 0;
-
-    transform:
-      scale(0.94) translateY(15px);
-  }
-
-  to {
-    opacity: 1;
-
-    transform:
-      scale(1) translateY(0);
-  }
-
-}
-
-
-/* =====================================================
-   CLOSE BUTTON*/
-
-.register-close-button {
-  position: absolute;
-
-  top: 12px;
-  right: 12px;
-
-  width: 40px;
-  height: 40px;
+.register-form-section {
+  position: relative;
 
   display: flex;
-
   align-items: center;
   justify-content: center;
 
-  border: none;
-
-  border-radius: 50%;
-
+  padding: 30px 55px;
   background: #ffffff;
 
-  color: #444444;
+  box-sizing: border-box;
+}
 
+
+/* =========================================
+   CLOSE BUTTON
+========================================= */
+
+.register-close {
+  position: absolute;
+  top: 20px;
+  right: 22px;
+
+  width: 32px;
+  height: 32px;
+
+  border: none;
+  background: transparent;
+
+  color: #777;
   font-size: 17px;
 
   cursor: pointer;
 
-  z-index: 20;
-
-  box-shadow:
-    0 3px 12px rgba(0, 0, 0, 0.18);
-
-  transition: all 0.2s ease;
-}
-
-.register-close-button:hover {
-
-  color: #ffffff;
-
-  background: #2875e8;
-
-  transform: rotate(90deg);
-
-}
-
-
-/* =====================================================
-   LEFT REGISTER FORM*/
-
-.register-form-section {
-
-  width: 54%;
-
-  height: 100%;
-
   display: flex;
-
   align-items: center;
   justify-content: center;
 
-  padding: 30px 45px;
+  transition: 0.2s ease;
+}
 
-  background: #ffffff;
-
-  overflow-y: auto;
+.register-close:hover {
+  color: #222;
+  transform: scale(1.08);
 }
 
 
-/* =====================================================
-   FORM BOX*/
+/* =========================================
+   CONTENT
+========================================= */
 
-.register-form-box {
-
+.register-content {
   width: 100%;
-
   max-width: 390px;
 }
 
 
-/* =====================================================
-   LOGO*/
+/* =========================================
+   HEADER
+========================================= */
 
-.auth-logo {
-
-  margin-bottom: 14px;
-
-  font-size: 28px;
-
-  font-weight: 700;
-
-  line-height: 1;
+.register-header {
+  margin-bottom: 22px;
 }
 
-.auth-logo span {
-  color: #2875e8;
-}
-
-.auth-logo strong {
-  color: #ff9800;
-}
-
-
-/* =====================================================
-   HEADING*/
-
-.register-form-box h2 {
-
+.register-header h1 {
   margin: 0 0 7px;
 
-  color: #111111;
-
-  font-size: 29px;
-
+  font-size: 30px;
   font-weight: 700;
+
+  color: #222;
 }
 
-
-/* =====================================================
-   SUBTITLE*/
-
-.auth-subtitle {
-
-  margin: 0 0 18px;
-
-  color: #777777;
+.register-header p {
+  margin: 0;
 
   font-size: 13px;
-
   line-height: 1.5;
+
+  color: #777;
 }
 
 
-/* =====================================================
-   INPUT GROUP*/
+/* =========================================
+   FORM
+========================================= */
 
-.input-group {
+.register-form {
+  width: 100%;
+}
+
+
+/* =========================================
+   INPUT GROUP
+========================================= */
+
+.register-input-group {
+  margin-bottom: 14px;
+}
+
+.register-input-group label {
+  display: block;
+
+  margin-bottom: 6px;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  color: #333;
+}
+
+
+/* =========================================
+   INPUT WRAPPER
+========================================= */
+
+.register-input-wrapper {
+  position: relative;
 
   width: 100%;
+  height: 44px;
+}
 
+
+/* =========================================
+   INPUT
+========================================= */
+
+.register-input-wrapper input {
+  width: 100%;
   height: 44px;
 
-  display: flex;
+  box-sizing: border-box;
 
-  align-items: center;
-
-  padding: 0 13px;
-
-  margin-bottom: 10px;
-
-  border: 1px solid #d5d5d5;
-
-  border-radius: 8px;
-
-  background: #ffffff;
-
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
-}
-
-.input-group:focus-within {
-
-  border-color: #2875e8;
-
-  box-shadow:
-    0 0 0 3px rgba(40, 117, 232, 0.08);
-}
-
-
-/* =====================================================
-   INPUT ICON*/
-
-.input-group>svg {
-
-  flex-shrink: 0;
-
-  color: #999999;
-
-  font-size: 14px;
-}
-
-
-/* =====================================================
-   INPUT*/
-
-.input-group input {
-
-  flex: 1;
-
-  width: 100%;
-
-  height: 100%;
-
-  padding: 0 10px;
-
-  border: none;
+  border: 1px solid #d7d7d7;
+  border-radius: 7px;
 
   outline: none;
 
-  background: transparent;
+  background: #ffffff !important;
 
-  color: #333333;
+  padding: 0 42px 0 42px;
 
   font-size: 13px;
+  color: #222;
+
+  transition: border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
-.input-group input::placeholder {
-  color: #999999;
+.register-input-wrapper input::placeholder {
+  color: #aaa;
+}
+
+.register-input-wrapper input:focus {
+  border-color: #2874f0;
+
+  background: #ffffff !important;
+
+  box-shadow: 0 0 0 2px rgba(40, 116, 240, 0.08);
 }
 
 
-/* =====================================================
-   PASSWORD EYE*/
+/* =========================================
+   REMOVE GREEN / AUTOFILL COLOR
+========================================= */
 
-.password-eye {
+.register-input-wrapper input:-webkit-autofill,
+.register-input-wrapper input:-webkit-autofill:hover,
+.register-input-wrapper input:-webkit-autofill:focus,
+.register-input-wrapper input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
+  -webkit-text-fill-color: #222 !important;
 
-  width: 30px;
+  background-color: #ffffff !important;
 
-  height: 30px;
+  transition: background-color 9999s ease-in-out 0s;
+}
+
+
+/* =========================================
+   INPUT ICON
+========================================= */
+
+.register-input-icon {
+  position: absolute;
+
+  left: 15px;
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  font-size: 14px;
+
+  color: #777;
+
+  pointer-events: none;
+
+  z-index: 2;
+}
+
+
+/* =========================================
+   PASSWORD EYE
+========================================= */
+
+.password-toggle {
+  position: absolute;
+
+  right: 12px;
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  border: none;
+  background: transparent;
+
+  color: #777;
+
+  font-size: 15px;
+
+  cursor: pointer;
 
   display: flex;
-
   align-items: center;
   justify-content: center;
 
-  padding: 0;
-
-  border: none;
-
-  background: transparent;
-
-  color: #888888;
-
-  cursor: pointer;
+  padding: 4px;
 }
 
-.password-eye:hover {
-  color: #2875e8;
+.password-toggle:hover {
+  color: #333;
 }
 
 
-/* =====================================================
-   REGISTER BUTTON*/
+/* =========================================
+   ERROR
+========================================= */
 
-.auth-button {
+.register-error {
+  margin: 5px 0 12px;
 
+  padding: 8px 10px;
+
+  border-radius: 5px;
+
+  background: #fff1f1;
+  color: #d93025;
+
+  font-size: 12px;
+}
+
+
+/* =========================================
+   CREATE ACCOUNT BUTTON
+========================================= */
+
+.register-button {
   width: 100%;
-
-  height: 46px;
+  height: 44px;
 
   margin-top: 4px;
 
   border: none;
+  border-radius: 7px;
 
-  border-radius: 5px;
-
-  background:
-    linear-gradient(135deg,
-      #2875e8,
-      #1765d5);
-
+  background: #2874f0;
   color: #ffffff;
 
-  font-size: 15px;
-
+  font-size: 14px;
   font-weight: 600;
 
   cursor: pointer;
 
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
+  transition: 0.2s ease;
 }
 
-.auth-button:hover {
+.register-button:hover {
+  background: #1765df;
+}
 
-  transform: translateY(-1px);
-
-  box-shadow:
-    0 6px 18px rgba(40, 117, 232, 0.25);
+.register-button:active {
+  transform: scale(0.99);
 }
 
 
-/* =====================================================
-   LOGIN LINK*/
+/* =========================================
+   LOGIN LINK
+========================================= */
 
-.switch-auth {
+.register-login {
+  text-align: center;
 
-  margin: 17px 0 0;
-
-  color: #777777;
+  margin-top: 17px;
 
   font-size: 13px;
 
-  text-align: center;
+  color: #777;
 }
 
-.switch-auth a {
-
-  margin-left: 5px;
-
-  color: #2875e8;
+.register-login a {
+  color: #2874f0;
 
   font-weight: 600;
 
   text-decoration: none;
 }
 
-.switch-auth a:hover {
+.register-login a:hover {
   text-decoration: underline;
 }
 
 
-/* =====================================================
-   RIGHT IMAGE*/
+/* =========================================
+   RIGHT IMAGE SECTION
+========================================= */
 
-.auth-image-section {
-
+.register-image-section {
   position: relative;
-
-  width: 46%;
 
   height: 100%;
 
   overflow: hidden;
 
-  background: #2875e8;
+  background: #eef4ff;
 }
 
 
-/* =====================================================
-   IMAGE*/
+/* =========================================
+   IMAGE
+========================================= */
 
-.auth-image {
-
-  position: absolute;
-
-  inset: 0;
-
+.register-image {
   width: 100%;
   height: 100%;
 
-  object-fit: cover;
-
   display: block;
+
+  object-fit: cover;
 }
 
 
-/* =====================================================
-   IMAGE OVERLAY*/
+/* =========================================
+   IMAGE OVERLAY
+========================================= */
 
-.auth-image-section::after {
-
-  content: "";
-
-  position: absolute;
-
-  inset: 0;
-
-  background:
-    linear-gradient(to bottom,
-      rgba(40, 117, 232, 0.05),
-      rgba(40, 117, 232, 0.35),
-      rgba(5, 55, 125, 0.92));
-
-  z-index: 1;
-}
-
-
-/* =====================================================
-   IMAGE TEXT*/
-
-.image-overlay {
-
+.register-image-overlay {
   position: absolute;
 
   left: 0;
   right: 0;
-
   bottom: 0;
 
-  padding: 35px;
+  padding: 45px 40px 35px;
 
   color: #ffffff;
 
-  z-index: 5;
+  background: linear-gradient(transparent,
+      rgba(0, 0, 0, 0.72));
 }
 
-.image-overlay h1 {
+.register-image-overlay h2 {
+  margin: 0 0 8px;
 
-  margin: 0 0 10px;
-
-  color: #ffffff;
-
-  font-size: 32px;
-
+  font-size: 25px;
   font-weight: 700;
 }
 
-.image-overlay p {
-
+.register-image-overlay p {
   margin: 0;
 
-  max-width: 320px;
+  max-width: 400px;
 
-  color: #ffffff;
+  font-size: 13px;
+  line-height: 1.6;
 
-  font-size: 14px;
-
-  line-height: 1.5;
+  color: #f2f2f2;
 }
 
 
-/* =====================================================
-   TABLET*/
+/* =========================================
+   TABLET
+========================================= */
 
-@media (max-width: 768px) {
+@media (max-width: 850px) {
+  .register-container {
+    width: min(700px, 100%);
+    height: auto;
 
-  .auth-page {
-    padding: 15px;
+    grid-template-columns: 1fr;
   }
 
-  .register-container {
-
-    width: 100%;
-
-    height: min(580px,
-        calc(100dvh - 30px));
+  .register-image-section {
+    display: none;
   }
 
   .register-form-section {
-
-    width: 55%;
-
-    padding: 25px;
+    min-height: 650px;
+    padding: 35px 45px;
   }
 
-  .auth-image-section {
+  .register-content {
+    max-width: 430px;
+  }
+}
 
-    width: 45%;
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 500px) {
+  .register-page {
+    padding: 0;
+
+    align-items: stretch;
   }
 
-  .register-form-box h2 {
+  .register-container {
+    width: 100%;
+    min-height: 100vh;
+
+    border-radius: 0;
+
+    box-shadow: none;
+  }
+
+  .register-form-section {
+    min-height: 100vh;
+
+    padding: 30px 22px;
+  }
+
+  .register-header h1 {
     font-size: 26px;
   }
 
-  .auth-logo {
-    font-size: 25px;
-  }
-
-}
-
-
-/* =====================================================
-   MOBILE*/
-
-@media (max-width: 600px) {
-
-  .auth-page {
-    padding: 10px;
-  }
-
-  .register-container {
-
-    width: 100%;
-
-    height:
-      calc(100dvh - 20px);
-
-    max-height:
-      calc(100dvh - 20px);
-
-    flex-direction: column;
-
-    overflow-y: auto;
-  }
-
-
-  /* FORM TOP */
-
-  .register-form-section {
-
-    width: 100%;
-
-    height: auto;
-
-    min-height: 500px;
-
-    padding: 25px 20px;
-
-    order: 1;
-
-    overflow: visible;
-  }
-
-
-  /* IMAGE BOTTOM */
-
-  .auth-image-section {
-
-    width: 100%;
-
-    height: 160px;
-
-    min-height: 160px;
-
-    order: 2;
-  }
-
-
-  .image-overlay {
-
-    padding: 20px 25px;
-  }
-
-  .image-overlay h1 {
-
-    font-size: 23px;
-
-    margin-bottom: 5px;
-  }
-
-  .image-overlay p {
-
+  .register-header p {
     font-size: 12px;
   }
 
-
-  .register-close-button {
-
-    width: 37px;
-
-    height: 37px;
-
-    top: 8px;
-
-    right: 8px;
-
-    font-size: 15px;
+  .register-input-group {
+    margin-bottom: 13px;
   }
 
-}
-
-
-/* =====================================================
-   SMALL MOBILE*/
-
-@media (max-width: 400px) {
-
-  .auth-page {
-    padding: 7px;
+  .register-input-wrapper,
+  .register-input-wrapper input {
+    height: 43px;
   }
-
-  .register-container {
-
-    height:
-      calc(100dvh - 14px);
-  }
-
-  .register-form-section {
-
-    padding: 20px 16px;
-
-    min-height: 480px;
-  }
-
-  .auth-logo {
-    font-size: 23px;
-  }
-
-  .register-form-box h2 {
-    font-size: 23px;
-  }
-
-  .auth-subtitle {
-    font-size: 11px;
-  }
-
-  .input-group {
-    height: 42px;
-
-    margin-bottom: 9px;
-  }
-
-  .auth-button {
-    height: 44px;
-  }
-
-  .auth-image-section {
-
-    height: 130px;
-
-    min-height: 130px;
-  }
-
 }

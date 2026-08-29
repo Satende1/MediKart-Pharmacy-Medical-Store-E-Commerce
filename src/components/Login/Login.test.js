@@ -1,18 +1,62 @@
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  cleanup,
+} from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
+
 import Login from "./Login";
 
-import "@testing-library/jest-dom";
 
-// Mock CSS
-jest.mock("./Login.css", () => ({}));
+// ============================================================
+// MOCK react-router-dom
+// ============================================================
 
-// Mock login image
-jest.mock("../../assets/Login pages.png", () => "login-image.png");
+const mockNavigate = jest.fn();
+
+jest.mock("react-router-dom", () => {
+  const actual = jest.requireActual("react-router-dom");
+
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+  };
+});
 
 
-// Helper function
+// ============================================================
+// MOCK REACT ICONS
+// ============================================================
+
+jest.mock("react-icons/fa", () => ({
+  FaUser: () => <span data-testid="user-icon">User</span>,
+  FaLock: () => <span data-testid="lock-icon">Lock</span>,
+  FaEye: () => <span data-testid="eye-icon">Eye</span>,
+  FaEyeSlash: () => (
+    <span data-testid="eye-slash-icon">EyeSlash</span>
+  ),
+  FaGoogle: () => (
+    <span data-testid="google-icon">Google</span>
+  ),
+  FaFacebookF: () => (
+    <span data-testid="facebook-icon">Facebook</span>
+  ),
+  FaApple: () => (
+    <span data-testid="apple-icon">Apple</span>
+  ),
+  FaTimes: () => (
+    <span data-testid="close-icon">X</span>
+  ),
+}));
+
+
+// ============================================================
+// HELPER
+// ============================================================
+
 const renderLogin = (props = {}) => {
   return render(
     <MemoryRouter>
@@ -22,34 +66,70 @@ const renderLogin = (props = {}) => {
 };
 
 
-describe("Login Component", () => {
+// ============================================================
+// SETUP
+// ============================================================
 
-  beforeEach(() => {
-    localStorage.clear();
+beforeEach(() => {
+  jest.clearAllMocks();
 
-    window.alert = jest.fn();
-  });
+  localStorage.clear();
+
+  window.alert = jest.fn();
+
+  // Prevent console.error from making invalid JSON tests noisy.
+  jest.spyOn(console, "error").mockImplementation(() => { });
+});
 
 
-  // ==========================================
-  // TEST 1 - RENDER LOGIN PAGE
-  // ==========================================
+afterEach(() => {
+  cleanup();
+
+  jest.restoreAllMocks();
+
+  localStorage.clear();
+});
+
+
+// ============================================================
+// TESTS
+// ============================================================
+
+describe("Login", () => {
+
+  // ==========================================================
+  // RENDERING
+  // ==========================================================
 
   test("renders login page correctly", () => {
     renderLogin();
 
     expect(
-      screen.getByText("Welcome Back!")
+      screen.getByRole("heading", {
+        name: "Login",
+      })
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText("Welcome to MEDIKART")
     ).toBeInTheDocument();
 
     expect(
       screen.getByText(
-        "Login to your account and continue"
+        "Your trusted online healthcare & pharmacy partner."
       )
     ).toBeInTheDocument();
 
     expect(
-      screen.getByPlaceholderText("Username")
+      screen.getByText(
+        "Login to continue shopping with MEDIKART"
+      )
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByPlaceholderText(
+        "Email or Username"
+      )
     ).toBeInTheDocument();
 
     expect(
@@ -64,31 +144,66 @@ describe("Login Component", () => {
   });
 
 
-  // ==========================================
-  // TEST 2 - USER CAN ENTER USERNAME
-  // ==========================================
+  // ==========================================================
+  // LOGO
+  // ==========================================================
 
-  test("allows user to enter username", () => {
+  test("renders MEDIKART logo", () => {
     renderLogin();
 
-    const usernameInput =
-      screen.getByPlaceholderText("Username");
+    expect(screen.getByText("MEDI")).toBeInTheDocument();
 
-    fireEvent.change(usernameInput, {
-      target: {
-        value: "satender",
-      },
-    });
-
-    expect(usernameInput).toHaveValue("satender");
+    expect(screen.getByText("KART")).toBeInTheDocument();
   });
 
 
-  // ==========================================
-  // TEST 3 - USER CAN ENTER PASSWORD
-  // ==========================================
+  // ==========================================================
+  // IMAGE
+  // ==========================================================
 
-  test("allows user to enter password", () => {
+  test("renders login image", () => {
+    renderLogin();
+
+    const image = screen.getByAltText("MEDIKART Login");
+
+    expect(image).toBeInTheDocument();
+
+    expect(image).toHaveAttribute(
+      "src",
+      "/images/login.png"
+    );
+  });
+
+
+  // ==========================================================
+  // EMAIL INPUT
+  // ==========================================================
+
+  test("updates email input", () => {
+    renderLogin();
+
+    const emailInput =
+      screen.getByPlaceholderText(
+        "Email or Username"
+      );
+
+    fireEvent.change(emailInput, {
+      target: {
+        value: "test@example.com",
+      },
+    });
+
+    expect(emailInput).toHaveValue(
+      "test@example.com"
+    );
+  });
+
+
+  // ==========================================================
+  // PASSWORD INPUT
+  // ==========================================================
+
+  test("updates password input", () => {
     renderLogin();
 
     const passwordInput =
@@ -96,19 +211,21 @@ describe("Login Component", () => {
 
     fireEvent.change(passwordInput, {
       target: {
-        value: "123456",
+        value: "password123",
       },
     });
 
-    expect(passwordInput).toHaveValue("123456");
+    expect(passwordInput).toHaveValue(
+      "password123"
+    );
   });
 
 
-  // ==========================================
-  // TEST 4 - SHOW PASSWORD
-  // ==========================================
+  // ==========================================================
+  // PASSWORD IS HIDDEN BY DEFAULT
+  // ==========================================================
 
-  test("shows password when eye button is clicked", () => {
+  test("password is hidden by default", () => {
     renderLogin();
 
     const passwordInput =
@@ -118,11 +235,28 @@ describe("Login Component", () => {
       "type",
       "password"
     );
+  });
+
+
+  // ==========================================================
+  // SHOW PASSWORD
+  // ==========================================================
+
+  test("shows password when eye button is clicked", () => {
+    renderLogin();
+
+    const passwordInput =
+      screen.getByPlaceholderText("Password");
 
     const showButton =
       screen.getByRole("button", {
         name: "Show password",
       });
+
+    expect(passwordInput).toHaveAttribute(
+      "type",
+      "password"
+    );
 
     fireEvent.click(showButton);
 
@@ -139,34 +273,32 @@ describe("Login Component", () => {
   });
 
 
-  // ==========================================
-  // TEST 5 - HIDE PASSWORD
-  // ==========================================
+  // ==========================================================
+  // HIDE PASSWORD
+  // ==========================================================
 
-  test("hides password when eye button is clicked again", () => {
+  test("hides password after clicking eye button again", () => {
     renderLogin();
 
     const passwordInput =
       screen.getByPlaceholderText("Password");
 
-    const showButton =
+    fireEvent.click(
       screen.getByRole("button", {
         name: "Show password",
-      });
-
-    fireEvent.click(showButton);
+      })
+    );
 
     expect(passwordInput).toHaveAttribute(
       "type",
       "text"
     );
 
-    const hideButton =
+    fireEvent.click(
       screen.getByRole("button", {
         name: "Hide password",
-      });
-
-    fireEvent.click(hideButton);
+      })
+    );
 
     expect(passwordInput).toHaveAttribute(
       "type",
@@ -175,43 +307,35 @@ describe("Login Component", () => {
   });
 
 
-  // ==========================================
-  // TEST 6 - REMEMBER ME
-  // ==========================================
+  // ==========================================================
+  // EMPTY FORM
+  // ==========================================================
 
-  test("allows user to select Remember me", () => {
+  test("shows alert when email and password are empty", () => {
     renderLogin();
 
-    const checkbox =
-      screen.getByRole("checkbox");
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Login",
+      })
+    );
 
-    expect(checkbox).not.toBeChecked();
+    expect(window.alert).toHaveBeenCalledWith(
+      "Please enter email and password."
+    );
 
-    fireEvent.click(checkbox);
-
-    expect(checkbox).toBeChecked();
-
-    fireEvent.click(checkbox);
-
-    expect(checkbox).not.toBeChecked();
+    expect(
+      localStorage.getItem("isLoggedIn")
+    ).toBeNull();
   });
 
 
-  // ==========================================
-  // TEST 7 - USER NOT REGISTERED
-  // ==========================================
+  // ==========================================================
+  // EMAIL EMPTY
+  // ==========================================================
 
-  test("shows alert when user is not registered", () => {
+  test("shows alert when email is empty", () => {
     renderLogin();
-
-    fireEvent.change(
-      screen.getByPlaceholderText("Username"),
-      {
-        target: {
-          value: "satender",
-        },
-      }
-    );
 
     fireEvent.change(
       screen.getByPlaceholderText("Password"),
@@ -229,46 +353,25 @@ describe("Login Component", () => {
     );
 
     expect(window.alert).toHaveBeenCalledWith(
-      "You are not registered. Please register first."
+      "Please enter email and password."
     );
   });
 
 
-  // ==========================================
-  // TEST 8 - INVALID PASSWORD
-  // ==========================================
+  // ==========================================================
+  // PASSWORD EMPTY
+  // ==========================================================
 
-  test("shows alert for invalid password", () => {
-
-    const user = {
-      name: "Satender Kashyap",
-      username: "satender",
-      email: "satender@gmail.com",
-      phone: "9876543210",
-      password: "correct123",
-    };
-
-    localStorage.setItem(
-      "registeredUser",
-      JSON.stringify(user)
-    );
-
+  test("shows alert when password is empty", () => {
     renderLogin();
 
     fireEvent.change(
-      screen.getByPlaceholderText("Username"),
+      screen.getByPlaceholderText(
+        "Email or Username"
+      ),
       {
         target: {
-          value: "satender",
-        },
-      }
-    );
-
-    fireEvent.change(
-      screen.getByPlaceholderText("Password"),
-      {
-        target: {
-          value: "wrong123",
+          value: "admin@medikart.com",
         },
       }
     );
@@ -280,41 +383,25 @@ describe("Login Component", () => {
     );
 
     expect(window.alert).toHaveBeenCalledWith(
-      "Invalid username/email or password."
+      "Please enter email and password."
     );
   });
 
 
-  // ==========================================
-  // TEST 9 - CORRECT LOGIN
-  // ==========================================
+  // ==========================================================
+  // DEMO LOGIN SUCCESS
+  // ==========================================================
 
-  test("logs in successfully with correct username and password", () => {
-
-    const user = {
-      name: "Satender Kashyap",
-      username: "satender",
-      email: "satender@gmail.com",
-      phone: "9876543210",
-      password: "123456",
-    };
-
-    localStorage.setItem(
-      "registeredUser",
-      JSON.stringify(user)
-    );
-
-    const onLoginSuccess = jest.fn();
-
-    renderLogin({
-      onLoginSuccess,
-    });
+  test("logs in successfully with demo credentials", () => {
+    renderLogin();
 
     fireEvent.change(
-      screen.getByPlaceholderText("Username"),
+      screen.getByPlaceholderText(
+        "Email or Username"
+      ),
       {
         target: {
-          value: "satender",
+          value: "admin@medikart.com",
         },
       }
     );
@@ -340,38 +427,34 @@ describe("Login Component", () => {
 
     expect(
       localStorage.getItem("username")
-    ).toBe("satender");
+    ).toBe("Satender");
 
-    expect(onLoginSuccess).toHaveBeenCalled();
+    expect(
+      JSON.parse(
+        localStorage.getItem("user")
+      )
+    ).toEqual({
+      name: "Satender",
+      username: "Satender",
+      email: "admin@medikart.com",
+    });
   });
 
 
-  // ==========================================
-  // TEST 10 - LOGIN USING EMAIL
-  // ==========================================
+  // ==========================================================
+  // DEMO LOGIN WRONG EMAIL
+  // ==========================================================
 
-  test("allows login using email", () => {
-
-    const user = {
-      name: "Satender Kashyap",
-      username: "satender",
-      email: "satender@gmail.com",
-      phone: "9876543210",
-      password: "123456",
-    };
-
-    localStorage.setItem(
-      "registeredUser",
-      JSON.stringify(user)
-    );
-
+  test("shows alert for invalid demo email", () => {
     renderLogin();
 
     fireEvent.change(
-      screen.getByPlaceholderText("Username"),
+      screen.getByPlaceholderText(
+        "Email or Username"
+      ),
       {
         target: {
-          value: "satender@gmail.com",
+          value: "wrong@example.com",
         },
       }
     );
@@ -391,38 +474,30 @@ describe("Login Component", () => {
       })
     );
 
+    expect(window.alert).toHaveBeenCalledWith(
+      "Invalid email/username or password."
+    );
+
     expect(
       localStorage.getItem("isLoggedIn")
-    ).toBe("true");
+    ).toBeNull();
   });
 
 
-  // ==========================================
-  // TEST 11 - LOGIN USING NAME
-  // ==========================================
+  // ==========================================================
+  // DEMO LOGIN WRONG PASSWORD
+  // ==========================================================
 
-  test("allows login using name", () => {
-
-    const user = {
-      name: "Satender Kashyap",
-      username: "satender",
-      email: "satender@gmail.com",
-      phone: "9876543210",
-      password: "123456",
-    };
-
-    localStorage.setItem(
-      "registeredUser",
-      JSON.stringify(user)
-    );
-
+  test("shows alert for invalid demo password", () => {
     renderLogin();
 
     fireEvent.change(
-      screen.getByPlaceholderText("Username"),
+      screen.getByPlaceholderText(
+        "Email or Username"
+      ),
       {
         target: {
-          value: "Satender Kashyap",
+          value: "admin@medikart.com",
         },
       }
     );
@@ -431,7 +506,62 @@ describe("Login Component", () => {
       screen.getByPlaceholderText("Password"),
       {
         target: {
-          value: "123456",
+          value: "wrongpassword",
+        },
+      }
+    );
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Login",
+      })
+    );
+
+    expect(window.alert).toHaveBeenCalledWith(
+      "Invalid email/username or password."
+    );
+
+    expect(
+      localStorage.getItem("isLoggedIn")
+    ).toBeNull();
+  });
+
+
+  // ==========================================================
+  // REGISTERED USER SUCCESS
+  // ==========================================================
+
+  test("logs in successfully with registered user email", () => {
+    const registeredUser = {
+      name: "Rahul",
+      username: "rahul123",
+      email: "rahul@example.com",
+      password: "password123",
+    };
+
+    localStorage.setItem(
+      "registeredUser",
+      JSON.stringify(registeredUser)
+    );
+
+    renderLogin();
+
+    fireEvent.change(
+      screen.getByPlaceholderText(
+        "Email or Username"
+      ),
+      {
+        target: {
+          value: "rahul@example.com",
+        },
+      }
+    );
+
+    fireEvent.change(
+      screen.getByPlaceholderText("Password"),
+      {
+        target: {
+          value: "password123",
         },
       }
     );
@@ -445,35 +575,262 @@ describe("Login Component", () => {
     expect(
       localStorage.getItem("isLoggedIn")
     ).toBe("true");
+
+    expect(
+      localStorage.getItem("username")
+    ).toBe("Rahul");
+
+    expect(
+      JSON.parse(
+        localStorage.getItem("user")
+      )
+    ).toEqual(registeredUser);
   });
 
 
-  // ==========================================
-  // TEST 12 - REMEMBER ME LOGIN
-  // ==========================================
+  // ==========================================================
+  // REGISTERED USER USERNAME LOGIN
+  // ==========================================================
 
-  test("stores rememberMe when checkbox is selected", () => {
-
-    const user = {
-      name: "Satender Kashyap",
-      username: "satender",
-      email: "satender@gmail.com",
-      phone: "9876543210",
-      password: "123456",
+  test("logs in using registered username", () => {
+    const registeredUser = {
+      name: "Rahul",
+      username: "rahul123",
+      email: "rahul@example.com",
+      password: "password123",
     };
 
     localStorage.setItem(
       "registeredUser",
-      JSON.stringify(user)
+      JSON.stringify(registeredUser)
     );
 
     renderLogin();
 
     fireEvent.change(
-      screen.getByPlaceholderText("Username"),
+      screen.getByPlaceholderText(
+        "Email or Username"
+      ),
       {
         target: {
-          value: "satender",
+          value: "RAHUL123",
+        },
+      }
+    );
+
+    fireEvent.change(
+      screen.getByPlaceholderText("Password"),
+      {
+        target: {
+          value: "password123",
+        },
+      }
+    );
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Login",
+      })
+    );
+
+    expect(
+      localStorage.getItem("isLoggedIn")
+    ).toBe("true");
+
+    expect(
+      localStorage.getItem("username")
+    ).toBe("Rahul");
+  });
+
+
+  // ==========================================================
+  // REGISTERED USER WRONG EMAIL
+  // ==========================================================
+
+  test("shows alert for incorrect registered email or username", () => {
+    const registeredUser = {
+      name: "Rahul",
+      username: "rahul123",
+      email: "rahul@example.com",
+      password: "password123",
+    };
+
+    localStorage.setItem(
+      "registeredUser",
+      JSON.stringify(registeredUser)
+    );
+
+    renderLogin();
+
+    fireEvent.change(
+      screen.getByPlaceholderText(
+        "Email or Username"
+      ),
+      {
+        target: {
+          value: "wrong@example.com",
+        },
+      }
+    );
+
+    fireEvent.change(
+      screen.getByPlaceholderText("Password"),
+      {
+        target: {
+          value: "password123",
+        },
+      }
+    );
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Login",
+      })
+    );
+
+    expect(window.alert).toHaveBeenCalledWith(
+      "Email or username is incorrect."
+    );
+
+    expect(
+      localStorage.getItem("isLoggedIn")
+    ).toBeNull();
+  });
+
+
+  // ==========================================================
+  // REGISTERED USER WRONG PASSWORD
+  // ==========================================================
+
+  test("shows alert for incorrect registered password", () => {
+    const registeredUser = {
+      name: "Rahul",
+      username: "rahul123",
+      email: "rahul@example.com",
+      password: "password123",
+    };
+
+    localStorage.setItem(
+      "registeredUser",
+      JSON.stringify(registeredUser)
+    );
+
+    renderLogin();
+
+    fireEvent.change(
+      screen.getByPlaceholderText(
+        "Email or Username"
+      ),
+      {
+        target: {
+          value: "rahul@example.com",
+        },
+      }
+    );
+
+    fireEvent.change(
+      screen.getByPlaceholderText("Password"),
+      {
+        target: {
+          value: "wrongpassword",
+        },
+      }
+    );
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Login",
+      })
+    );
+
+    expect(window.alert).toHaveBeenCalledWith(
+      "Incorrect password."
+    );
+
+    expect(
+      localStorage.getItem("isLoggedIn")
+    ).toBeNull();
+  });
+
+
+  // ==========================================================
+  // INVALID REGISTERED USER JSON
+  // ==========================================================
+
+  test("handles invalid registeredUser JSON", () => {
+    localStorage.setItem(
+      "registeredUser",
+      "{invalid-json"
+    );
+
+    renderLogin();
+
+    fireEvent.change(
+      screen.getByPlaceholderText(
+        "Email or Username"
+      ),
+      {
+        target: {
+          value: "wrong@example.com",
+        },
+      }
+    );
+
+    fireEvent.change(
+      screen.getByPlaceholderText("Password"),
+      {
+        target: {
+          value: "wrongpassword",
+        },
+      }
+    );
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Login",
+      })
+    );
+
+    /*
+     * Invalid JSON causes JSON.parse() to throw.
+     * Login.js catches the error and then falls
+     * through to the DEMO LOGIN section.
+     */
+    expect(window.alert).toHaveBeenCalledWith(
+      "Invalid email/username or password."
+    );
+
+    expect(
+      localStorage.getItem("isLoggedIn")
+    ).toBeNull();
+
+    expect(console.error).toHaveBeenCalled();
+  });
+
+
+  // ==========================================================
+  // REMEMBER ME CHECKED
+  // ==========================================================
+
+  test("stores rememberMe when Remember me is checked", () => {
+    renderLogin();
+
+    const checkbox =
+      screen.getByRole("checkbox");
+
+    expect(checkbox).not.toBeChecked();
+
+    fireEvent.click(checkbox);
+
+    expect(checkbox).toBeChecked();
+
+    fireEvent.change(
+      screen.getByPlaceholderText(
+        "Email or Username"
+      ),
+      {
+        target: {
+          value: "admin@medikart.com",
         },
       }
     );
@@ -485,10 +842,6 @@ describe("Login Component", () => {
           value: "123456",
         },
       }
-    );
-
-    fireEvent.click(
-      screen.getByRole("checkbox")
     );
 
     fireEvent.click(
@@ -503,32 +856,30 @@ describe("Login Component", () => {
   });
 
 
-  // ==========================================
-  // TEST 13 - REMEMBER ME NOT SELECTED
-  // ==========================================
+  // ==========================================================
+  // REMEMBER ME NOT CHECKED
+  // ==========================================================
 
-  test("does not store rememberMe when checkbox is not selected", () => {
-
-    const user = {
-      name: "Satender Kashyap",
-      username: "satender",
-      email: "satender@gmail.com",
-      phone: "9876543210",
-      password: "123456",
-    };
-
+  test("does not store rememberMe when unchecked", () => {
     localStorage.setItem(
-      "registeredUser",
-      JSON.stringify(user)
+      "rememberMe",
+      "true"
     );
 
     renderLogin();
 
+    const checkbox =
+      screen.getByRole("checkbox");
+
+    expect(checkbox).not.toBeChecked();
+
     fireEvent.change(
-      screen.getByPlaceholderText("Username"),
+      screen.getByPlaceholderText(
+        "Email or Username"
+      ),
       {
         target: {
-          value: "satender",
+          value: "admin@medikart.com",
         },
       }
     );
@@ -554,54 +905,374 @@ describe("Login Component", () => {
   });
 
 
-  // ==========================================
-  // TEST 14 - SOCIAL BUTTONS
-  // ==========================================
+  // ==========================================================
+  // USER UPDATED EVENT
+  // ==========================================================
+
+  test("dispatches userUpdated event after successful login", () => {
+    const eventSpy = jest.fn();
+
+    window.addEventListener(
+      "userUpdated",
+      eventSpy
+    );
+
+    renderLogin();
+
+    fireEvent.change(
+      screen.getByPlaceholderText(
+        "Email or Username"
+      ),
+      {
+        target: {
+          value: "admin@medikart.com",
+        },
+      }
+    );
+
+    fireEvent.change(
+      screen.getByPlaceholderText("Password"),
+      {
+        target: {
+          value: "123456",
+        },
+      }
+    );
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Login",
+      })
+    );
+
+    expect(eventSpy).toHaveBeenCalledTimes(1);
+
+    window.removeEventListener(
+      "userUpdated",
+      eventSpy
+    );
+  });
+
+
+  // ==========================================================
+  // CLOSE BUTTON WITH onClose
+  // ==========================================================
+
+  test("calls onClose when close button is clicked", () => {
+    const onClose = jest.fn();
+
+    renderLogin({ onClose });
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Close login",
+      })
+    );
+
+    expect(onClose).toHaveBeenCalledTimes(1);
+
+    expect(mockNavigate).not.toHaveBeenCalled();
+  });
+
+
+  // ==========================================================
+  // CLOSE BUTTON WITHOUT onClose
+  // ==========================================================
+
+  test("navigates to home when close button is clicked without onClose", () => {
+    renderLogin();
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Close login",
+      })
+    );
+
+    expect(mockNavigate).toHaveBeenCalledWith("/");
+  });
+
+
+  // ==========================================================
+  // OVERLAY CLICK
+  // ==========================================================
+
+  test("closes login when clicking outside popup", () => {
+    const onClose = jest.fn();
+
+    const { container } = renderLogin({
+      onClose,
+    });
+
+    const overlay =
+      container.querySelector(
+        ".login-popup-overlay"
+      );
+
+    expect(overlay).toBeInTheDocument();
+
+    fireEvent.mouseDown(overlay);
+
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+
+  // ==========================================================
+  // CLICK INSIDE POPUP DOES NOT CLOSE
+  // ==========================================================
+
+  test("does not close when clicking inside popup", () => {
+    const onClose = jest.fn();
+
+    renderLogin({
+      onClose,
+    });
+
+    const popup =
+      document.querySelector(
+        ".login-popup"
+      );
+
+    fireEvent.mouseDown(popup);
+
+    expect(onClose).not.toHaveBeenCalled();
+  });
+
+
+  // ==========================================================
+  // FORGOT PASSWORD LINK
+  // ==========================================================
+
+  test("renders Forgot Password link", () => {
+    renderLogin();
+
+    const link =
+      screen.getByRole("link", {
+        name: "Forgot Password?",
+      });
+
+    expect(link).toBeInTheDocument();
+
+    expect(link).toHaveAttribute(
+      "href",
+      "/forgot-password"
+    );
+  });
+
+
+  // ==========================================================
+  // CREATE ACCOUNT LINK
+  // ==========================================================
+
+  test("renders Create Account link", () => {
+    renderLogin();
+
+    const link =
+      screen.getByRole("link", {
+        name: "Create Account",
+      });
+
+    expect(link).toBeInTheDocument();
+
+    expect(link).toHaveAttribute(
+      "href",
+      "/register"
+    );
+  });
+
+
+  // ==========================================================
+  // SOCIAL LOGIN BUTTONS
+  // ==========================================================
 
   test("renders social login buttons", () => {
     renderLogin();
 
     expect(
       screen.getByRole("button", {
-        name: "Login with Google",
+        name: "Google login",
       })
     ).toBeInTheDocument();
 
     expect(
       screen.getByRole("button", {
-        name: "Login with Facebook",
+        name: "Facebook login",
       })
     ).toBeInTheDocument();
 
     expect(
       screen.getByRole("button", {
-        name: "Login with Twitter",
-      })
-    ).toBeInTheDocument();
-
-    expect(
-      screen.getByRole("button", {
-        name: "Login with Apple",
+        name: "Apple login",
       })
     ).toBeInTheDocument();
   });
 
 
-  // ==========================================
-  // TEST 15 - IMAGE
-  // ==========================================
+  // ==========================================================
+  // SOCIAL BUTTONS DO NOT SUBMIT FORM
+  // ==========================================================
 
-  test("renders Medikart login image", () => {
+  test("social buttons are type button", () => {
     renderLogin();
 
-    const image = screen.getByAltText(
-      "Medikart Healthcare"
+    expect(
+      screen.getByRole("button", {
+        name: "Google login",
+      })
+    ).toHaveAttribute("type", "button");
+
+    expect(
+      screen.getByRole("button", {
+        name: "Facebook login",
+      })
+    ).toHaveAttribute("type", "button");
+
+    expect(
+      screen.getByRole("button", {
+        name: "Apple login",
+      })
+    ).toHaveAttribute("type", "button");
+  });
+
+
+  // ==========================================================
+  // REGISTERED USER WITH UPPERCASE EMAIL
+  // ==========================================================
+
+  test("accepts registered email regardless of case", () => {
+    const registeredUser = {
+      name: "Rahul",
+      username: "rahul123",
+      email: "Rahul@Example.com",
+      password: "password123",
+    };
+
+    localStorage.setItem(
+      "registeredUser",
+      JSON.stringify(registeredUser)
     );
 
-    expect(image).toBeInTheDocument();
-    expect(image).toHaveAttribute(
-      "src",
-      "login-image.png"
+    renderLogin();
+
+    fireEvent.change(
+      screen.getByPlaceholderText(
+        "Email or Username"
+      ),
+      {
+        target: {
+          value: "RAHUL@EXAMPLE.COM",
+        },
+      }
     );
+
+    fireEvent.change(
+      screen.getByPlaceholderText("Password"),
+      {
+        target: {
+          value: "password123",
+        },
+      }
+    );
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Login",
+      })
+    );
+
+    expect(
+      localStorage.getItem("isLoggedIn")
+    ).toBe("true");
   });
+
+
+  // ==========================================================
+  // REGISTERED USER NAME FALLBACK
+  // ==========================================================
+
+  test("uses username when registered user has no name", () => {
+    const registeredUser = {
+      username: "rahul123",
+      email: "rahul@example.com",
+      password: "password123",
+    };
+
+    localStorage.setItem(
+      "registeredUser",
+      JSON.stringify(registeredUser)
+    );
+
+    renderLogin();
+
+    fireEvent.change(
+      screen.getByPlaceholderText(
+        "Email or Username"
+      ),
+      {
+        target: {
+          value: "rahul@example.com",
+        },
+      }
+    );
+
+    fireEvent.change(
+      screen.getByPlaceholderText("Password"),
+      {
+        target: {
+          value: "password123",
+        },
+      }
+    );
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Login",
+      })
+    );
+
+    expect(
+      localStorage.getItem("username")
+    ).toBe("rahul123");
+
+    expect(
+      localStorage.getItem("isLoggedIn")
+    ).toBe("true");
+  });
+
+
+  // ==========================================================
+  // FORM SUBMISSION
+  // ==========================================================
+
+  test("submits login form", () => {
+    renderLogin();
+
+    const emailInput =
+      screen.getByPlaceholderText(
+        "Email or Username"
+      );
+
+    const passwordInput =
+      screen.getByPlaceholderText("Password");
+
+    fireEvent.change(emailInput, {
+      target: {
+        value: "admin@medikart.com",
+      },
+    });
+
+    fireEvent.change(passwordInput, {
+      target: {
+        value: "123456",
+      },
+    });
+
+    fireEvent.submit(
+      emailInput.closest("form")
+    );
+
+    expect(
+      localStorage.getItem("isLoggedIn")
+    ).toBe("true");
+  });
+
 });

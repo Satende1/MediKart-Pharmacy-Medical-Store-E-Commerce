@@ -1,84 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
+
 import styles from "./FlashSale.module.css";
 
-import Dolo650 from "../assets/FlashSale/Debo650.jpg";
-import Crocin from "../assets/FlashSale/crocin.jpg";
-import Revital from "../assets/FlashSale/revital.jpg";
-import Limcee from "../assets/FlashSale/limcee.jpg";
-import Glucometer from "../assets/FlashSale/glucometer.jpg";
-import BPMonitor from "../assets/FlashSale/bpMonitor.jpg";
-import N95Mask from "../assets/FlashSale/n95mask.jpg";
-import Sanitizer from "../assets/FlashSale/sanitizer.jpg";
-
-const flashSaleProducts = [
-  {
-    id: 9008,
-    title: "Dolo 650",
-    image: Dolo650,
-    originalPrice: 32.12,
-    discountedPrice: 24.09,
-  },
-  {
-    id: 9009,
-    title: "Pain Relief",
-    image: Crocin,
-    originalPrice: 175.00,
-    discountedPrice: 140.00,
-  },
-  {
-    id: 9010,
-    title: "Revital for Men/Women",
-    image: Revital,
-    originalPrice: 340,
-    discountedPrice: 300,
-  },
-  {
-    id: 9011,
-    title: "Vitamin C Chewable",
-    image: Limcee,
-    originalPrice: 30,
-    discountedPrice: 24.00,
-  },
-  {
-    id: 9012,
-    title: "Glucometer Kit",
-    image: Glucometer,
-    originalPrice: 1164.00,
-    discountedPrice: 809.00,
-  },
-  {
-    id: 9013,
-    title: "BP Monitor",
-    image: BPMonitor,
-    originalPrice: 2350.00,
-    discountedPrice: 1849.00,
-  },
-  {
-    id: 9003,
-    title: "Sanitizer",
-    image: Sanitizer,
-    originalPrice: 250.00,
-    discountedPrice: 175.00,
-  },
-  {
-    id: 9014,
-    title: "N95 Mask",
-    image: N95Mask,
-    originalPrice: 100.00,
-    discountedPrice: 50.00,
-  },
-];
+import flashSaleProducts from "../data/flashSaleProducts";
 
 const FlashSale = () => {
   const [timeLeft, setTimeLeft] = useState({
     hours: "24",
     minutes: "00",
-    seconds: "00",
+    seconds: "00"
   });
 
   const [addedItems, setAddedItems] = useState({});
+
+  // =========================================
+  // FLASH SALE TIMER
+  // =========================================
 
   useEffect(() => {
     const target = Date.now() + 24 * 60 * 60 * 1000;
@@ -88,11 +27,13 @@ const FlashSale = () => {
 
       if (difference <= 0) {
         clearInterval(timer);
+
         setTimeLeft({
           hours: "00",
           minutes: "00",
-          seconds: "00",
+          seconds: "00"
         });
+
         return;
       }
 
@@ -100,90 +41,124 @@ const FlashSale = () => {
         hours: String(
           Math.floor(difference / (1000 * 60 * 60))
         ).padStart(2, "0"),
+
         minutes: String(
           Math.floor((difference / (1000 * 60)) % 60)
         ).padStart(2, "0"),
+
         seconds: String(
           Math.floor((difference / 1000) % 60)
-        ).padStart(2, "0"),
+        ).padStart(2, "0")
       });
     }, 1000);
 
     return () => clearInterval(timer);
   }, []);
 
-  // ADD TO CART FUNCTION
+  // =========================================
+  // ADD TO CART
+  // =========================================
+
   const handleAddToCart = (product) => {
-    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    let cart =
+      JSON.parse(localStorage.getItem("cart")) || [];
 
     const existingProduct = cart.find(
-      (item) => item.id === product.id
+      (item) => Number(item.id) === Number(product.id)
     );
 
-    let updatedCart;
-
     if (existingProduct) {
-      updatedCart = cart.map((item) =>
-        item.id === product.id
+      cart = cart.map((item) =>
+        Number(item.id) === Number(product.id)
           ? {
-              ...item,
-              quantity: (item.quantity || 1) + 1,
-            }
+            ...item,
+            quantity: (item.quantity || 1) + 1
+          }
           : item
       );
     } else {
-      updatedCart = [
-        ...cart,
-        {
-          id: product.id,
-          name: product.title,
-          image: product.image,
-          price: product.discountedPrice,
-          quantity: 1,
-        },
-      ];
+      cart.push({
+        id: product.id,
+
+        name: product.name,
+
+        title: product.title,
+
+        brand: product.brand,
+
+        category: product.category,
+
+        image: product.image,
+
+        price: product.price,
+
+        originalPrice: product.originalPrice,
+
+        discountedPrice: product.discountedPrice,
+
+        rating: product.rating,
+
+        quantity: 1
+      });
     }
 
-    localStorage.setItem("cart", JSON.stringify(updatedCart));
+    localStorage.setItem(
+      "cart",
+      JSON.stringify(cart)
+    );
 
-    // Update Navbar Count
-    window.dispatchEvent(new Event("cartUpdated"));
+    // Update Navbar Cart Count
+    window.dispatchEvent(
+      new Event("cartUpdated")
+    );
 
-    // Toast Notification
-    toast.success(`${product.title} added to cart!`, {
-      position: "top-right",
-      autoClose: 2000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      theme: "colored",
-      icon: "🛒",
-    });
+    // Toast
+    toast.success(
+      `${product.name} added to cart!`,
+      {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "colored"
+      }
+    );
 
-    // Change Button Text
+    // Change button
     setAddedItems((prev) => ({
       ...prev,
-      [product.id]: true,
+      [product.id]: true
     }));
 
+    // Reset button after 2 seconds
     setTimeout(() => {
       setAddedItems((prev) => ({
         ...prev,
-        [product.id]: false,
+        [product.id]: false
       }));
     }, 2000);
   };
 
+  // =========================================
+  // JSX
+  // =========================================
+
   return (
     <section className={styles.flashSale}>
+
+      {/* HEADER */}
       <div className={styles.header}>
+
         <div className={styles.titleSection}>
           <h2>🔥 Flash Sale</h2>
           <p>Limited Time Deals</p>
         </div>
 
+        {/* TIMER */}
         <div className={styles.timer}>
+
           <div className={styles.timeBox}>
             <span>{timeLeft.hours}</span>
             <small>Hours</small>
@@ -198,50 +173,95 @@ const FlashSale = () => {
             <span>{timeLeft.seconds}</span>
             <small>Seconds</small>
           </div>
+
         </div>
+
       </div>
 
+      {/* PRODUCTS */}
       <div className={styles.productGrid}>
+
         {flashSaleProducts.map((product) => (
-          <div key={product.id} className={styles.productCard}>
+
+          <div
+            key={product.id}
+            className={styles.productCard}
+          >
+
+            {/* IMAGE */}
             <div className={styles.imageWrapper}>
+
               <img
                 src={product.image}
-                alt={product.title}
+                alt={product.name}
                 className={styles.productImage}
               />
+
             </div>
 
+            {/* CONTENT */}
             <div className={styles.cardContent}>
-              <h3>{product.title}</h3>
 
+              <h3>{product.name}</h3>
+
+              <p className={styles.brand}>
+                {product.brand}
+              </p>
+
+              {/* RATING */}
+              <div className={styles.rating}>
+                ⭐ {product.rating}
+              </div>
+
+              {/* PRICE */}
               <div className={styles.priceSection}>
+
                 <span className={styles.originalPrice}>
                   ₹{product.originalPrice}
                 </span>
 
                 <span className={styles.discountedPrice}>
-                  ₹{product.discountedPrice}
+                  ₹{product.price}
                 </span>
+
               </div>
 
+              {/* BUTTONS */}
               <div className={styles.buttonGroup}>
-                <Link to={`/product/${product.id}`} className={styles.viewBtn}
-                > View Details </Link>
+
+                <Link
+                  to={`/product/${product.id}`}
+                  className={styles.viewBtn}
+                >
+                  View Details
+                </Link>
 
                 <button
+                  type="button"
                   className={
-                    addedItems[product.id] ? styles.added : styles.cartBtn
+                    addedItems[product.id]
+                      ? styles.added
+                      : styles.cartBtn
                   }
-                  onClick={() => handleAddToCart(product)}
+                  onClick={() =>
+                    handleAddToCart(product)
+                  }
                 >
-                  {addedItems[product.id] ? "✓ Added" : "Add to Cart"}
+                  {addedItems[product.id]
+                    ? "✓ Added"
+                    : "Add to Cart"}
                 </button>
+
               </div>
+
             </div>
+
           </div>
+
         ))}
+
       </div>
+
     </section>
   );
 };

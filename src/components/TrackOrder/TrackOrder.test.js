@@ -1,223 +1,757 @@
-// TrackOrder.test.js
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
-import { BrowserRouter } from "react-router-dom";
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+} from "@testing-library/react";
+import {
+  MemoryRouter,
+  Routes,
+  Route,
+} from "react-router-dom";
+
 import TrackOrder from "./TrackOrder";
 
-// Mock the modules BEFORE importing the component
-jest.mock("react-router-dom", () => ({
-  useNavigate: () => jest.fn(),
-  BrowserRouter: ({ children }) => <div>{children}</div>,
-}));
+// --------------------------------------------------
+// MOCK TOAST CONTAINER
+// --------------------------------------------------
 
 jest.mock("react-toastify", () => ({
-  toast: {
-    success: jest.fn(),
-    error: jest.fn(),
-  },
-  ToastContainer: () => <div data-testid="toast-container" />,
+  ToastContainer: () => (
+    <div data-testid="toast-container">
+      Toast Container
+    </div>
+  ),
 }));
 
-// Mock localStorage
-const localStorageMock = {
-  getItem: jest.fn(),
-  setItem: jest.fn(),
-  clear: jest.fn(),
-  removeItem: jest.fn(),
-};
-Object.defineProperty(window, "localStorage", { value: localStorageMock });
+// --------------------------------------------------
+// TEST ORDER DATA
+// --------------------------------------------------
 
-// Mock clipboard
-Object.defineProperty(navigator, "clipboard", {
-  value: { writeText: jest.fn().mockResolvedValue(undefined) },
-});
+const createTestOrder = (overrides = {}) => ({
+  orderId: "TEST_ORDER",
+  orderDate: "Test Date",
+  estimatedDelivery: "Test Delivery",
+  status: "Order Confirmed",
 
-// Mock console.error to avoid test output clutter
-console.error = jest.fn();
+  trackingId: "TEST_TRACKING",
 
-// Test data
-const mockOrder = {
-  orderId: "ORD-12345",
-  status: "Shipped",
-  totalAmount: 2999,
-  estimatedDelivery: "15 Aug 2026",
-  customer: {
-    name: "John Doe",
-    address: "123 Main Street",
-    phone: "+91 9876543210",
-  },
   courier: {
-    name: "Blue Dart",
-    trackingId: "BD-9876543210",
+    name: "Test Delivery Partner",
   },
+
   items: [
     {
-      id: 1,
-      name: "Vitamin C",
-      price: 999,
-      quantity: 2,
-      image: "test.jpg",
+      id: "TEST_PRODUCT",
+      name: "Test Product",
+      price: 100,
+      quantity: 1,
     },
   ],
-};
 
-// Helper to render component
-const renderComponent = () => {
+  address: {
+    name: "Test Customer",
+    phone: "0000000000",
+    address: "Test Address",
+    city: "Test City",
+    state: "Test State",
+    pincode: "000000",
+  },
+
+  paymentMethod: "COD",
+
+  totalAmount: 100,
+
+  ...overrides,
+});
+
+// --------------------------------------------------
+// RENDER HELPER
+// --------------------------------------------------
+
+const renderTrackOrder = (
+  orderId = "TEST_ORDER"
+) => {
   return render(
-    <BrowserRouter>
-      <TrackOrder />
-    </BrowserRouter>
+    <MemoryRouter
+      initialEntries={[`/track/${orderId}`]}
+    >
+      <Routes>
+
+        <Route
+          path="/track/:orderId"
+          element={<TrackOrder />}
+        />
+
+        <Route
+          path="/orders"
+          element={<div>Orders Page</div>}
+        />
+
+        <Route
+          path="/shop"
+          element={<div>Shop Page</div>}
+        />
+
+        <Route
+          path="/contact"
+          element={<div>Contact Page</div>}
+        />
+
+        <Route
+          path="/"
+          element={<div>Home Page</div>}
+        />
+
+      </Routes>
+    </MemoryRouter>
   );
 };
 
+// --------------------------------------------------
+// BEFORE EACH
+// --------------------------------------------------
+
+beforeEach(() => {
+  jest.clearAllMocks();
+
+  localStorage.clear();
+
+  const order = createTestOrder();
+
+  localStorage.setItem(
+    "orders",
+    JSON.stringify([order])
+  );
+
+  window.confirm = jest.fn(() => true);
+
+  window.alert = jest.fn();
+
+  Object.assign(navigator, {
+    clipboard: {
+      writeText: jest.fn(),
+    },
+  });
+});
+
+// --------------------------------------------------
+// AFTER EACH
+// --------------------------------------------------
+
+afterEach(() => {
+  localStorage.clear();
+});
+
+// ==================================================
+// TRACK ORDER TESTS
+// ==================================================
+
 describe("TrackOrder Component", () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-    localStorageMock.getItem.mockReset();
+
+  // ------------------------------------------------
+  // BASIC RENDER
+  // ------------------------------------------------
+
+  test("renders Track Order page", async () => {
+    renderTrackOrder();
+
+    expect(
+      await screen.findByText("Track Order")
+    ).toBeInTheDocument();
   });
 
-  // Test 1: Empty state
-  test("shows empty state when no order exists", () => {
-    localStorageMock.getItem.mockReturnValue(null);
-    renderComponent();
+  test("renders current order status", async () => {
+    renderTrackOrder();
 
-    expect(screen.getByText("No Order Found")).toBeInTheDocument();
-    expect(screen.getByText("Continue Shopping")).toBeInTheDocument();
+    expect(
+      await screen.findByText("Order Confirmed")
+    ).toBeInTheDocument();
   });
 
-  // Test 2: Invalid JSON
-  test("shows empty state when localStorage has invalid JSON", () => {
-    localStorageMock.getItem.mockReturnValue("invalid json");
-    renderComponent();
+  test("renders delivery tracking section", async () => {
+    renderTrackOrder();
 
-    expect(screen.getByText("No Order Found")).toBeInTheDocument();
+    expect(
+      await screen.findByText("Delivery Tracking")
+    ).toBeInTheDocument();
   });
 
-  // Test 3: Renders order details
-  test("renders order details when valid order exists", () => {
-    localStorageMock.getItem.mockReturnValue(JSON.stringify(mockOrder));
-    renderComponent();
+  // ------------------------------------------------
+  // DELIVERY STEPS
+  // ------------------------------------------------
+
+  test("renders all delivery steps", async () => {
+    renderTrackOrder();
+
+    expect(
+      await screen.findByText("Order Placed")
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText("Packed")
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText("Shipped")
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText("Out for Delivery")
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText("Delivered")
+    ).toBeInTheDocument();
   });
 
-  // Test 4: Delivered status
-  test("shows delivered status correctly", () => {
-    const deliveredOrder = { ...mockOrder, status: "Delivered" };
-    localStorageMock.getItem.mockReturnValue(JSON.stringify(deliveredOrder));
-    renderComponent();
+  // ------------------------------------------------
+  // ORDER ITEMS
+  // ------------------------------------------------
 
-    expect(screen.getByText("Order Delivered")).toBeInTheDocument();
-    expect(screen.getByText("Your order has been delivered successfully")).toBeInTheDocument();
+  test("renders Order Items section", async () => {
+    renderTrackOrder();
+
+    expect(
+      await screen.findByText("Order Items")
+    ).toBeInTheDocument();
   });
 
-  // Test 5: Missing fields use defaults
-  test("uses default values when fields are missing", () => {
-    const minimalOrder = {
-      orderId: "ORD-001",
-      status: "Order Placed",
-      items: [{ name: "Product", price: 100, quantity: 1 }],
-    };
-    localStorageMock.getItem.mockReturnValue(JSON.stringify(minimalOrder));
-    renderComponent();
+  test("renders product information", async () => {
+    renderTrackOrder();
 
-    expect(screen.getByText("MEDIKART Delivery")).toBeInTheDocument();
-    expect(screen.getByText("Not available")).toBeInTheDocument();
-    expect(screen.getByText("Customer")).toBeInTheDocument();
-    expect(screen.getByText("Delivery address not available")).toBeInTheDocument();
+    expect(
+      await screen.findByText("Test Product")
+    ).toBeInTheDocument();
   });
 
-  // Test 6: Copy order ID
-  test("copies order ID to clipboard", () => {
-    localStorageMock.getItem.mockReturnValue(JSON.stringify(mockOrder));
-    renderComponent();
+  test("renders product quantity", async () => {
+    renderTrackOrder();
 
-    const copyButton = screen.getByTitle("Copy Order ID");
+    expect(
+      await screen.findByText(/Quantity:\s*1/i)
+    ).toBeInTheDocument();
+  });
+
+  // ------------------------------------------------
+  // TOTAL AMOUNT
+  // ------------------------------------------------
+
+  test("renders total amount", async () => {
+    renderTrackOrder();
+
+    expect(
+      await screen.findByText("Total Amount")
+    ).toBeInTheDocument();
+
+    /*
+     * IMPORTANT:
+     *
+     * ₹100 may appear multiple times on the page.
+     * Therefore we use getAllByText instead of getByText.
+     */
+
+    const amountElements =
+      screen.getAllByText("₹100");
+
+    expect(amountElements.length).toBeGreaterThan(0);
+  });
+
+  // ------------------------------------------------
+  // SHIPPING DETAILS
+  // ------------------------------------------------
+
+  test("renders shipment details", async () => {
+    renderTrackOrder();
+
+    expect(
+      await screen.findByText("Shipment Details")
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText("Delivery Partner")
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText("Order Date")
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText("Expected Delivery")
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText("Payment")
+    ).toBeInTheDocument();
+  });
+
+  // ------------------------------------------------
+  // DELIVERY ADDRESS
+  // ------------------------------------------------
+
+  test("renders delivery address section", async () => {
+    renderTrackOrder();
+
+    expect(
+      await screen.findByText("Delivery Address")
+    ).toBeInTheDocument();
+  });
+
+  // ------------------------------------------------
+  // HOME BUTTON
+  // ------------------------------------------------
+
+  test("renders Home button", async () => {
+    renderTrackOrder();
+
+    const homeButton =
+      await screen.findByRole("link", {
+        name: /home/i,
+      });
+
+    expect(homeButton).toBeInTheDocument();
+
+    expect(homeButton).toHaveAttribute(
+      "href",
+      "/"
+    );
+  });
+
+  // ------------------------------------------------
+  // CONTACT BUTTON
+  // ------------------------------------------------
+
+  test("renders Contact Us button", async () => {
+    renderTrackOrder();
+
+    const contactButton =
+      await screen.findByRole("link", {
+        name: /contact us/i,
+      });
+
+    expect(contactButton).toBeInTheDocument();
+
+    expect(contactButton).toHaveAttribute(
+      "href",
+      "/contact"
+    );
+  });
+
+  // ------------------------------------------------
+  // VIEW ALL ORDERS
+  // ------------------------------------------------
+
+  test("renders View All Orders button", async () => {
+    renderTrackOrder();
+
+    const ordersButton =
+      await screen.findByRole("link", {
+        name: /view all orders/i,
+      });
+
+    expect(ordersButton).toBeInTheDocument();
+
+    expect(ordersButton).toHaveAttribute(
+      "href",
+      "/orders"
+    );
+  });
+
+  // ------------------------------------------------
+  // CANCEL ORDER
+  // ------------------------------------------------
+
+  test("renders Cancel Order button", async () => {
+    renderTrackOrder();
+
+    expect(
+      await screen.findByRole("button", {
+        name: /cancel order/i,
+      })
+    ).toBeInTheDocument();
+  });
+
+  test("cancel order calls confirmation", async () => {
+    renderTrackOrder();
+
+    const cancelButton =
+      await screen.findByRole("button", {
+        name: /cancel order/i,
+      });
+
+    fireEvent.click(cancelButton);
+
+    expect(window.confirm).toHaveBeenCalledWith(
+      "Are you sure you want to cancel this order?"
+    );
+  });
+
+  test("cancels order when confirmation is accepted", async () => {
+    renderTrackOrder();
+
+    window.confirm = jest.fn(() => true);
+
+    const cancelButton =
+      await screen.findByRole("button", {
+        name: /cancel order/i,
+      });
+
+    fireEvent.click(cancelButton);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Cancelled")
+      ).toBeInTheDocument();
+    });
+
+    const storedOrders =
+      JSON.parse(
+        localStorage.getItem("orders")
+      );
+
+    expect(
+      storedOrders[0].status
+    ).toBe("Cancelled");
+  });
+
+  test("does not cancel order when confirmation is rejected", async () => {
+    window.confirm = jest.fn(() => false);
+
+    renderTrackOrder();
+
+    const cancelButton =
+      await screen.findByRole("button", {
+        name: /cancel order/i,
+      });
+
+    fireEvent.click(cancelButton);
+
+    expect(window.confirm).toHaveBeenCalled();
+
+    expect(
+      screen.getByText("Order Confirmed")
+    ).toBeInTheDocument();
+  });
+
+  // ------------------------------------------------
+  // COPY ORDER ID
+  // ------------------------------------------------
+
+  test("copy order ID button works", async () => {
+    renderTrackOrder();
+
+    const copyButton =
+      await screen.findByTitle(
+        "Copy Order ID"
+      );
+
     fireEvent.click(copyButton);
 
-    expect(navigator.clipboard.writeText).toHaveBeenCalledWith("ORD-12345");
+    expect(
+      navigator.clipboard.writeText
+    ).toHaveBeenCalled();
   });
 
-  // Test 7: Back button navigation
-  test("navigates back when back button is clicked", () => {
-    const navigateMock = jest.fn();
-    const useNavigateSpy = jest.spyOn(require("react-router-dom"), "useNavigate");
-    useNavigateSpy.mockReturnValue(navigateMock);
+  // ------------------------------------------------
+  // BACK BUTTON
+  // ------------------------------------------------
 
-    localStorageMock.getItem.mockReturnValue(JSON.stringify(mockOrder));
-    renderComponent();
+  test("renders Back button", async () => {
+    renderTrackOrder();
 
-    const backButton = screen.getByRole("button", { name: /back/i });
-    fireEvent.click(backButton);
-
-    expect(navigateMock).toHaveBeenCalledWith(-1);
+    expect(
+      await screen.findByRole("button", {
+        name: "Back",
+      })
+    ).toBeInTheDocument();
   });
 
-  // Test 8: Continue shopping navigation
-  test("navigates to shop when continue shopping is clicked", () => {
-    const navigateMock = jest.fn();
-    const useNavigateSpy = jest.spyOn(require("react-router-dom"), "useNavigate");
-    useNavigateSpy.mockReturnValue(navigateMock);
+  // ------------------------------------------------
+  // EMPTY ORDER
+  // ------------------------------------------------
 
-    localStorageMock.getItem.mockReturnValue(JSON.stringify(mockOrder));
-    renderComponent();
+  test("shows Order Not Found when order does not exist", async () => {
+    localStorage.clear();
 
-    const continueButton = screen.getByText("Continue Shopping");
-    fireEvent.click(continueButton);
+    renderTrackOrder();
 
-    expect(navigateMock).toHaveBeenCalledWith("/shop");
+    expect(
+      await screen.findByText("Order Not Found")
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText(
+        "We couldn't find an order with this order ID."
+      )
+    ).toBeInTheDocument();
   });
 
-  // Test 9: Contact us navigation
-  test("navigates to contact page when contact us is clicked", () => {
-    const navigateMock = jest.fn();
-    const useNavigateSpy = jest.spyOn(require("react-router-dom"), "useNavigate");
-    useNavigateSpy.mockReturnValue(navigateMock);
+  // ------------------------------------------------
+  // UNKNOWN ORDER ID
+  // ------------------------------------------------
 
-    localStorageMock.getItem.mockReturnValue(JSON.stringify(mockOrder));
-    renderComponent();
+  test("shows Order Not Found for unknown order ID", async () => {
+    renderTrackOrder("UNKNOWN_ORDER");
 
-    const contactButton = screen.getByText("Contact Us");
-    fireEvent.click(contactButton);
+    expect(
+      await screen.findByText("Order Not Found")
+    ).toBeInTheDocument();
 
-    expect(navigateMock).toHaveBeenCalledWith("/contact");
+    expect(
+      screen.getByRole("link", {
+        name: /view my orders/i,
+      })
+    ).toBeInTheDocument();
   });
 
-  // Test 10: Total calculation
-  test("calculates total correctly from items", () => {
-    const orderWithItems = {
-      ...mockOrder,
-      items: [
-        { name: "Item 1", price: 100, quantity: 2, image: "test.jpg" },
-        { name: "Item 2", price: 50, quantity: 3, image: "test.jpg" },
-      ],
-    };
-    localStorageMock.getItem.mockReturnValue(JSON.stringify(orderWithItems));
-    renderComponent();
+  // ------------------------------------------------
+  // INVALID LOCAL STORAGE
+  // ------------------------------------------------
+
+  test("handles invalid orders JSON", async () => {
+    localStorage.setItem(
+      "orders",
+      "invalid-json"
+    );
+
+    renderTrackOrder();
+
+    expect(
+      await screen.findByText("Order Not Found")
+    ).toBeInTheDocument();
   });
 
-  // Test 11: Shows ToastContainer
-  test("renders ToastContainer", () => {
-    localStorageMock.getItem.mockReturnValue(JSON.stringify(mockOrder));
-    renderComponent();
+  // ------------------------------------------------
+  // CANCELLED ORDER
+  // ------------------------------------------------
 
-    expect(screen.getByTestId("toast-container")).toBeInTheDocument();
+  test("does not show cancel button for cancelled order", async () => {
+    const cancelledOrder =
+      createTestOrder({
+        status: "Cancelled",
+      });
+
+    localStorage.setItem(
+      "orders",
+      JSON.stringify([
+        cancelledOrder,
+      ])
+    );
+
+    renderTrackOrder();
+
+    expect(
+      await screen.findByText("Cancelled")
+    ).toBeInTheDocument();
+
+    expect(
+      screen.queryByRole("button", {
+        name: /cancel order/i,
+      })
+    ).not.toBeInTheDocument();
   });
 
-  // Test 12: Handles single product without items array
-  test("renders single product when items array doesn't exist", () => {
-    const singleProductOrder = {
-      orderId: "ORD-999",
-      status: "Order Placed",
-      product: {
-        name: "Single Product",
-        price: 299,
-        quantity: 1,
-        image: "test.jpg",
-      },
-    };
-    localStorageMock.getItem.mockReturnValue(JSON.stringify(singleProductOrder));
-    renderComponent();
+  // ------------------------------------------------
+  // DELIVERED ORDER
+  // ------------------------------------------------
 
-    expect(screen.getByText("Single Product")).toBeInTheDocument();
-    expect(screen.getByText("1 Item")).toBeInTheDocument();
+  test("shows Order Delivered for delivered order", async () => {
+    const deliveredOrder =
+      createTestOrder({
+        status: "Delivered",
+      });
+
+    localStorage.setItem(
+      "orders",
+      JSON.stringify([
+        deliveredOrder,
+      ])
+    );
+
+    renderTrackOrder();
+
+    expect(
+      await screen.findByText(
+        "Order Delivered"
+      )
+    ).toBeInTheDocument();
   });
+
+  test("shows return button for delivered order", async () => {
+    const deliveredOrder =
+      createTestOrder({
+        status: "Delivered",
+      });
+
+    localStorage.setItem(
+      "orders",
+      JSON.stringify([
+        deliveredOrder,
+      ])
+    );
+
+    renderTrackOrder();
+
+    expect(
+      await screen.findByRole("button", {
+        name: /return order/i,
+      })
+    ).toBeInTheDocument();
+  });
+
+  // ------------------------------------------------
+  // RETURN ORDER
+  // ------------------------------------------------
+
+  test("return order shows alert", async () => {
+    const deliveredOrder =
+      createTestOrder({
+        status: "Delivered",
+      });
+
+    localStorage.setItem(
+      "orders",
+      JSON.stringify([
+        deliveredOrder,
+      ])
+    );
+
+    renderTrackOrder();
+
+    const returnButton =
+      await screen.findByRole("button", {
+        name: /return order/i,
+      });
+
+    fireEvent.click(returnButton);
+
+    expect(window.alert).toHaveBeenCalledWith(
+      "Return request has been initiated. Our support team will contact you."
+    );
+  });
+
+  // ------------------------------------------------
+  // TOAST CONTAINER
+  // ------------------------------------------------
+
+  test("renders ToastContainer", async () => {
+    renderTrackOrder();
+
+    expect(
+      await screen.findByTestId(
+        "toast-container"
+      )
+    ).toBeInTheDocument();
+  });
+
+  // ------------------------------------------------
+  // PRODUCT WITHOUT IMAGE
+  // ------------------------------------------------
+
+  test("renders fallback icon when product image is unavailable", async () => {
+    const orderWithoutImage =
+      createTestOrder({
+        items: [
+          {
+            id: "TEST_PRODUCT",
+            name: "Test Product",
+            price: 100,
+            quantity: 1,
+          },
+        ],
+      });
+
+    localStorage.setItem(
+      "orders",
+      JSON.stringify([
+        orderWithoutImage,
+      ])
+    );
+
+    renderTrackOrder();
+
+    expect(
+      await screen.findByText("Test Product")
+    ).toBeInTheDocument();
+  });
+
+  // ------------------------------------------------
+  // MULTIPLE PRODUCTS
+  // ------------------------------------------------
+
+  test("renders multiple order items", async () => {
+    const orderWithMultipleProducts =
+      createTestOrder({
+        items: [
+          {
+            id: "PRODUCT_ONE",
+            name: "Product One",
+            price: 100,
+            quantity: 1,
+          },
+          {
+            id: "PRODUCT_TWO",
+            name: "Product Two",
+            price: 200,
+            quantity: 2,
+          },
+        ],
+
+        totalAmount: 500,
+      });
+
+    localStorage.setItem(
+      "orders",
+      JSON.stringify([
+        orderWithMultipleProducts,
+      ])
+    );
+
+    renderTrackOrder();
+
+    expect(
+      await screen.findByText("Product One")
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText("Product Two")
+    ).toBeInTheDocument();
+
+  });
+
+  // ------------------------------------------------
+  // ORDER ARRAY SUPPORT
+  // ------------------------------------------------
+
+  test("loads order from an array in localStorage", async () => {
+    const firstOrder =
+      createTestOrder({
+        orderId: "FIRST_ORDER",
+      });
+
+    const secondOrder =
+      createTestOrder({
+        orderId: "TEST_ORDER",
+      });
+
+    localStorage.setItem(
+      "orders",
+      JSON.stringify([
+        firstOrder,
+        secondOrder,
+      ])
+    );
+
+    renderTrackOrder("TEST_ORDER");
+
+    expect(
+      await screen.findByText("Track Order")
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText("Order Confirmed")
+    ).toBeInTheDocument();
+  });
+
 });

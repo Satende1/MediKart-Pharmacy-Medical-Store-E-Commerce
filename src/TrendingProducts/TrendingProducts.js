@@ -3,40 +3,83 @@ import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import "./TrendingProducts.css";
 
-import product5 from "../assets/products/product5.png";
-import product6 from "../assets/products/product6.png";
-import product7 from "../assets/products/product7.png";
-import product8 from "../assets/products/product8.png";
+import cottonRoll from "../assets/healthcare/cotton-roll.png";
+import amoxycillin from "../assets/medicines/amoxycillin.png";
+import fishOil from "../assets/vitamins/fish-oil.png";
+import premium14 from "../assets/premium/premium14.png";
 
 const trendingProducts = [
   {
-    id: 9004,
-    name: "Digital Thermometer",
-    price: 299,
-    rating: 4.8,
-    image: product5,
-  },
-  {
-    id: 9005,
-    name: "Protein Powder",
-    price: 10000,
-    rating: 4.7,
-    image: product6,
-  },
-  {
-    id: 9006,
-    name: "Face Wash",
+    id: 253,
+    name: "Cotton Roll",
+    brand: "Johnson's",
+    category: "Healthcare",
+    originalPrice: 90,
     price: 70,
-    rating: 4.9,
-    image: product7,
+    rating: 4.8,
+    reviews: 760,
+    discount: 22,
+    image: cottonRoll,
+    packSize: "100g",
+    expiry: "36 Months",
+    delivery: "2-3 Business Days",
+    returnPolicy: "7 Days Return Eligible",
+    stock: true,
+    description: "Soft and absorbent cotton roll suitable for wound dressing and personal care.",
   },
   {
-    id: 9007,
-    name: "Vitamin D Capsules",
-    price: 300,
-    rating: 4.6,
-    image: product8,
+    id: 354,
+    name: "Amoxycillin 500mg",
+    brand: "Mankind",
+    category: "Medicines",
+    originalPrice: 120,
+    price: 95,
+    rating: 4.5,
+    reviews: 860,
+    discount: 21,
+    image: amoxycillin,
+    packSize: "10 Capsules",
+    expiry: "24 Months",
+    delivery: "2-3 Business Days",
+    returnPolicy: "7 Days Return Eligible",
+    stock: true,
+    description:
+      "Amoxycillin 500mg is an antibiotic used to treat bacterial infections.",
   },
+  {
+    id: 16,
+    name: "Omega-3 Fish Oil",
+    brand: "HK Vitals",
+    category: "Vitamins",
+    price: 699,
+    originalPrice: 899,
+    discount: 22,
+    rating: 4.8,
+    reviews: 2850,
+    image: fishOil,
+    packSize: "60 Capsules",
+    expiry: "24 Months",
+    stock: 32,
+    description:
+      "Omega-3 fish oil dietary supplement.",
+  },
+  {
+      id: 2014,
+      name: "Johnson's Baby Premium Care Kit",
+      brand: "Johnson & Johnson",
+      category: "Premium Healthcare",
+      price: 250,
+      originalPrice: 325,
+      discount: 23,
+      rating: 4.9,
+      reviews: 1540,
+      image: premium14,
+      packSize: "Baby Care Kit",
+      expiry: "24 Months",
+      stock: 38,
+      description:
+        "A baby care kit containing gentle everyday care essentials suitable for baby's daily hygiene routine.",
+    },
 ];
 
 
@@ -56,9 +99,9 @@ function TrendingProducts() {
       updatedCart = cart.map((item) =>
         item.id === product.id
           ? {
-              ...item,
-              quantity: (item.quantity || 1) + 1,
-            }
+            ...item,
+            quantity: (item.quantity || 1) + 1,
+          }
           : item
       );
     } else {
@@ -139,9 +182,8 @@ function TrendingProducts() {
                   </Link>
 
                   <button
-                    className={`cart-btn ${
-                      addedItems[product.id] ? "added" : ""
-                    }`}
+                    className={`cart-btn ${addedItems[product.id] ? "added" : ""
+                      }`}
                     onClick={() => handleAddToCart(product)}
                   >
                     {addedItems[product.id]

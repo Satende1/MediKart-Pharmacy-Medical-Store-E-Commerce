@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-
 import {
   FaUser,
   FaEnvelope,
@@ -12,322 +11,211 @@ import {
 
 import "./Register.css";
 
-const Register = ({ onClose }) => {
+import registerImage from "../../assets/register/register.png";
+
+const Register = () => {
   const navigate = useNavigate();
 
-  const [name, setName] = useState("");
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] =
-    useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  /* ==========================================
-     CLOSE POPUP
-  ========================================== */
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
 
-  const handleClose = () => {
-    if (onClose) {
-      onClose();
-    } else {
-      navigate("/");
-    }
+  const [error, setError] = useState("");
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+
+    setError("");
   };
 
-  /* ==========================================
-     REGISTER
-  ========================================== */
-
-  const handleRegister = (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (
-      !name ||
-      !username ||
-      !email ||
-      !password ||
-      !confirmPassword
-    ) {
-      alert("Please enter all required details.");
+    const { name, email, password, confirmPassword } = formData;
+
+    if (!name || !email || !password || !confirmPassword) {
+      setError("Please fill in all fields.");
       return;
     }
 
     if (password.length < 6) {
-      alert("Password must be at least 6 characters.");
+      setError("Password must be at least 6 characters.");
       return;
     }
 
     if (password !== confirmPassword) {
-      alert("Passwords do not match.");
+      setError("Passwords do not match.");
       return;
     }
 
-    const existingUser = JSON.parse(
-      localStorage.getItem("registeredUser")
-    );
-
-    if (existingUser) {
-      if (existingUser.email === email) {
-        alert("Email is already registered.");
-        return;
-      }
-
-      if (existingUser.username === username) {
-        alert("Username is already registered.");
-        return;
-      }
-    }
-
-    const newUser = {
-      name,
-      username,
-      email,
-      password,
-    };
-
+    // Save user information
     localStorage.setItem(
-      "registeredUser",
-      JSON.stringify(newUser)
+      "user",
+      JSON.stringify({
+        name,
+        email,
+        password,
+      })
     );
 
-    alert("Account created successfully!");
+    localStorage.setItem("isLoggedIn", "true");
 
-    navigate("/login");
+    navigate("/");
   };
 
   return (
-    <div
-      className="auth-page"
-      onClick={handleClose}
-    >
+    <div className="register-page">
+      <div className="register-container">
 
-      <div
-        className="auth-container register-container"
-        onClick={(e) => e.stopPropagation()}
-      >
-
-        {/* ==========================================
-            CLOSE BUTTON
-        ========================================== */}
-
-        <button
-          type="button"
-          className="register-close-button"
-          onClick={handleClose}
-        >
-          <FaTimes />
-        </button>
-
-        {/* ==========================================
-            LEFT FORM
-        ========================================== */}
-
+        {/* LEFT SIDE - FORM */}
         <div className="register-form-section">
 
-          <div className="register-form-box">
+          <button
+            className="register-close"
+            onClick={() => navigate("/")}
+            aria-label="Close"
+          >
+            <FaTimes />
+          </button>
 
-            {/* LOGO */}
+          <div className="register-content">
 
-            <div className="auth-logo">
-              <span>MEDI</span>
-              <strong>KART</strong>
+            <div className="register-header">
+              <h1>Create Account</h1>
+              <p>Join MEDIKART and manage your healthcare easily.</p>
             </div>
 
-            {/* TITLE */}
-
-            <h2>Create Account</h2>
-
-            <p className="auth-subtitle">
-              Create your account to continue shopping
-              with MEDIKART
-            </p>
-
-            <form onSubmit={handleRegister}>
+            <form onSubmit={handleSubmit} className="register-form">
 
               {/* NAME */}
+              <div className="register-input-group">
+                <label>Full Name</label>
 
-              <div className="input-group">
+                <div className="register-input-wrapper">
+                  <FaUser className="register-input-icon" />
 
-                <FaUser />
-
-                <input
-                  type="text"
-                  placeholder="Full Name"
-                  value={name}
-                  onChange={(e) =>
-                    setName(e.target.value)
-                  }
-                />
-
-              </div>
-
-              {/* USERNAME */}
-
-              <div className="input-group">
-
-                <FaUser />
-
-                <input
-                  type="text"
-                  placeholder="Username"
-                  value={username}
-                  onChange={(e) =>
-                    setUsername(e.target.value)
-                  }
-                />
-
+                  <input
+                    type="text"
+                    name="name"
+                    placeholder="Enter your full name"
+                    value={formData.name}
+                    onChange={handleChange}
+                  />
+                </div>
               </div>
 
               {/* EMAIL */}
+              <div className="register-input-group">
+                <label>Email Address</label>
 
-              <div className="input-group">
+                <div className="register-input-wrapper">
+                  <FaEnvelope className="register-input-icon" />
 
-                <FaEnvelope />
-
-                <input
-                  type="email"
-                  placeholder="Email Address"
-                  value={email}
-                  onChange={(e) =>
-                    setEmail(e.target.value)
-                  }
-                />
-
+                  <input
+                    type="email"
+                    name="email"
+                    placeholder="Enter your email"
+                    value={formData.email}
+                    onChange={handleChange}
+                  />
+                </div>
               </div>
 
               {/* PASSWORD */}
+              <div className="register-input-group">
+                <label>Password</label>
 
-              <div className="input-group">
+                <div className="register-input-wrapper">
+                  <FaLock className="register-input-icon" />
 
-                <FaLock />
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    placeholder="Create a password"
+                    value={formData.password}
+                    onChange={handleChange}
+                  />
 
-                <input
-                  type={
-                    showPassword
-                      ? "text"
-                      : "password"
-                  }
-                  placeholder="Password"
-                  value={password}
-                  onChange={(e) =>
-                    setPassword(e.target.value)
-                  }
-                />
-
-                <button
-                  type="button"
-                  className="password-eye"
-                  onClick={() =>
-                    setShowPassword(!showPassword)
-                  }
-                >
-                  {showPassword ? (
-                    <FaEyeSlash />
-                  ) : (
-                    <FaEye />
-                  )}
-                </button>
-
+                  <button
+                    type="button"
+                    className="password-toggle"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? <FaEyeSlash /> : <FaEye />}
+                  </button>
+                </div>
               </div>
 
               {/* CONFIRM PASSWORD */}
+              <div className="register-input-group">
+                <label>Confirm Password</label>
 
-              <div className="input-group">
+                <div className="register-input-wrapper">
+                  <FaLock className="register-input-icon" />
 
-                <FaLock />
+                  <input
+                    type={showConfirmPassword ? "text" : "password"}
+                    name="confirmPassword"
+                    placeholder="Confirm your password"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                  />
 
-                <input
-                  type={
-                    showConfirmPassword
-                      ? "text"
-                      : "password"
-                  }
-                  placeholder="Confirm Password"
-                  value={confirmPassword}
-                  onChange={(e) =>
-                    setConfirmPassword(
-                      e.target.value
-                    )
-                  }
-                />
-
-                <button
-                  type="button"
-                  className="password-eye"
-                  onClick={() =>
-                    setShowConfirmPassword(
-                      !showConfirmPassword
-                    )
-                  }
-                >
-                  {showConfirmPassword ? (
-                    <FaEyeSlash />
-                  ) : (
-                    <FaEye />
-                  )}
-                </button>
-
+                  <button
+                    type="button"
+                    className="password-toggle"
+                    onClick={() =>
+                      setShowConfirmPassword(!showConfirmPassword)
+                    }
+                  >
+                    {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                  </button>
+                </div>
               </div>
 
-              {/* REGISTER BUTTON */}
+              {error && <div className="register-error">{error}</div>}
 
-              <button
-                type="submit"
-                className="auth-button"
-              >
+              <button type="submit" className="register-button">
                 Create Account
               </button>
 
             </form>
 
-            {/* LOGIN */}
-
-            <p className="switch-auth">
-
+            <div className="register-login">
               Already have an account?
-
-              <Link to="/login">
-                Login
-              </Link>
-
-            </p>
+              <Link to="/login"> Login</Link>
+            </div>
 
           </div>
-
         </div>
 
-        {/* ==========================================
-            RIGHT IMAGE
-        ========================================== */}
-
-        <div className="auth-image-section">
-
+        {/* RIGHT SIDE - IMAGE */}
+        <div className="register-image-section">
           <img
-            src="/images/register.png"
-            alt="MEDIKART Register"
-            className="auth-image"
+            src={registerImage}
+            alt="MEDIKART Healthcare"
+            className="register-image"
           />
 
-          <div className="image-overlay">
-
-            <h1>
-              Join MEDIKART
-            </h1>
-
+          <div className="register-image-overlay">
+            <h2>Your Health, Our Priority</h2>
             <p>
-              Your trusted online healthcare
-              & pharmacy partner.
+              Get medicines, healthcare products and wellness essentials
+              delivered to your doorstep.
             </p>
-
           </div>
-
         </div>
 
       </div>
-
     </div>
   );
 };

@@ -6,6 +6,7 @@ import {
   FaCreditCard,
   FaTag,
   FaRupeeSign,
+  FaPercent,
 } from "react-icons/fa";
 
 import styles from "./CartSummary.module.css";
@@ -14,19 +15,56 @@ const CartSummary = ({
   cartItems = [],
   totalItems = 0,
   totalPrice = 0,
+  subtotal,
+  discount,
+  delivery,
 }) => {
   const navigate = useNavigate();
 
-  // Delivery charge only for Medical Devices
-  const hasDevice = cartItems.some(
-    (item) =>
-      item.category === "Medical Devices" ||
-      item.category === "Device"
-  );
+  // Delivery charge calculation:
+  // Base delivery: ₹10 if subtotal < 499 (otherwise FREE)
+  // Special surcharge for Medical Devices and Premium Healthcare: +₹50
+  const isSpecialCategory = (category) => {
+    if (!category) return false;
+    const cat = String(category).toLowerCase().replace(/[-_]/g, " ");
+    return (
+      cat.includes("medical device") ||
+      cat.includes("medicaldevices") ||
+      cat.includes("device") ||
+      cat.includes("premium healthcare") ||
+      cat.includes("premiumhealthcare") ||
+      cat.includes("premium")
+    );
+  };
 
-  const deliveryCharge = hasDevice ? 100 : 0;
+  const hasSpecialItem = cartItems.some((item) => isSpecialCategory(item.category));
 
-  const finalAmount = totalPrice + deliveryCharge;
+  // Product Subtotal
+  const productSubtotal =
+    subtotal !== undefined
+      ? subtotal
+      : cartItems.length > 0
+      ? cartItems.reduce(
+          (sum, item) =>
+            sum + (Number(item.price ?? item.discountedPrice) || 0) * (Number(item.quantity) || 1),
+          0
+        )
+      : totalPrice;
+
+  const baseDelivery = productSubtotal >= 499 ? 0 : 10;
+  const specialSurcharge = hasSpecialItem ? 50 : 0;
+  const calculatedDelivery = baseDelivery + specialSurcharge;
+
+  const deliveryCharge =
+    delivery !== undefined
+      ? delivery
+      : calculatedDelivery;
+
+  // Discount Amount
+  const discountAmount = discount !== undefined ? discount : Math.round(productSubtotal * 0.1);
+
+  // Final Total Amount
+  const finalAmount = productSubtotal - discountAmount + deliveryCharge;
 
   // Checkout Button
   const handleCheckout = () => {
@@ -47,24 +85,26 @@ const CartSummary = ({
       </h2>
 
       {/* Product List */}
-      {cartItems.map((item) => (
-        <div
-          key={item.id}
-          className={styles.productRow}
-        >
-          <span>
-            📦 {item.name} × {item.quantity}
-          </span>
+      {cartItems.map((item) => {
+        const itemPrice = Number(item.price ?? item.discountedPrice) || 0;
+        const itemQty = Number(item.quantity) || 1;
+        return (
+          <div
+            key={item.id}
+            className={styles.productRow}
+          >
+            <span>
+              📦 {item.name || item.title} × {itemQty}
+            </span>
 
-          <span>
-            ₹{(
-              item.price * item.quantity
-            ).toLocaleString()}
-          </span>
-        </div>
-      ))}
+            <span>
+              ₹{(itemPrice * itemQty).toLocaleString()}
+            </span>
+          </div>
+        );
+      })}
 
-      <hr />
+      {cartItems.length > 0 && <hr />}
 
       {/* Total Items */}
       <div className={styles.row}>
@@ -82,9 +122,22 @@ const CartSummary = ({
         </span>
 
         <span>
-          ₹{totalPrice.toLocaleString()}
+          ₹{productSubtotal.toLocaleString()}
         </span>
       </div>
+
+      {/* Discount (if applicable) */}
+      {discountAmount > 0 && (
+        <div className={styles.row}>
+          <span>
+            <FaPercent /> Discount (10%)
+          </span>
+
+          <span style={{ color: "#388e3c" }}>
+            - ₹{discountAmount.toLocaleString()}
+          </span>
+        </div>
+      )}
 
       {/* Delivery Charge */}
       <div className={styles.row}>
@@ -93,9 +146,11 @@ const CartSummary = ({
         </span>
 
         <span>
-          {deliveryCharge === 0
-            ? "FREE"
-            : `₹${deliveryCharge}`}
+          {deliveryCharge === 0 ? (
+            <span className={styles.freeDelivery}>FREE</span>
+          ) : (
+            `₹${deliveryCharge}`
+          )}
         </span>
       </div>
 
@@ -111,8 +166,15 @@ const CartSummary = ({
           ₹{finalAmount.toLocaleString()}
         </span>
       </div>
-            <div className={styles.buttons}>
 
+      {/* Savings Message */}
+      {discountAmount > 0 && (
+        <div className={styles.savings}>
+          You will save ₹{discountAmount.toLocaleString()} on this order
+        </div>
+      )}
+
+      <div className={styles.buttons}>
         {/* Continue Shopping */}
         <Link
           to="/shop"
@@ -130,7 +192,6 @@ const CartSummary = ({
           <FaCreditCard />
           &nbsp; Proceed to Checkout
         </button>
-
       </div>
     </div>
   );

@@ -1,592 +1,347 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-
-import {
-    FaBoxOpen,
-    FaTruck,
-    FaCheckCircle,
-    FaTimesCircle,
-    FaEye,
-    FaShoppingBag,
-    FaArrowLeft,
-    FaTrash,
-} from "react-icons/fa";
-
+import { FaBox, FaCalendarAlt, FaCheckCircle, FaTruck } from "react-icons/fa";
 import "./OrderHistory.css";
+import Footer from "../../components/Footer/Footer";
 
 const OrderHistory = () => {
-    const navigate = useNavigate();
-
     const [orders, setOrders] = useState([]);
-
-    // =====================================================
-    // LOAD ALL ORDERS
-    // =====================================================
 
     useEffect(() => {
         loadOrders();
 
-        window.addEventListener(
-            "ordersUpdated",
-            loadOrders
-        );
+        const handleOrderUpdate = () => {
+            loadOrders();
+        };
+
+        window.addEventListener("ordersUpdated", handleOrderUpdate);
 
         return () => {
-            window.removeEventListener(
-                "ordersUpdated",
-                loadOrders
-            );
+            window.removeEventListener("ordersUpdated", handleOrderUpdate);
         };
     }, []);
 
     const loadOrders = () => {
         try {
-            const savedOrders =
-                JSON.parse(
-                    localStorage.getItem("orders")
-                ) || [];
-
-            setOrders(savedOrders);
-        } catch (error) {
-            console.error(
-                "Error loading order history:",
-                error
+            const savedOrders = JSON.parse(
+                localStorage.getItem("orders") || "[]"
             );
 
+            setOrders(Array.isArray(savedOrders) ? savedOrders : []);
+        } catch (error) {
+            console.error("Error loading orders:", error);
             setOrders([]);
         }
     };
 
-    // =====================================================
-    // VIEW ORDER
-    // =====================================================
+    const formatDate = (date) => {
+        if (!date) return "Date not available";
 
-    const handleViewOrder = (order) => {
-        // Save selected order
-        localStorage.setItem(
-            "latestOrder",
-            JSON.stringify(order)
-        );
-
-        navigate("/orders");
-    };
-
-    // =====================================================
-    // VIEW PRODUCT
-    // =====================================================
-
-    const handleViewProduct = (item) => {
-        navigate(`/product/${item.id}`);
-    };
-
-    // =====================================================
-    // DELETE ORDER
-    // =====================================================
-
-    const handleDeleteOrder = (orderId) => {
-        const confirmDelete =
-            window.confirm(
-                "Are you sure you want to remove this order from your order history?"
-            );
-
-        if (!confirmDelete) {
-            return;
-        }
-
-        const updatedOrders =
-            orders.filter(
-                (order) =>
-                    order.orderId !== orderId
-            );
-
-        setOrders(updatedOrders);
-
-        localStorage.setItem(
-            "orders",
-            JSON.stringify(updatedOrders)
-        );
-
-        // If latest order is deleted
-        const latestOrder =
-            JSON.parse(
-                localStorage.getItem(
-                    "latestOrder"
-                )
-            );
-
+        // Already formatted date
         if (
-            latestOrder?.orderId ===
-            orderId
+            typeof date === "string" &&
+            /^\d{1,2} [A-Za-z]+ \d{4}$/.test(date)
         ) {
-            localStorage.removeItem(
-                "latestOrder"
-            );
-        }
-    };
-
-    // =====================================================
-    // CLEAR ALL ORDERS
-    // =====================================================
-
-    const handleClearHistory = () => {
-        const confirmClear =
-            window.confirm(
-                "Are you sure you want to clear your complete order history?"
-            );
-
-        if (!confirmClear) {
-            return;
+            return date;
         }
 
-        localStorage.removeItem(
-            "orders"
-        );
+        const parsedDate = new Date(date);
 
-        setOrders([]);
+        if (Number.isNaN(parsedDate.getTime())) {
+            return date;
+        }
+
+        return parsedDate.toLocaleDateString("en-GB", {
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+        });
     };
 
-    // =====================================================
-    // ORDER STATUS
-    // =====================================================
+    const getOrderItems = (order) => {
+        if (Array.isArray(order.items)) {
+            return order.items;
+        }
+
+        if (Array.isArray(order.products)) {
+            return order.products;
+        }
+
+        if (order.productName) {
+            return [
+                {
+                    name: order.productName,
+                    brand: order.brand,
+                    image: order.image,
+                    price: order.price,
+                    quantity: order.quantity || 1,
+                },
+            ];
+        }
+
+        return [];
+    };
 
     const getStatusClass = (status) => {
-        if (
-            status === "Delivered"
-        ) {
-            return "status-delivered";
-        }
+        const value = String(status || "Processing").toLowerCase();
 
-        if (
-            status === "Cancelled"
-        ) {
-            return "status-cancelled";
-        }
+        if (value === "delivered") return "delivered";
+        if (value === "shipped") return "shipped";
+        if (value === "cancelled") return "cancelled";
+        if (value === "out for delivery") return "out-for-delivery";
 
-        if (
-            status === "Out for Delivery"
-        ) {
-            return "status-out";
-        }
-
-        if (
-            status === "Shipped"
-        ) {
-            return "status-shipped";
-        }
-
-        if (
-            status === "Packed"
-        ) {
-            return "status-packed";
-        }
-
-        return "status-placed";
+        return "processing";
     };
 
-    // =====================================================
-    // STATUS ICON
-    // =====================================================
-
     const getStatusIcon = (status) => {
-        if (
-            status === "Delivered"
-        ) {
+        const value = String(status || "").toLowerCase();
+
+        if (value === "delivered") {
             return <FaCheckCircle />;
         }
 
         if (
-            status === "Cancelled"
+            value === "shipped" ||
+            value === "out for delivery"
         ) {
-            return <FaTimesCircle />;
+            return <FaTruck />;
         }
 
-        return <FaTruck />;
+        return <FaBox />;
     };
 
-    // =====================================================
-    // EMPTY ORDER HISTORY
-    // =====================================================
+    const getTotal = (order) => {
+        if (order.totalAmount !== undefined) {
+            return order.totalAmount;
+        }
 
-    if (orders.length === 0) {
-        return (
-            <div className="order-history-page">
+        if (order.total !== undefined) {
+            return order.total;
+        }
 
-                <div className="order-history-header">
+        if (order.totalPrice !== undefined) {
+            return order.totalPrice;
+        }
 
-                    <button
-                        className="history-back-btn"
-                        onClick={() =>
-                            navigate(-1)
-                        }
-                    >
-                        <FaArrowLeft />
-                        Back
-                    </button>
+        const items = getOrderItems(order);
 
-                    <div>
-                        <h1>
-                            My Orders
-                        </h1>
+        return items.reduce((total, item) => {
+            return (
+                total +
+                Number(item.price || 0) *
+                Number(item.quantity || 1)
+            );
+        }, 0);
+    };
 
-                        <p>
-                            Your MEDIKART Order History
-                        </p>
-                    </div>
-
-                </div>
-
-                <div className="empty-orders">
-
-                    <FaBoxOpen />
-
-                    <h2>
-                        No Orders Yet
-                    </h2>
-
-                    <p>
-                        You haven't placed any
-                        orders yet.
-                    </p>
-
-                    <button
-                        onClick={() =>
-                            navigate("/shop")
-                        }
-                    >
-                        <FaShoppingBag />
-                        Start Shopping
-                    </button>
-
-                </div>
-
-            </div>
+    const handleClearHistory = () => {
+        const confirmDelete = window.confirm(
+            "Are you sure you want to clear your order history?"
         );
-    }
 
-    // =====================================================
-    // MAIN UI
-    // =====================================================
+        if (!confirmDelete) return;
+
+        localStorage.removeItem("orders");
+        setOrders([]);
+
+        window.dispatchEvent(new Event("ordersUpdated"));
+    };
 
     return (
         <div className="order-history-page">
-
-            {/* =================================================
-                HEADER
-            ================================================= */}
-
-            <div className="order-history-header">
-
-                <button
-                    className="history-back-btn"
-                    onClick={() =>
-                        navigate(-1)
-                    }
-                >
-                    <FaArrowLeft />
-                    Back
-                </button>
-
-                <div>
-                    <h1>
-                        My Orders
-                    </h1>
-
-                    <p>
-                        Your MEDIKART Order History
-                    </p>
-                </div>
-
-                <button
-                    className="clear-history-btn"
-                    onClick={
-                        handleClearHistory
-                    }
-                >
-                    <FaTrash />
-                    Clear History
-                </button>
-
-            </div>
-
-            {/* =================================================
-                ORDER COUNT
-            ================================================= */}
-
             <div className="order-history-container">
 
-                <div className="history-summary">
-
+                {/* Page Header */}
+                <div className="order-history-header">
                     <div>
-                        <FaBoxOpen />
-
-                        <div>
-                            <strong>
-                                {orders.length}
-                            </strong>
-
-                            <span>
-                                Total Orders
-                            </span>
-                        </div>
-
+                        <h1>Order History</h1>
+                        <p>
+                            View all your previous MEDIKART orders.
+                        </p>
                     </div>
 
-                    <button
-                        className="shop-more-btn"
-                        onClick={() =>
-                            navigate("/shop")
-                        }
-                    >
-                        <FaShoppingBag />
-                        Continue Shopping
-                    </button>
-
+                    {orders.length > 0 && (
+                        <button
+                            className="clear-history-btn"
+                            onClick={handleClearHistory}
+                        >
+                            Clear History
+                        </button>
+                    )}
                 </div>
 
-                {/* =================================================
-                    ORDERS
-                ================================================= */}
+                {/* Empty State */}
+                {orders.length === 0 ? (
+                    <div className="order-history-empty">
+                        <div className="empty-icon">
+                            <FaBox />
+                        </div>
 
-                <div className="orders-list">
+                        <h2>No Orders Yet</h2>
 
-                    {orders.map(
-                        (order, index) => {
+                        <p>
+                            You haven't placed any orders yet.
+                        </p>
 
-                            const totalAmount =
-                                Number(
-                                    order
-                                        .priceDetails
-                                        ?.totalAmount
-                                ) || 0;
+                        <button
+                            className="shop-now-btn"
+                            onClick={() => {
+                                window.location.href = "/shop";
+                            }}
+                        >
+                            Start Shopping
+                        </button>
+                    </div>
+                ) : (
+                    <div className="order-history-list">
 
-                            const items =
-                                order.items || [];
+                        {orders.map((order, index) => {
+                            const items = getOrderItems(order);
+
+                            const orderId =
+                                order.orderId ||
+                                order.id ||
+                                `MED${10000 + index}`;
+
+                            const status =
+                                order.status || "Processing";
+
+                            const orderDate =
+                                order.orderDate ||
+                                order.date ||
+                                order.createdAt;
 
                             return (
                                 <div
                                     className="history-order-card"
-                                    key={
-                                        order.orderId ||
-                                        index
-                                    }
+                                    key={orderId}
                                 >
 
-                                    {/* =================================
-                                        ORDER HEADER
-                                    ================================= */}
+                                    {/* Order Top */}
+                                    <div className="history-order-top">
 
-                                    <div className="history-card-header">
-
-                                        <div>
-
+                                        <div className="history-order-info">
                                             <h2>
-                                                Order #
-                                                {
-                                                    order.orderId
-                                                }
+                                                Order #{orderId}
                                             </h2>
 
-                                            <p>
-                                                Ordered on{" "}
-                                                {
-                                                    order.orderDate
-                                                }
-                                            </p>
+                                            <div className="history-date">
+                                                <FaCalendarAlt />
 
+                                                <span>
+                                                    {formatDate(orderDate)}
+                                                </span>
+                                            </div>
                                         </div>
 
                                         <div
                                             className={`history-status ${getStatusClass(
-                                                order.status
+                                                status
                                             )}`}
                                         >
-                                            {
-                                                getStatusIcon(
-                                                    order.status
-                                                )
-                                            }
+                                            {getStatusIcon(status)}
 
-                                            <span>
-                                                {
-                                                    order.status
-                                                }
-                                            </span>
-
+                                            <span>{status}</span>
                                         </div>
 
                                     </div>
 
-                                    {/* =================================
-                                        ORDER ITEMS
-                                    ================================= */}
+                                    {/* Products */}
+                                    <div className="history-products">
 
-                                    <div className="history-items">
+                                        {items.map((item, itemIndex) => (
+                                            <div
+                                                className="history-product"
+                                                key={`${orderId}-${itemIndex}`}
+                                            >
 
-                                        {items.map(
-                                            (
-                                                item,
-                                                itemIndex
-                                            ) => (
+                                                <div className="history-product-image">
 
-                                                <div
-                                                    className="history-item"
-                                                    key={
-                                                        item.id ||
-                                                        itemIndex
-                                                    }
-                                                >
-
-                                                    {/* IMAGE */}
-
-                                                    <div className="history-image">
-
+                                                    {item.image ? (
                                                         <img
-                                                            src={
-                                                                item.image
-                                                            }
-                                                            alt={
-                                                                item.name
-                                                            }
-                                                            onError={(
-                                                                e
-                                                            ) => {
-                                                                e.currentTarget.src =
-                                                                    "/images/medicine-placeholder.png";
-                                                            }}
+                                                            src={item.image}
+                                                            alt={item.name}
                                                         />
-
-                                                    </div>
-
-                                                    {/* DETAILS */}
-
-                                                    <div className="history-item-info">
-
-                                                        <h3>
-                                                            {
-                                                                item.name
-                                                            }
-                                                        </h3>
-
-                                                        {item.brand && (
-                                                            <p>
-                                                                Brand:{" "}
-                                                                <strong>
-                                                                    {
-                                                                        item.brand
-                                                                    }
-                                                                </strong>
-                                                            </p>
-                                                        )}
-
-                                                        <p>
-                                                            Quantity:{" "}
-                                                            {
-                                                                item.quantity
-                                                            }
-                                                        </p>
-
-                                                        <strong className="history-price">
-                                                            ₹
-                                                            {
-                                                                item.price
-                                                            }
-                                                        </strong>
-
-                                                    </div>
-
-                                                    <button
-                                                        className="history-view-product"
-                                                        onClick={() =>
-                                                            handleViewProduct(
-                                                                item
-                                                            )
-                                                        }
-                                                    >
-                                                        <FaEye />
-                                                        View Product
-                                                    </button>
+                                                    ) : (
+                                                        <div className="product-placeholder">
+                                                            <FaBox />
+                                                        </div>
+                                                    )}
 
                                                 </div>
 
-                                            )
-                                        )}
+                                                <div className="history-product-details">
+
+                                                    <h3>
+                                                        {item.name ||
+                                                            "Product"}
+                                                    </h3>
+
+                                                    {item.brand && (
+                                                        <p>
+                                                            <strong>
+                                                                Brand:
+                                                            </strong>{" "}
+                                                            {item.brand}
+                                                        </p>
+                                                    )}
+
+                                                    <p>
+                                                        <strong>
+                                                            Quantity:
+                                                        </strong>{" "}
+                                                        {item.quantity || 1}
+                                                    </p>
+
+                                                    {item.price !==
+                                                        undefined && (
+                                                            <p className="history-price">
+                                                                ₹{item.price}
+                                                            </p>
+                                                        )}
+
+                                                </div>
+
+                                            </div>
+                                        ))}
 
                                     </div>
 
-                                    {/* =================================
-                                        ORDER FOOTER
-                                    ================================= */}
+                                    {/* Order Bottom */}
+                                    <div className="history-order-bottom">
 
-                                    <div className="history-card-footer">
-
-                                        <div className="history-total">
-
-                                            <span>
+                                        <div>
+                                            <span className="total-label">
                                                 Total Amount
                                             </span>
 
-                                            <strong>
-                                                ₹
-                                                {totalAmount.toFixed(
-                                                    2
-                                                )}
-                                            </strong>
-
+                                            <span className="total-price">
+                                                ₹{getTotal(order)}
+                                            </span>
                                         </div>
 
-                                        <div className="history-actions">
+                                        {order.paymentMethod && (
+                                            <div>
+                                                <span className="payment-label">
+                                                    Payment
+                                                </span>
 
-                                            <button
-                                                className="view-order-btn"
-                                                onClick={() =>
-                                                    handleViewOrder(
-                                                        order
-                                                    )
-                                                }
-                                            >
-                                                <FaEye />
-                                                View Order
-                                            </button>
-
-                                            {order.status !==
-                                                "Cancelled" && (
-                                                    <button
-                                                        className="track-history-btn"
-                                                        onClick={() =>
-                                                            navigate(
-                                                                `/track-order/${order.orderId}`
-                                                            )
-                                                        }
-                                                    >
-                                                        <FaTruck />
-                                                        Track Order
-                                                    </button>
-                                                )}
-
-                                            <button
-                                                className="delete-order-btn"
-                                                onClick={() =>
-                                                    handleDeleteOrder(
-                                                        order.orderId
-                                                    )
-                                                }
-                                            >
-                                                <FaTrash />
-                                            </button>
-
-                                        </div>
+                                                <span>
+                                                    {order.paymentMethod}
+                                                </span>
+                                            </div>
+                                        )}
 
                                     </div>
 
                                 </div>
                             );
-                        }
-                    )}
+                        })}
 
-                </div>
+                    </div>
+                )}
 
             </div>
-
+            <Footer/>
         </div>
     );
 };

@@ -23,14 +23,24 @@ const Login = ({ onClose }) => {
   const [remember, setRemember] = useState(false);
 
   /* =====================================================
-     CLOSE POPUP
+     CLOSE LOGIN
   ===================================================== */
 
   const handleClose = () => {
-    if (onClose) {
+    if (typeof onClose === "function") {
       onClose();
     } else {
       navigate("/");
+    }
+  };
+
+  /* =====================================================
+     CLOSE WHEN CLICKING OUTSIDE
+  ===================================================== */
+
+  const handleOverlayClick = (e) => {
+    if (e.target === e.currentTarget) {
+      handleClose();
     }
   };
 
@@ -41,38 +51,74 @@ const Login = ({ onClose }) => {
   const handleLogin = (e) => {
     e.preventDefault();
 
-    if (!email || !password) {
+    if (!email.trim() || !password.trim()) {
       alert("Please enter email and password.");
       return;
     }
 
-    const registeredUser = JSON.parse(
-      localStorage.getItem("registeredUser")
-    );
+    let registeredUser = null;
 
-    /* ===================================================
-       REGISTERED USER
-    =================================================== */
+    try {
+      const storedUser =
+        localStorage.getItem("registeredUser");
+
+      if (storedUser) {
+        registeredUser = JSON.parse(storedUser);
+      }
+    } catch (error) {
+      console.error(
+        "Error reading registered user:",
+        error
+      );
+    }
+
+    /* =================================================
+       REGISTERED USER LOGIN
+    ================================================= */
 
     if (registeredUser) {
+      const enteredEmail =
+        email.trim().toLowerCase();
+
+      const registeredEmail =
+        registeredUser.email
+          ?.trim()
+          .toLowerCase();
+
+      const registeredUsername =
+        registeredUser.username
+          ?.trim()
+          .toLowerCase();
+
       if (
-        email !== registeredUser.email &&
-        email !== registeredUser.username
+        enteredEmail !== registeredEmail &&
+        enteredEmail !== registeredUsername
       ) {
-        alert("Email or username is incorrect.");
+        alert(
+          "Email or username is incorrect."
+        );
         return;
       }
 
-      if (password !== registeredUser.password) {
+      if (
+        password !== registeredUser.password
+      ) {
         alert("Incorrect password.");
         return;
       }
 
-      localStorage.setItem("isLoggedIn", "true");
+      /* LOGIN SUCCESS */
+
+      localStorage.setItem(
+        "isLoggedIn",
+        "true"
+      );
 
       localStorage.setItem(
         "username",
-        registeredUser.name || registeredUser.username
+        registeredUser.name ||
+        registeredUser.username ||
+        registeredUser.email
       );
 
       localStorage.setItem(
@@ -80,55 +126,107 @@ const Login = ({ onClose }) => {
         JSON.stringify(registeredUser)
       );
 
+      /* REMEMBER ME */
+
       if (remember) {
-        localStorage.setItem("rememberMe", "true");
+        localStorage.setItem(
+          "rememberMe",
+          "true"
+        );
       } else {
-        localStorage.removeItem("rememberMe");
+        localStorage.removeItem(
+          "rememberMe"
+        );
       }
 
-      window.dispatchEvent(new Event("userUpdated"));
+      /* UPDATE NAVBAR */
 
-      navigate("/");
+      window.dispatchEvent(
+        new Event("userUpdated")
+      );
+
+      /* CLOSE LOGIN */
+
+      handleClose();
 
       return;
     }
 
-    /* ===================================================
+    /* =================================================
        DEMO LOGIN
-    =================================================== */
+    ================================================= */
+
+    const enteredEmail =
+      email.trim().toLowerCase();
 
     if (
-      email === "admin@medikart.com" &&
+      enteredEmail ===
+      "admin@medikart.com" &&
       password === "123456"
     ) {
-      localStorage.setItem("isLoggedIn", "true");
-      localStorage.setItem("username", "Satender");
+      localStorage.setItem(
+        "isLoggedIn",
+        "true"
+      );
+
+      localStorage.setItem(
+        "username",
+        "Satender"
+      );
+
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          name: "Satender",
+          username: "Satender",
+          email: "admin@medikart.com",
+        })
+      );
+
+      /* REMEMBER ME */
 
       if (remember) {
-        localStorage.setItem("rememberMe", "true");
+        localStorage.setItem(
+          "rememberMe",
+          "true"
+        );
       } else {
-        localStorage.removeItem("rememberMe");
+        localStorage.removeItem(
+          "rememberMe"
+        );
       }
 
-      window.dispatchEvent(new Event("userUpdated"));
+      /* UPDATE NAVBAR */
 
-      navigate("/");
+      window.dispatchEvent(
+        new Event("userUpdated")
+      );
+
+      /* CLOSE */
+
+      handleClose();
     } else {
-      alert("Invalid email/username or password.");
+      alert(
+        "Invalid email/username or password."
+      );
     }
   };
 
   return (
     <div
       className="login-popup-overlay"
-      onClick={handleClose}
+      onMouseDown={handleOverlayClick}
     >
+      {/* =================================================
+          LOGIN POPUP
+      ================================================= */}
 
       <div
         className="login-popup"
-        onClick={(e) => e.stopPropagation()}
+        onMouseDown={(e) =>
+          e.stopPropagation()
+        }
       >
-
         {/* =================================================
             CLOSE BUTTON
         ================================================= */}
@@ -138,6 +236,7 @@ const Login = ({ onClose }) => {
           className="login-close-button"
           onClick={handleClose}
           aria-label="Close login"
+          title="Close"
         >
           <FaTimes />
         </button>
@@ -147,7 +246,6 @@ const Login = ({ onClose }) => {
         ================================================= */}
 
         <div className="auth-image-section">
-
           <img
             src="/images/login.png"
             alt="MEDIKART Login"
@@ -155,7 +253,6 @@ const Login = ({ onClose }) => {
           />
 
           <div className="image-overlay">
-
             <h1>
               Welcome to MEDIKART
             </h1>
@@ -164,17 +261,14 @@ const Login = ({ onClose }) => {
               Your trusted online healthcare
               & pharmacy partner.
             </p>
-
           </div>
-
         </div>
 
         {/* =================================================
-            RIGHT LOGIN
+            RIGHT FORM
         ================================================= */}
 
         <div className="auth-form-section">
-
           <div className="auth-form-box">
 
             {/* LOGO */}
@@ -184,12 +278,13 @@ const Login = ({ onClose }) => {
               <strong>KART</strong>
             </div>
 
-            <h2>
-              Login
-            </h2>
+            {/* HEADING */}
+
+            <h2>Login</h2>
 
             <p className="auth-subtitle">
-              Login to continue shopping with MEDIKART
+              Login to continue shopping with
+              MEDIKART
             </p>
 
             {/* =================================================
@@ -201,8 +296,9 @@ const Login = ({ onClose }) => {
               {/* EMAIL */}
 
               <div className="input-group">
-
-                <FaUser className="input-icon" />
+                <FaUser
+                  className="input-icon"
+                />
 
                 <input
                   type="text"
@@ -213,14 +309,14 @@ const Login = ({ onClose }) => {
                   }
                   autoComplete="username"
                 />
-
               </div>
 
               {/* PASSWORD */}
 
               <div className="input-group">
-
-                <FaLock className="input-icon" />
+                <FaLock
+                  className="input-icon"
+                />
 
                 <input
                   type={
@@ -240,9 +336,17 @@ const Login = ({ onClose }) => {
                   type="button"
                   className="password-eye"
                   onClick={() =>
-                    setShowPassword(!showPassword)
+                    setShowPassword(
+                      (previous) =>
+                        !previous
+                    )
                   }
                   aria-label={
+                    showPassword
+                      ? "Hide password"
+                      : "Show password"
+                  }
+                  title={
                     showPassword
                       ? "Hide password"
                       : "Show password"
@@ -254,15 +358,15 @@ const Login = ({ onClose }) => {
                     <FaEye />
                   )}
                 </button>
-
               </div>
 
-              {/* OPTIONS */}
+              {/* =================================================
+                  OPTIONS
+              ================================================= */}
 
               <div className="login-options">
 
                 <label>
-
                   <input
                     type="checkbox"
                     checked={remember}
@@ -276,7 +380,6 @@ const Login = ({ onClose }) => {
                   <span>
                     Remember me
                   </span>
-
                 </label>
 
                 <Link to="/forgot-password">
@@ -285,7 +388,7 @@ const Login = ({ onClose }) => {
 
               </div>
 
-              {/* LOGIN */}
+              {/* LOGIN BUTTON */}
 
               <button
                 type="submit"
@@ -296,19 +399,24 @@ const Login = ({ onClose }) => {
 
             </form>
 
-            {/* OR */}
+            {/* =================================================
+                OR
+            ================================================= */}
 
             <div className="or-divider">
               <span>OR</span>
             </div>
 
-            {/* SOCIAL */}
+            {/* =================================================
+                SOCIAL LOGIN
+            ================================================= */}
 
             <div className="social-login">
 
               <button
                 type="button"
                 aria-label="Google login"
+                title="Google"
               >
                 <FaGoogle />
               </button>
@@ -316,6 +424,7 @@ const Login = ({ onClose }) => {
               <button
                 type="button"
                 aria-label="Facebook login"
+                title="Facebook"
               >
                 <FaFacebookF />
               </button>
@@ -323,30 +432,29 @@ const Login = ({ onClose }) => {
               <button
                 type="button"
                 aria-label="Apple login"
+                title="Apple"
               >
                 <FaApple />
               </button>
 
             </div>
 
-            {/* REGISTER */}
+            {/* =================================================
+                REGISTER
+            ================================================= */}
 
             <p className="switch-auth">
-
               Don't have an account?
 
               <Link to="/register">
                 Create Account
               </Link>
-
             </p>
 
           </div>
-
         </div>
 
       </div>
-
     </div>
   );
 };

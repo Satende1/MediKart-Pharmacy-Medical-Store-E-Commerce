@@ -1,1078 +1,919 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 import {
     FaCheckCircle,
     FaBox,
     FaTruck,
-    FaHome,
     FaMapMarkerAlt,
-    FaCreditCard,
     FaArrowLeft,
     FaShoppingBag,
-    FaStar,
     FaTimesCircle,
-    FaEye,
+    FaCalendarAlt,
+    FaShippingFast,
+    FaTimes,
+    FaSearch,
+    FaCopy,
 } from "react-icons/fa";
 
-import FeedbackPopup from "../../components/Feedback/Feedback.js";
+import { toast } from "react-toastify";
 
+import Footer from "../../components/Footer/Footer.js";
 import "./Orders.css";
 
-const Order = () => {
+const Orders = () => {
     const navigate = useNavigate();
 
     // =====================================================
-    // STATES
+    // STATE
     // =====================================================
 
-    const [showFeedback, setShowFeedback] = useState(false);
+    const [orders, setOrders] = useState([]);
+    const [filterTab, setFilterTab] = useState("all");
+    const [searchQuery, setSearchQuery] = useState("");
 
-    const [cancelled, setCancelled] = useState(false);
-
-    const [showCancelConfirm, setShowCancelConfirm] =
-        useState(false);
-
-    const [order, setOrder] = useState(null);
+    const [cancellingOrder, setCancellingOrder] = useState(null);
+    const [cancelReason, setCancelReason] = useState(
+        "Found a better price elsewhere"
+    );
 
     // =====================================================
-    // LOAD ORDER
+    // LOAD ORDERS
     // =====================================================
+
+    const loadOrders = () => {
+        try {
+            const savedOrders = JSON.parse(
+                localStorage.getItem("orders") || "[]"
+            );
+
+            setOrders(Array.isArray(savedOrders) ? savedOrders : []);
+        } catch (error) {
+            console.error("Error loading orders:", error);
+            setOrders([]);
+        }
+    };
 
     useEffect(() => {
-        let savedOrder = null;
+        loadOrders();
 
-        try {
-            savedOrder = JSON.parse(
-                localStorage.getItem("latestOrder")
-            );
-        } catch (error) {
-            console.error(
-                "Error loading latest order:",
-                error
-            );
-        }
-
-        // =================================================
-        // DEMO ORDER
-        // =================================================
-
-        const demoOrder = {
-            orderId: "MED20260818001",
-
-            orderDate: "18 Aug 2026",
-
-            paymentMethod: "Cash on Delivery",
-
-            status: "Out for Delivery",
-
-            customer: {
-                name: "Satender Kashyap",
-                phone: "9876543210",
-                address: "New Delhi, Delhi, India",
-                pincode: "110001",
-            },
-
-            items: [
-                {
-                    id: 300,
-
-                    name: "Dolo 650 Tablet",
-
-                    brand: "Micro Labs",
-
-                    image: "/images/dolo650.png",
-
-                    price: 35,
-
-                    originalPrice: 45,
-
-                    quantity: 2,
-                },
-            ],
-
-            priceDetails: {
-                deliveryCharge: 0,
-            },
+        const handleOrderUpdate = () => {
+            loadOrders();
         };
 
-        const finalOrder =
-            savedOrder || demoOrder;
+        window.addEventListener("ordersUpdated", handleOrderUpdate);
 
-        setOrder(finalOrder);
-
-        // =================================================
-        // CHECK CANCELLED ORDER
-        // =================================================
-
-        const cancelledOrder =
-            localStorage.getItem(
-                `cancelled_${finalOrder.orderId}`
-            );
-
-        if (cancelledOrder === "true") {
-            setCancelled(true);
-        }
+        return () => {
+            window.removeEventListener("ordersUpdated", handleOrderUpdate);
+        };
     }, []);
 
     // =====================================================
-    // LOADING
+    // FORMAT ADDRESS
     // =====================================================
 
-    if (!order) {
-        return (
-            <div className="order-loading">
-                <div className="order-loader"></div>
+    const formatAddress = (address) => {
+        if (!address) {
+            return "Delivery address not available";
+        }
 
-                <h2>
-                    Loading Order...
-                </h2>
-            </div>
-        );
-    }
+        if (typeof address === "string") {
+            return address;
+        }
 
-    // =====================================================
-    // PRICE CALCULATION
-    // =====================================================
+        const parts = [
+            address.name,
+            address.address,
+            address.street,
+            address.city,
+            address.state,
+            address.pincode ? `PIN: ${address.pincode}` : null,
+        ].filter(Boolean);
 
-    /*
-        originalPrice = MRP
-        price         = Selling Price
-
-        Example:
-
-        MRP = ₹45
-        Selling Price = ₹35
-        Quantity = 2
-
-        Item Total:
-        ₹45 × 2 = ₹90
-
-        Discount:
-        (₹45 - ₹35) × 2 = ₹20
-
-        Final Amount:
-        ₹90 - ₹20 = ₹70
-    */
+        return parts.length
+            ? parts.join(", ")
+            : "Address details not available";
+    };
 
     // =====================================================
-    // ITEM TOTAL / MRP TOTAL
+    // FORMAT DATE
     // =====================================================
 
-    const itemTotal = (
-        order.items || []
-    ).reduce(
-        (total, item) => {
-            const mrp =
-                Number(
-                    item.originalPrice ??
-                    item.price
-                ) || 0;
+    const formatDate = (date) => {
+        if (!date) {
+            return "Date not available";
+        }
 
-            const quantity =
-                Number(item.quantity) || 1;
+        const parsedDate = new Date(date);
 
-            return (
-                total +
-                mrp * quantity
-            );
-        },
-        0
-    );
+        if (Number.isNaN(parsedDate.getTime())) {
+            return String(date);
+        }
+
+        return parsedDate.toLocaleDateString("en-IN", {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+        });
+    };
 
     // =====================================================
-    // TOTAL DISCOUNT
+    // GET ORDER ITEMS
     // =====================================================
 
-    const discount = (
-        order.items || []
-    ).reduce(
-        (total, item) => {
-            const mrp =
-                Number(
-                    item.originalPrice ??
-                    item.price
-                ) || 0;
+    const getOrderItems = (order) => {
+        if (Array.isArray(order.items)) {
+            return order.items;
+        }
 
-            const sellingPrice =
-                Number(item.price) || 0;
+        if (Array.isArray(order.products)) {
+            return order.products;
+        }
 
-            const quantity =
-                Number(item.quantity) || 1;
+        if (order.product) {
+            return [order.product];
+        }
 
-            const itemDiscount =
-                Math.max(
-                    mrp - sellingPrice,
-                    0
-                ) * quantity;
-
-            return (
-                total +
-                itemDiscount
-            );
-        },
-        0
-    );
+        return [];
+    };
 
     // =====================================================
-    // DELIVERY CHARGE
+    // STATUS BADGE
     // =====================================================
 
-    const deliveryCharge =
-        Number(
-            order.priceDetails
-                ?.deliveryCharge
-        ) || 0;
+    const getStatusBadge = (status) => {
+        const currentStatus = String(
+            status || "Processing"
+        ).toLowerCase();
+
+        if (currentStatus.includes("cancel")) {
+            return {
+                label: "Cancelled",
+                className: "status-cancelled",
+                icon: <FaTimesCircle />,
+            };
+        }
+
+        if (currentStatus.includes("deliver")) {
+            return {
+                label: "Delivered",
+                className: "status-delivered",
+                icon: <FaCheckCircle />,
+            };
+        }
+
+        if (currentStatus.includes("out")) {
+            return {
+                label: "Out for Delivery",
+                className: "status-out",
+                icon: <FaShippingFast />,
+            };
+        }
+
+        if (
+            currentStatus.includes("ship") ||
+            currentStatus.includes("transit")
+        ) {
+            return {
+                label: "In Transit",
+                className: "status-transit",
+                icon: <FaTruck />,
+            };
+        }
+
+        if (currentStatus.includes("pack")) {
+            return {
+                label: "Packed",
+                className: "status-packed",
+                icon: <FaBox />,
+            };
+        }
+
+        return {
+            label: status || "Order Confirmed",
+            className: "status-confirmed",
+            icon: <FaBox />,
+        };
+    };
 
     // =====================================================
-    // FINAL PAYABLE AMOUNT
+    // COPY ORDER ID
     // =====================================================
 
-    const totalAmount =
-        itemTotal -
-        discount +
-        deliveryCharge;
+    const handleCopyOrderId = async (orderId) => {
+        try {
+            await navigator.clipboard.writeText(String(orderId));
 
-    // =====================================================
-    // FEEDBACK STATUS
-    // =====================================================
-
-    const feedbackSubmitted =
-        localStorage.getItem(
-            `feedbackSubmitted_${order.orderId}`
-        ) === "true";
+            toast.success("Order ID copied!");
+        } catch (error) {
+            console.error("Copy failed:", error);
+            toast.error("Unable to copy Order ID");
+        }
+    };
 
     // =====================================================
     // CANCEL ORDER
     // =====================================================
 
-    const handleCancelOrder = () => {
-        const updatedOrder = {
-            ...order,
-            status: "Cancelled",
-        };
+    const handleConfirmCancel = () => {
+        if (!cancellingOrder) {
+            return;
+        }
 
-        setCancelled(true);
+        try {
+            const existingOrders = JSON.parse(
+                localStorage.getItem("orders") || "[]"
+            );
 
-        setOrder(updatedOrder);
+            const targetId =
+                cancellingOrder.orderId || cancellingOrder.id;
 
-        setShowCancelConfirm(false);
+            const cancelledTime = new Date().toLocaleString("en-IN");
 
-        localStorage.setItem(
-            `cancelled_${order.orderId}`,
-            "true"
-        );
+            const updatedOrders = existingOrders.map((item) => {
+                const itemId = item.orderId || item.id;
 
-        localStorage.setItem(
-            "latestOrder",
-            JSON.stringify(updatedOrder)
-        );
+                if (String(itemId) === String(targetId)) {
+                    return {
+                        ...item,
+                        status: "Cancelled",
+                        cancelReason,
+                        cancelledAt: cancelledTime,
+                        cancellationDetails: {
+                            reason: cancelReason,
+                            cancelledAt: cancelledTime,
+                        },
+                    };
+                }
+
+                return item;
+            });
+
+            localStorage.setItem(
+                "orders",
+                JSON.stringify(updatedOrders)
+            );
+
+            setOrders(updatedOrders);
+
+            window.dispatchEvent(new Event("ordersUpdated"));
+
+            toast.info(`Order #${targetId} has been cancelled.`);
+
+            setCancellingOrder(null);
+        } catch (error) {
+            console.error("Error cancelling order:", error);
+
+            toast.error("Failed to cancel order.");
+        }
     };
 
     // =====================================================
-    // TRACK ORDER
+    // FILTER ORDERS
     // =====================================================
 
-    const handleTrackOrder = () => {
-        navigate(
-            `/track-order/${order.orderId}`
+    const filteredOrders = orders.filter((order) => {
+        const status = String(order.status || "").toLowerCase();
+
+        const orderId = String(
+            order.orderId || order.id || ""
+        ).toLowerCase();
+
+        // Search
+        if (searchQuery.trim()) {
+            const query = searchQuery.toLowerCase().trim();
+
+            const matchesOrderId = orderId.includes(query);
+
+            const items = getOrderItems(order);
+
+            const matchesProduct = items.some((item) =>
+                String(item.name || item.title || "")
+                    .toLowerCase()
+                    .includes(query)
+            );
+
+            if (!matchesOrderId && !matchesProduct) {
+                return false;
+            }
+        }
+
+        // Active
+        if (filterTab === "active") {
+            return (
+                !status.includes("deliver") &&
+                !status.includes("cancel")
+            );
+        }
+
+        // Delivered
+        if (filterTab === "delivered") {
+            return status.includes("deliver");
+        }
+
+        // Cancelled
+        if (filterTab === "cancelled") {
+            return status.includes("cancel");
+        }
+
+        return true;
+    });
+
+    // =====================================================
+    // COUNTS
+    // =====================================================
+
+    const activeCount = orders.filter((order) => {
+        const status = String(order.status || "").toLowerCase();
+
+        return (
+            !status.includes("deliver") &&
+            !status.includes("cancel")
         );
-    };
+    }).length;
+
+    const deliveredCount = orders.filter((order) =>
+        String(order.status || "")
+            .toLowerCase()
+            .includes("deliver")
+    ).length;
+
+    const cancelledCount = orders.filter((order) =>
+        String(order.status || "")
+            .toLowerCase()
+            .includes("cancel")
+    ).length;
 
     // =====================================================
-    // VIEW PRODUCT
+    // CANCEL REASONS
     // =====================================================
 
-    const handleViewProduct = (item) => {
-        navigate(
-            `/product/${item.id}`
-        );
-    };
-
-    // =====================================================
-    // STATUS STEPS
-    // =====================================================
-
-    const statusSteps = [
-        {
-            title: "Order Placed",
-
-            description:
-                "Your order has been placed successfully",
-
-            icon: <FaCheckCircle />,
-
-            completed:
-                !cancelled,
-        },
-
-        {
-            title: "Packed",
-
-            description:
-                "Your item has been packed",
-
-            icon: <FaBox />,
-
-            completed:
-                !cancelled &&
-                [
-                    "Packed",
-                    "Shipped",
-                    "Out for Delivery",
-                    "Delivered",
-                ].includes(
-                    order.status
-                ),
-        },
-
-        {
-            title: "Shipped",
-
-            description:
-                "Your order is on the way",
-
-            icon: <FaTruck />,
-
-            completed:
-                !cancelled &&
-                [
-                    "Shipped",
-                    "Out for Delivery",
-                    "Delivered",
-                ].includes(
-                    order.status
-                ),
-        },
-
-        {
-            title: "Out for Delivery",
-
-            description:
-                "Your order is out for delivery",
-
-            icon: <FaHome />,
-
-            completed:
-                !cancelled &&
-                [
-                    "Out for Delivery",
-                    "Delivered",
-                ].includes(
-                    order.status
-                ),
-        },
-
-        {
-            title: "Delivered",
-
-            description:
-                "Your order has been delivered",
-
-            icon: <FaCheckCircle />,
-
-            completed:
-                !cancelled &&
-                order.status ===
-                "Delivered",
-        },
+    const cancelReasons = [
+        "Found a better price elsewhere",
+        "Order placed by mistake",
+        "Delivery time is too long",
+        "Need to change delivery address or phone",
+        "Expected faster delivery",
+        "Product no longer required",
+        "Ordered wrong product",
+        "Other reasons",
     ];
 
     // =====================================================
-    // RETURN
+    // RENDER
     // =====================================================
 
     return (
         <div className="order-page">
-
             {/* =================================================
-                HEADER
-            ================================================= */}
+          HEADER
+      ================================================= */}
 
             <div className="order-header">
+                <div className="order-header-left">
+                    <button
+                        className="back-button"
+                        onClick={() => navigate(-1)}
+                    >
+                        <FaArrowLeft />
+                        Back
+                    </button>
 
-                <button
-                    className="back-button"
-                    onClick={() =>
-                        navigate(-1)
-                    }
-                >
-                    <FaArrowLeft />
-
-                    Back
-                </button>
-
-                <div>
-                    <h1>
-                        My Order
-                    </h1>
+                    <h1>My Orders</h1>
 
                     <p>
-                        MEDIKART Order Details
+                        Track shipments, cancel orders, or review your
+                        complete purchase history.
                     </p>
                 </div>
 
-            </div>
-
-            <div className="order-container">
-
-                {/* =================================================
-                    ORDER TOP
-                ================================================= */}
-
-                <div className="order-top-card">
-
-                    <div>
-
-                        <h2>
-                            Order #
-                            {order.orderId}
-                        </h2>
-
-                        <p>
-                            Ordered on{" "}
-                            {order.orderDate}
-                        </p>
-
-                    </div>
-
-                    <div className="order-status">
-
-                        <span>
-                            Current Status
-                        </span>
-
-                        <strong
-                            className={
-                                cancelled
-                                    ? "cancelled-status"
-                                    : ""
-                            }
-                        >
-                            {cancelled
-                                ? "Cancelled"
-                                : order.status}
-                        </strong>
-
-                    </div>
-
+                <div className="order-header-actions">
+                    <Link to="/track-order" className="track-id-button">
+                        <FaShippingFast />
+                        Track by ID
+                    </Link>
                 </div>
-
-                {/* =================================================
-                    CANCELLED MESSAGE
-                ================================================= */}
-
-                {cancelled && (
-                    <div className="cancelled-box">
-
-                        <FaTimesCircle />
-
-                        <div>
-
-                            <h3>
-                                Order Cancelled
-                            </h3>
-
-                            <p>
-                                This order has been
-                                cancelled successfully.
-                            </p>
-
-                        </div>
-
-                    </div>
-                )}
-
-                {/* =================================================
-                    ORDER ITEMS
-                ================================================= */}
-
-                <div className="order-card">
-
-                    <div className="section-title">
-
-                        <FaShoppingBag />
-
-                        <h2>
-                            Order Items
-                        </h2>
-
-                    </div>
-
-                    {order.items?.map(
-                        (item, index) => (
-
-                            <div
-                                className="order-item"
-                                key={
-                                    item.id ||
-                                    index
-                                }
-                            >
-
-                                {/* PRODUCT IMAGE */}
-
-                                <div className="product-image-box">
-
-                                    <img
-                                        src={
-                                            item.image
-                                        }
-                                        alt={
-                                            item.name
-                                        }
-                                        onError={(
-                                            e
-                                        ) => {
-                                            e.currentTarget.src =
-                                                "/images/medicine-placeholder.png";
-                                        }}
-                                    />
-
-                                </div>
-
-                                {/* PRODUCT INFO */}
-
-                                <div className="product-info">
-
-                                    <h3>
-                                        {item.name}
-                                    </h3>
-
-                                    {item.brand && (
-                                        <p className="brand">
-                                            Brand:{" "}
-                                            <strong>
-                                                {
-                                                    item.brand
-                                                }
-                                            </strong>
-                                        </p>
-                                    )}
-
-                                    <p className="quantity">
-                                        Quantity:{" "}
-                                        <strong>
-                                            {
-                                                item.quantity
-                                            }
-                                        </strong>
-                                    </p>
-
-                                    <div className="product-price">
-
-                                        <strong>
-                                            ₹
-                                            {
-                                                item.price
-                                            }
-                                        </strong>
-
-                                        {item.originalPrice &&
-                                            Number(
-                                                item.originalPrice
-                                            ) >
-                                            Number(
-                                                item.price
-                                            ) && (
-                                                <span>
-                                                    ₹
-                                                    {
-                                                        item.originalPrice
-                                                    }
-                                                </span>
-                                            )}
-
-                                    </div>
-
-                                </div>
-
-                                {/* VIEW PRODUCT */}
-
-                                <button
-                                    className="view-product-btn"
-                                    onClick={() =>
-                                        handleViewProduct(
-                                            item
-                                        )
-                                    }
-                                >
-                                    <FaEye />
-
-                                    View Product
-                                </button>
-
-                            </div>
-                        )
-                    )}
-
-                </div>
-
-                {/* =================================================
-                    TRACK ORDER
-                ================================================= */}
-
-                <div className="order-card">
-
-                    <div className="section-title">
-
-                        <FaTruck />
-
-                        <h2>
-                            Track Your Order
-                        </h2>
-
-                    </div>
-
-                    {cancelled ? (
-
-                        <div className="cancelled-tracking">
-
-                            <FaTimesCircle />
-
-                            <h3>
-                                Order Cancelled
-                            </h3>
-
-                            <p>
-                                Tracking is unavailable
-                                for cancelled orders.
-                            </p>
-
-                        </div>
-
-                    ) : (
-
-                        <div className="tracking">
-
-                            {statusSteps.map(
-                                (
-                                    step,
-                                    index
-                                ) => (
-
-                                    <div
-                                        className={`tracking-step ${step.completed
-                                            ? "completed"
-                                            : ""
-                                            }`}
-                                        key={
-                                            index
-                                        }
-                                    >
-
-                                        <div className="tracking-icon">
-                                            {
-                                                step.icon
-                                            }
-                                        </div>
-
-                                        <div className="tracking-content">
-
-                                            <h3>
-                                                {
-                                                    step.title
-                                                }
-                                            </h3>
-
-                                            <p>
-                                                {
-                                                    step.description
-                                                }
-                                            </p>
-
-                                        </div>
-
-                                        {index <
-                                            statusSteps.length -
-                                            1 && (
-                                                <div
-                                                    className={`tracking-line ${step.completed
-                                                        ? "active"
-                                                        : ""
-                                                        }`}
-                                                />
-                                            )}
-
-                                    </div>
-
-                                )
-                            )}
-
-                        </div>
-
-                    )}
-
-                    {!cancelled && (
-                        <button
-                            className="track-order-btn"
-                            onClick={
-                                handleTrackOrder
-                            }
-                        >
-                            <FaTruck />
-
-                            Track Order
-                        </button>
-                    )}
-
-                </div>
-
-                {/* =================================================
-                    ADDRESS + PAYMENT
-                ================================================= */}
-
-                <div className="two-column">
-
-                    {/* ADDRESS */}
-
-                    <div className="order-card">
-
-                        <div className="section-title">
-
-                            <FaMapMarkerAlt />
-
-                            <h2>
-                                Delivery Address
-                            </h2>
-
-                        </div>
-
-                        <div className="address-box">
-
-                            <h3>
-                                {
-                                    order.customer
-                                        ?.name
-                                }
-                            </h3>
-
-                            <p>
-                                {
-                                    order.customer
-                                        ?.address
-                                }
-                            </p>
-
-                            <p>
-                                <strong>
-                                    Pincode:
-                                </strong>{" "}
-                                {
-                                    order.customer
-                                        ?.pincode
-                                }
-                            </p>
-
-                            <p>
-                                <strong>
-                                    Phone:
-                                </strong>{" "}
-                                {
-                                    order.customer
-                                        ?.phone
-                                }
-                            </p>
-
-                        </div>
-
-                        <button
-                            className="map-button"
-                            onClick={() =>
-                                window.open(
-                                    `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                                        order.customer
-                                            ?.address ||
-                                        ""
-                                    )}`,
-                                    "_blank"
-                                )
-                            }
-                        >
-                            <FaMapMarkerAlt />
-
-                            Show on Map
-                        </button>
-
-                    </div>
-
-                    {/* PAYMENT */}
-
-                    <div className="order-card">
-
-                        <div className="section-title">
-
-                            <FaCreditCard />
-
-                            <h2>
-                                Payment Information
-                            </h2>
-
-                        </div>
-
-                        <div className="payment-box">
-
-                            <p>
-                                <strong>
-                                    Payment Method
-                                </strong>
-                            </p>
-
-                            <p>
-                                {
-                                    order.paymentMethod
-                                }
-                            </p>
-
-                            <div className="payment-status">
-
-                                {order.paymentMethod ===
-                                    "Cash on Delivery"
-                                    ? "Payment will be collected on delivery"
-                                    : "Payment Successful"}
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-                {/* =================================================
-                    PRICE DETAILS
-                ================================================= */}
-
-                <div className="order-card">
-
-                    <div className="section-title">
-
-                        <FaCreditCard />
-
-                        <h2>
-                            Price Details
-                        </h2>
-
-                    </div>
-
-                    <div className="price-details">
-
-                        {/* ITEM TOTAL */}
-
-                        <div>
-
-                            <span>
-                                Item Total
-                            </span>
-
-                            <span>
-                                ₹
-                                {itemTotal.toFixed(
-                                    2
-                                )}
-                            </span>
-
-                        </div>
-
-                        {/* DISCOUNT */}
-
-                        <div className="discount-row">
-
-                            <span>
-                                Discount
-                            </span>
-
-                            <span>
-                                - ₹
-                                {discount.toFixed(
-                                    2
-                                )}
-                            </span>
-
-                        </div>
-
-                        {/* DELIVERY */}
-
-                        <div>
-
-                            <span>
-                                Delivery Charges
-                            </span>
-
-                            <span>
-
-                                {deliveryCharge ===
-                                    0
-                                    ? "FREE"
-                                    : `₹${deliveryCharge.toFixed(
-                                        2
-                                    )}`}
-
-                            </span>
-
-                        </div>
-
-                        <hr />
-
-                        {/* TOTAL */}
-
-                        <div className="total-row">
-
-                            <strong>
-                                Total Amount
-                            </strong>
-
-                            <strong>
-                                ₹
-                                {totalAmount.toFixed(
-                                    2
-                                )}
-                            </strong>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-                {/* =================================================
-                    ACTION BUTTONS
-                ================================================= */}
-
-                <div className="order-actions">
-
-                    {/* CANCEL */}
-
-                    {!cancelled && (
-                        <button
-                            className="cancel-order-btn"
-                            onClick={() =>
-                                setShowCancelConfirm(
-                                    true
-                                )
-                            }
-                        >
-                            <FaTimesCircle />
-
-                            Cancel Order
-                        </button>
-                    )}
-
-                    {/* FEEDBACK */}
-
-                    {!feedbackSubmitted &&
-                        !cancelled && (
-                            <button
-                                className="feedback-btn"
-                                onClick={() =>
-                                    setShowFeedback(
-                                        true
-                                    )
-                                }
-                            >
-                                <FaStar />
-
-                                Give Feedback
-                            </button>
-                        )}
-
-                    {/* CONTINUE SHOPPING */}
-
-                    <button
-                        className="continue-button"
-                        onClick={() =>
-                            navigate("/shop")
-                        }
-                    >
-                        Continue Shopping
-                    </button>
-
-                    {/* HOME */}
-
-                    <button
-                        className="home-button"
-                        onClick={() =>
-                            navigate("/")
-                        }
-                    >
-                        Go to Home
-                    </button>
-
-                </div>
-
             </div>
 
             {/* =================================================
-                CANCEL CONFIRMATION POPUP
-            ================================================= */}
+          MAIN
+      ================================================= */}
 
-            {showCancelConfirm && (
+            <div className="order-container">
+                {/* SEARCH & FILTER */}
 
-                <div className="cancel-overlay">
+                <div className="order-filter-box">
+                    <div className="order-tabs">
+                        {[
+                            {
+                                key: "all",
+                                label: "All Orders",
+                                count: orders.length,
+                            },
+                            {
+                                key: "active",
+                                label: "Active",
+                                count: activeCount,
+                            },
+                            {
+                                key: "delivered",
+                                label: "Delivered",
+                                count: deliveredCount,
+                            },
+                            {
+                                key: "cancelled",
+                                label: "Cancelled",
+                                count: cancelledCount,
+                            },
+                        ].map((tab) => (
+                            <button
+                                key={tab.key}
+                                type="button"
+                                className={`order-tab ${filterTab === tab.key ? "active" : ""
+                                    }`}
+                                onClick={() => setFilterTab(tab.key)}
+                            >
+                                {tab.label}
 
-                    <div className="cancel-popup">
+                                <span className="tab-count">
+                                    {tab.count}
+                                </span>
+                            </button>
+                        ))}
+                    </div>
 
-                        <div className="cancel-icon">
-                            <FaTimesCircle />
-                        </div>
+                    <div className="order-search">
+                        <FaSearch />
 
-                        <h2>
-                            Cancel Order?
-                        </h2>
+                        <input
+                            type="text"
+                            placeholder="Search by Order ID or Product..."
+                            value={searchQuery}
+                            onChange={(e) =>
+                                setSearchQuery(e.target.value)
+                            }
+                        />
+                    </div>
+                </div>
+
+                {/* =================================================
+            EMPTY STATE
+        ================================================= */}
+
+                {filteredOrders.length === 0 ? (
+                    <div className="empty-orders">
+                        <FaShoppingBag className="empty-orders-icon" />
+
+                        <h2>No Orders Found</h2>
 
                         <p>
-                            Are you sure you want
-                            to cancel this order?
+                            {searchQuery
+                                ? `No orders matched your search "${searchQuery}".`
+                                : "You don't have any orders in this category."}
                         </p>
 
-                        <div className="cancel-actions">
+                        <button
+                            onClick={() => navigate("/shop")}
+                            className="start-shopping-button"
+                        >
+                            Start Shopping
+                        </button>
+                    </div>
+                ) : (
+                    /* =================================================
+                       ORDERS LIST
+                    ================================================= */
+
+                    <div className="orders-list">
+                        {filteredOrders.map((order, index) => {
+                            const orderId =
+                                order.orderId ||
+                                order.id ||
+                                `MK${10000 + index}`;
+
+                            const items = getOrderItems(order);
+
+                            const status =
+                                order.status || "Order Confirmed";
+
+                            const badge = getStatusBadge(status);
+
+                            const normalizedStatus =
+                                String(status).toLowerCase();
+
+                            const isCancelled =
+                                normalizedStatus.includes("cancel");
+
+                            const isDelivered =
+                                normalizedStatus.includes("deliver");
+
+                            const productSubtotal = items.reduce(
+                                (sum, item) =>
+                                    sum +
+                                    Number(
+                                        item.price ||
+                                        item.discountedPrice ||
+                                        0
+                                    ) *
+                                    Number(item.quantity || 1),
+                                0
+                            );
+
+                            const discount = Number(
+                                order.discount || 0
+                            );
+
+                            const deliveryCharge = Number(
+                                order.deliveryCharge || 0
+                            );
+
+                            const totalAmount =
+                                order.totalAmount !== undefined
+                                    ? Number(order.totalAmount)
+                                    : productSubtotal -
+                                    discount +
+                                    deliveryCharge;
+
+                            return (
+                                <div
+                                    className="order-card"
+                                    key={`${orderId}-${index}`}
+                                >
+                                    {/* ORDER HEADER */}
+
+                                    <div className="order-card-header">
+                                        <div className="order-header-info">
+                                            {/* ORDER ID */}
+
+                                            <div className="order-info-block">
+                                                <span>Order ID</span>
+
+                                                <h3>
+                                                    #{orderId}
+
+                                                    <button
+                                                        type="button"
+                                                        onClick={() =>
+                                                            handleCopyOrderId(orderId)
+                                                        }
+                                                        title="Copy Order ID"
+                                                        className="copy-order-button"
+                                                    >
+                                                        <FaCopy />
+                                                    </button>
+                                                </h3>
+                                            </div>
+
+                                            {/* DATE */}
+
+                                            <div className="order-info-block separated">
+                                                <span>Order Placed</span>
+
+                                                <p>
+                                                    {formatDate(
+                                                        order.orderDate ||
+                                                        order.date
+                                                    )}
+                                                </p>
+                                            </div>
+
+                                            {/* TOTAL */}
+
+                                            <div className="order-info-block separated">
+                                                <span>Total Amount</span>
+
+                                                <p className="order-total">
+                                                    ₹
+                                                    {totalAmount.toLocaleString(
+                                                        "en-IN"
+                                                    )}
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        {/* STATUS */}
+
+                                        <div
+                                            className={`order-status ${badge.className}`}
+                                        >
+                                            {badge.icon}
+                                            {badge.label}
+                                        </div>
+                                    </div>
+
+                                    {/* =================================================
+                      PRODUCTS
+                  ================================================= */}
+
+                                    <div className="order-products">
+                                        {items.length === 0 ? (
+                                            <p className="no-product-details">
+                                                No product details available.
+                                            </p>
+                                        ) : (
+                                            <div className="products-list">
+                                                {items.map(
+                                                    (item, itemIndex) => {
+                                                        const quantity = Number(
+                                                            item.quantity || 1
+                                                        );
+
+                                                        const price = Number(
+                                                            item.price ||
+                                                            item.discountedPrice ||
+                                                            0
+                                                        );
+
+                                                        return (
+                                                            <div
+                                                                className="order-product"
+                                                                key={
+                                                                    item.id ||
+                                                                    itemIndex
+                                                                }
+                                                            >
+                                                                <div className="product-left">
+                                                                    {/* IMAGE */}
+
+                                                                    <div className="order-product-image">
+                                                                        {item.image ? (
+                                                                            <img
+                                                                                src={
+                                                                                    item.image
+                                                                                }
+                                                                                alt={
+                                                                                    item.name ||
+                                                                                    item.title ||
+                                                                                    "Product"
+                                                                                }
+                                                                                onError={(
+                                                                                    event
+                                                                                ) => {
+                                                                                    event.currentTarget.style.display =
+                                                                                        "none";
+                                                                                }}
+                                                                            />
+                                                                        ) : (
+                                                                            <FaBox />
+                                                                        )}
+                                                                    </div>
+
+                                                                    {/* DETAILS */}
+
+                                                                    <div className="order-product-details">
+                                                                        <h4>
+                                                                            {item.name ||
+                                                                                item.title ||
+                                                                                "Healthcare Item"}
+                                                                        </h4>
+
+                                                                        <p>
+                                                                            Qty:{" "}
+                                                                            <strong>
+                                                                                {quantity}
+                                                                            </strong>
+
+                                                                            <span>
+                                                                                |
+                                                                            </span>
+
+                                                                            ₹
+                                                                            {price.toLocaleString(
+                                                                                "en-IN"
+                                                                            )}{" "}
+                                                                            each
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+
+                                                                {/* ITEM TOTAL */}
+
+                                                                <strong className="item-total">
+                                                                    ₹
+                                                                    {(
+                                                                        price *
+                                                                        quantity
+                                                                    ).toLocaleString(
+                                                                        "en-IN"
+                                                                    )}
+                                                                </strong>
+                                                            </div>
+                                                        );
+                                                    }
+                                                )}
+                                            </div>
+                                        )}
+
+                                        {/* =================================================
+                        DELIVERY INFO
+                    ================================================= */}
+
+                                        <div className="delivery-info">
+                                            <div className="delivery-address">
+                                                <FaMapMarkerAlt />
+
+                                                <span>
+                                                    <strong>
+                                                        Deliver To:
+                                                    </strong>{" "}
+                                                    {formatAddress(
+                                                        order.address ||
+                                                        order.deliveryAddress ||
+                                                        order.customer
+                                                    )}
+                                                </span>
+                                            </div>
+
+                                            <div className="delivery-date">
+                                                <FaCalendarAlt />
+
+                                                <span>
+                                                    <strong>
+                                                        Est. Delivery:
+                                                    </strong>{" "}
+                                                    {order.estimatedDelivery ||
+                                                        "2-3 Days"}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* =================================================
+                      ACTION FOOTER
+                  ================================================= */}
+
+                                    <div className="order-card-footer">
+                                        <div className="payment-info">
+                                            Payment:{" "}
+                                            <strong>
+                                                {order.paymentMethod ||
+                                                    "Online Payment"}
+                                            </strong>
+                                        </div>
+
+                                        <div className="order-actions">
+                                            {/* TRACK */}
+
+                                            {!isCancelled && (
+                                                <button
+                                                    type="button"
+                                                    className="track-shipment-button"
+                                                    onClick={() =>
+                                                        navigate(
+                                                            `/track-order?id=${encodeURIComponent(
+                                                                orderId
+                                                            )}`
+                                                        )
+                                                    }
+                                                >
+                                                    <FaShippingFast />
+                                                    Track Shipment
+                                                </button>
+                                            )}
+
+                                            {/* CANCEL */}
+
+                                            {!isCancelled &&
+                                                !isDelivered && (
+                                                    <button
+                                                        type="button"
+                                                        className="cancel-order-button"
+                                                        onClick={() => {
+                                                            setCancelReason(
+                                                                "Found a better price elsewhere"
+                                                            );
+
+                                                            setCancellingOrder(
+                                                                order
+                                                            );
+                                                        }}
+                                                    >
+                                                        <FaTimes />
+                                                        Cancel Order
+                                                    </button>
+                                                )}
+
+                                            {/* CANCELLED */}
+
+                                            {isCancelled && (
+                                                <span className="cancelled-text">
+                                                    Cancelled
+                                                    {order.cancelReason
+                                                        ? ` (${order.cancelReason})`
+                                                        : ""}
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                )}
+            </div>
+
+            {/* =================================================
+          CANCEL MODAL
+      ================================================= */}
+
+            {cancellingOrder && (
+                <div
+                    className="cancel-modal-overlay"
+                    onClick={(event) => {
+                        if (
+                            event.target === event.currentTarget
+                        ) {
+                            setCancellingOrder(null);
+                        }
+                    }}
+                >
+                    <div className="cancel-modal">
+                        {/* MODAL HEADER */}
+
+                        <div className="cancel-modal-header">
+                            <h3>
+                                Cancel Order #
+                                {cancellingOrder.orderId ||
+                                    cancellingOrder.id}
+                            </h3>
 
                             <button
-                                className="keep-order-btn"
+                                type="button"
                                 onClick={() =>
-                                    setShowCancelConfirm(
-                                        false
-                                    )
+                                    setCancellingOrder(null)
+                                }
+                                aria-label="Close"
+                            >
+                                <FaTimes />
+                            </button>
+                        </div>
+
+                        <p className="cancel-modal-description">
+                            Are you sure you want to cancel this
+                            order? Please select a reason:
+                        </p>
+
+                        {/* REASONS */}
+
+                        <div className="cancel-reasons">
+                            {cancelReasons.map((reason) => (
+                                <label
+                                    key={reason}
+                                    className={
+                                        cancelReason === reason
+                                            ? "selected"
+                                            : ""
+                                    }
+                                >
+                                    <input
+                                        type="radio"
+                                        name="cancelReason"
+                                        value={reason}
+                                        checked={
+                                            cancelReason === reason
+                                        }
+                                        onChange={(event) =>
+                                            setCancelReason(
+                                                event.target.value
+                                            )
+                                        }
+                                    />
+
+                                    {reason}
+                                </label>
+                            ))}
+                        </div>
+
+                        {/* BUTTONS */}
+
+                        <div className="cancel-modal-buttons">
+                            <button
+                                type="button"
+                                className="keep-order-button"
+                                onClick={() =>
+                                    setCancellingOrder(null)
                                 }
                             >
-                                No, Keep Order
+                                Keep Order
                             </button>
 
                             <button
-                                className="confirm-cancel-btn"
-                                onClick={
-                                    handleCancelOrder
-                                }
+                                type="button"
+                                className="confirm-cancel-button"
+                                onClick={handleConfirmCancel}
                             >
                                 Yes, Cancel Order
                             </button>
-
                         </div>
-
                     </div>
-
                 </div>
             )}
 
-            {/* =================================================
-                FEEDBACK POPUP
-            ================================================= */}
+            {/* FOOTER */}
 
-            {showFeedback && (
-
-                <FeedbackPopup
-                    order={order}
-                    onClose={() =>
-                        setShowFeedback(
-                            false
-                        )
-                    }
-                />
-
-            )}
-
+            <Footer />
         </div>
     );
 };
 
-export default Order;
+export default Orders;

@@ -1,130 +1,162 @@
-/* =========================================
-   PAGE
-========================================= */
+/* =====================================================
+   MEDIKART TRACK ORDER
+===================================================== */
 
-.track-page {
+.track-order-page {
   min-height: 100vh;
-  background: #f1f3f6;
-  padding-bottom: 50px;
-  font-family: Arial, Helvetica, sans-serif;
+  background: #f5f6f8;
   color: #212121;
 }
 
-/* =========================================
-   TOP
-========================================= */
 
-.track-top {
-  max-width: 1200px;
+/* =====================================================
+   HEADER
+===================================================== */
+
+.track-header {
+  background: #ffffff;
+  border-bottom: 1px solid #e1e4e8;
+}
+
+.track-header-inner {
+  width: min(1150px, 94%);
+  min-height: 76px;
+
   margin: auto;
-  padding: 20px 20px 5px;
+
+  display: flex;
+  align-items: center;
+  gap: 15px;
 }
 
 .track-back-btn {
-  border: none;
-  background: transparent;
-  color: #2874f0;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
+  width: 38px;
+  height: 38px;
+
+  border: 1px solid #ddd;
+  border-radius: 50%;
+
+  background: #fff;
+
+  color: #555;
+
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 0;
+  justify-content: center;
+
+  cursor: pointer;
 }
 
-/* =========================================
-   HEADER
-========================================= */
-
-.track-header {
-  max-width: 1200px;
-  margin: auto;
-  padding: 15px 20px 25px;
-
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+.track-back-btn:hover {
+  border-color: #2874f0;
+  color: #2874f0;
 }
 
 .track-header h1 {
-  margin: 0 0 8px;
-  font-size: 28px;
+  margin: 0 0 3px;
+
+  font-size: 22px;
   font-weight: 600;
 }
 
-.order-id-row {
+.track-header p {
+  margin: 0;
+
+  font-size: 12px;
+  color: #777;
+}
+
+.track-header p strong {
+  color: #333;
+}
+
+.track-home-btn {
+  margin-left: auto;
+
+  height: 38px;
+
+  padding: 0 15px;
+
+  border: 1px solid #2874f0;
+  border-radius: 5px;
+
+  color: #2874f0;
+
   display: flex;
   align-items: center;
-  gap: 6px;
-  color: #757575;
-  font-size: 14px;
-}
+  gap: 7px;
 
-.order-id-row strong {
-  color: #212121;
-}
+  text-decoration: none;
 
-.copy-btn {
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  color: #2874f0;
-  padding: 3px;
-}
-
-.continue-shopping {
-  background: #2874f0;
-  color: white;
-  border: none;
-  padding: 11px 22px;
-  border-radius: 2px;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 600;
-  cursor: pointer;
 }
 
-.continue-shopping:hover {
-  background: #1c5dcc;
+.track-home-btn:hover {
+  background: #2874f0;
+  color: #fff;
 }
 
-/* =========================================
-   CONTAINER
-========================================= */
+
+/* =====================================================
+   MAIN
+===================================================== */
 
 .track-container {
-  max-width: 1200px;
-  margin: auto;
-  padding: 0 20px;
+  width: min(1150px, 94%);
+
+  margin: 22px auto 50px;
 }
 
-/* =========================================
-   DELIVERY SUMMARY
-========================================= */
 
-.delivery-summary {
-  background: white;
-  border-radius: 3px;
-  padding: 25px 30px;
+/* =====================================================
+   COMMON CARD
+===================================================== */
+
+.track-card,
+.track-status-card {
+  background: #fff;
+
+  border: 1px solid #e1e4e8;
+
+  border-radius: 8px;
+
+  margin-bottom: 16px;
+}
+
+
+/* =====================================================
+   STATUS CARD
+===================================================== */
+
+.track-status-card {
+  min-height: 125px;
+
+  padding: 20px 24px;
+
+  box-sizing: border-box;
+
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 18px;
-  border: 1px solid #e0e0e0;
 }
 
-.delivery-summary-left {
+.track-status-left {
   display: flex;
   align-items: center;
-  gap: 18px;
+
+  gap: 15px;
 }
 
-.delivery-truck {
+.track-truck-icon {
   width: 58px;
   height: 58px;
+
   border-radius: 50%;
-  background: #e8f5e9;
-  color: #388e3c;
+
+  background: #eef4ff;
+
+  color: #2874f0;
 
   display: flex;
   align-items: center;
@@ -133,529 +165,825 @@
   font-size: 25px;
 }
 
-.small-title {
-  color: #878787;
-  margin: 0 0 5px;
-  font-size: 13px;
+.track-status-left>div:last-child>span {
+  display: block;
+
+  margin-bottom: 3px;
+
+  font-size: 11px;
+
+  color: #888;
 }
 
-.delivery-summary h2 {
-  margin: 0 0 5px;
+.track-status-left h2 {
+  margin: 0 0 6px;
+
   font-size: 20px;
+
+  color: #2874f0;
 }
 
-.delivery-summary span {
-  color: #757575;
-  font-size: 13px;
+.track-status-left p {
+  margin: 0;
+
+  display: flex;
+  align-items: center;
+
+  gap: 6px;
+
+  font-size: 11px;
+
+  color: #777;
 }
 
-.delivery-status {
+.track-status-left p svg {
+  color: #2874f0;
+}
+
+.track-id-box {
+  padding-left: 35px;
+
+  border-left: 1px solid #eee;
+
   text-align: right;
 }
 
-.delivery-status span {
+.track-id-box span {
   display: block;
-  margin-bottom: 7px;
-  color: #878787;
+
+  margin-bottom: 5px;
+
+  font-size: 10px;
+
+  color: #999;
 }
 
-.delivery-status strong {
-  color: #388e3c;
-  font-size: 15px;
+.track-id-box strong {
+  font-size: 13px;
+
+  color: #333;
+
+  letter-spacing: 0.3px;
 }
 
-/* =========================================
-   CARD
-========================================= */
+
+/* =====================================================
+   CARD HEADING
+===================================================== */
 
 .track-card {
-  background: #fff;
-  border-radius: 3px;
-  margin-bottom: 18px;
-  border: 1px solid #e0e0e0;
-  overflow: hidden;
+  padding: 0;
 }
 
-.track-card-header {
-  padding: 20px 25px;
-  border-bottom: 1px solid #eeeeee;
+.track-card-heading {
+  padding: 20px 24px;
 
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  border-bottom: 1px solid #eee;
 }
 
-.track-card-header h2 {
+.track-card-heading h2 {
+  margin: 0 0 5px;
+
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.track-card-heading p {
   margin: 0;
-  font-size: 19px;
-  font-weight: 600;
+
+  font-size: 11px;
+
+  color: #888;
 }
 
-.track-card-header p {
-  margin: 5px 0 0;
-  color: #878787;
-  font-size: 13px;
+
+/* =====================================================
+   TRACKING TIMELINE
+===================================================== */
+
+.track-timeline {
+  padding: 28px 35px 32px;
 }
 
-.status-badge {
-  background: #e8f5e9;
-  color: #388e3c;
-  padding: 7px 14px;
-  border-radius: 3px;
-  font-size: 13px;
-  font-weight: 600;
-}
-
-/* =========================================
-   TRACKING
-========================================= */
-
-.tracking-wrapper {
+.track-step {
   display: flex;
-  align-items: flex-start;
-  padding: 40px 35px 35px;
+
+  min-height: 82px;
 }
 
-.tracking-step {
-  flex: 1;
-  text-align: center;
+.track-step-left {
+  width: 42px;
+
+  flex-shrink: 0;
+
   position: relative;
+
+  display: flex;
+  justify-content: center;
 }
 
-.tracking-icon {
-  width: 46px;
-  height: 46px;
+.track-step-circle {
+  width: 32px;
+  height: 32px;
+
+  border: 2px solid #d9dde2;
 
   border-radius: 50%;
 
-  margin: auto;
+  background: #fff;
+
+  color: #aeb4bb;
+
+  z-index: 2;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  background: #eeeeee;
-  color: #9e9e9e;
-
-  font-size: 18px;
-
-  position: relative;
-  z-index: 2;
-
-  border: 3px solid #eeeeee;
+  font-size: 12px;
 }
 
-.tracking-step.completed .tracking-icon {
-  background: #2874f0;
-  border-color: #2874f0;
-  color: white;
+.track-step-line {
+  position: absolute;
+
+  top: 32px;
+
+  bottom: 0;
+
+  left: 20px;
+
+  width: 2px;
+
+  background: #e2e5e8;
+
+  transform: translateX(-50%);
 }
 
-.tracking-step.active .tracking-icon {
-  background: #2874f0;
-  border-color: #2874f0;
-  color: white;
-  box-shadow: 0 0 0 5px #e3f2fd;
+
+/* =====================================================
+   STEP CONTENT
+===================================================== */
+
+.track-step-content {
+  flex: 1;
+
+  padding-left: 17px;
 }
 
-.tracking-info {
-  margin-top: 12px;
-}
-
-.tracking-info strong {
-  display: block;
-  font-size: 13px;
-  color: #757575;
-}
-
-.tracking-step.completed .tracking-info strong {
-  color: #212121;
-}
-
-.tracking-info span {
-  display: block;
-  margin-top: 5px;
-  font-size: 11px;
-  color: #388e3c;
-}
-
-.tracking-connector {
-  height: 3px;
-  flex: 0.6;
-  background: #e0e0e0;
-  margin-top: 22px;
-}
-
-.tracking-connector.completed {
-  background: #2874f0;
-}
-
-/* =========================================
-   PRODUCTS
-========================================= */
-
-.products-list {
-  padding: 0 25px;
-}
-
-.track-product {
+.track-step-title {
   display: flex;
   align-items: center;
-  padding: 20px 0;
-  border-bottom: 1px solid #eeeeee;
+  justify-content: space-between;
+
   gap: 20px;
 }
 
-.track-product:last-child {
-  border-bottom: none;
-}
+.track-step-title h3 {
+  margin: 5px 0 4px;
 
-.track-product-image {
-  width: 90px;
-  height: 90px;
+  font-size: 14px;
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  color: #777;
 
-  background: #fff;
-}
-
-.track-product-image img {
-  width: 80px;
-  height: 80px;
-  object-fit: contain;
-}
-
-.track-product-info {
-  flex: 1;
-}
-
-.track-product-info h3 {
-  margin: 0 0 7px;
-  font-size: 15px;
   font-weight: 500;
 }
 
-.track-product-info p {
-  margin: 0 0 7px;
-  color: #878787;
-  font-size: 13px;
+.track-step-title span {
+  font-size: 10px;
+
+  color: #999;
 }
 
-.track-product-info span {
-  font-size: 13px;
+.track-step-content p {
+  margin: 0;
+
+  font-size: 11px;
+
+  line-height: 1.5;
+
+  color: #aaa;
+}
+
+
+/* =====================================================
+   COMPLETED
+===================================================== */
+
+.track-step.completed .track-step-circle {
+  border-color: #2874f0;
+
+  background: #2874f0;
+
+  color: #fff;
+}
+
+.track-step.completed .track-step-line {
+  background: #2874f0;
+}
+
+.track-step.completed h3 {
+  color: #333;
+}
+
+.track-step.completed p {
+  color: #777;
+}
+
+
+/* =====================================================
+   ACTIVE
+===================================================== */
+
+.track-step.active .track-step-circle {
+  width: 36px;
+  height: 36px;
+
+  margin-top: -2px;
+
+  border-color: #2874f0;
+
+  background: #2874f0;
+
+  color: #fff;
+
+  box-shadow:
+    0 0 0 5px rgba(40, 116, 240, 0.12);
+
+  font-size: 14px;
+}
+
+.track-step.active h3 {
+  color: #2874f0;
+
+  font-size: 15px;
+
+  font-weight: 700;
+}
+
+.track-step.active p {
   color: #555;
 }
 
-.track-product-price {
-  font-size: 16px;
-  font-weight: 600;
+.track-active {
+  display: inline-block;
+
+  margin-top: 8px;
+
+  padding: 4px 8px;
+
+  border-radius: 3px;
+
+  background: #eef4ff;
+
+  color: #2874f0 !important;
+
+  font-size: 9px !important;
+
+  font-weight: 700;
 }
 
-.track-total {
-  border-top: 1px solid #eeeeee;
-  padding: 18px 25px;
+
+/* =====================================================
+   PRODUCTS
+===================================================== */
+
+.track-products {
+  padding: 5px 24px 0;
+}
+
+.track-product-row {
+  min-height: 90px;
+
+  padding: 14px 0;
+
+  border-bottom: 1px solid #eee;
 
   display: flex;
-  justify-content: space-between;
   align-items: center;
+
+  gap: 15px;
+}
+
+.track-product-row:last-child {
+  border-bottom: none;
+}
+
+.track-product-img {
+  width: 75px;
+  height: 75px;
+
+  flex-shrink: 0;
+
+  border: 1px solid #eee;
+  border-radius: 6px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #fff;
+
+  overflow: hidden;
+
+  color: #aaa;
+
+  font-size: 25px;
+}
+
+.track-product-img img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: contain;
+}
+
+.track-product-details {
+  flex: 1;
+}
+
+.track-product-details h3 {
+  margin: 0 0 7px;
+
+  font-size: 13px;
+
+  font-weight: 500;
+
+  color: #333;
+}
+
+.track-product-details p {
+  margin: 0;
+
+  font-size: 11px;
+
+  color: #888;
+}
+
+.track-product-row>strong {
+  font-size: 14px;
+}
+
+.track-no-products {
+  padding: 25px;
+
+  text-align: center;
+
+  color: #999;
+}
+
+.track-no-products svg {
+  font-size: 25px;
+
+  margin-bottom: 7px;
+}
+
+.track-no-products p {
+  margin: 0;
+
+  font-size: 12px;
+}
+
+
+/* =====================================================
+   TOTAL
+===================================================== */
+
+.track-total {
+  min-height: 55px;
+
+  padding: 0 24px;
+
+  border-top: 1px solid #eee;
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  gap: 35px;
 }
 
 .track-total span {
-  font-size: 14px;
-  color: #555;
+  font-size: 12px;
+
+  color: #777;
 }
 
 .track-total strong {
-  font-size: 20px;
+  font-size: 18px;
 }
 
-/* =========================================
+
+/* =====================================================
+   SHIPMENT
+===================================================== */
+
+.track-shipment-grid {
+  padding: 22px 24px;
+
+  display: grid;
+
+  grid-template-columns: repeat(3, 1fr);
+
+  gap: 22px;
+}
+
+.track-shipment-grid span {
+  display: block;
+
+  margin-bottom: 6px;
+
+  font-size: 10px;
+
+  color: #999;
+}
+
+.track-shipment-grid strong {
+  font-size: 12px;
+
+  color: #333;
+}
+
+
+/* =====================================================
    ADDRESS
-========================================= */
+===================================================== */
 
-.address-box {
-  padding: 25px;
+.track-address {
+  padding: 20px 24px;
 
   display: flex;
-  align-items: flex-start;
-  gap: 18px;
+
+  gap: 15px;
 }
 
-.address-icon {
-  width: 45px;
-  height: 45px;
+.track-address-icon {
+  width: 43px;
+  height: 43px;
+
+  flex-shrink: 0;
 
   border-radius: 50%;
-  background: #fff3e0;
-  color: #ff9800;
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background: #eef4ff;
 
-  font-size: 19px;
-}
-
-.address-content h3 {
-  margin: 0 0 8px;
-  font-size: 15px;
-}
-
-.address-content p {
-  margin: 0 0 7px;
-  color: #555;
-  font-size: 14px;
-  line-height: 1.5;
-}
-
-.mobile-number {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-}
-
-/* =========================================
-   COURIER
-========================================= */
-
-.courier-box {
-  padding: 25px;
-
-  display: flex;
-  align-items: center;
-  gap: 18px;
-}
-
-.courier-icon {
-  width: 48px;
-  height: 48px;
-
-  border-radius: 50%;
-  background: #e3f2fd;
   color: #2874f0;
 
   display: flex;
   align-items: center;
   justify-content: center;
-
-  font-size: 20px;
 }
 
-.courier-info h3 {
-  margin: 0 0 7px;
-  font-size: 15px;
-}
-
-.courier-info p {
-  margin: 0;
-  color: #757575;
-  font-size: 13px;
-}
-
-.courier-info strong {
-  color: #212121;
-}
-
-.copy-tracking {
-  border: none;
-  background: transparent;
-  color: #2874f0;
-  cursor: pointer;
-  margin-left: 7px;
-}
-
-/* =========================================
-   HELP
-========================================= */
-
-.track-help {
-  background: white;
-  border: 1px solid #e0e0e0;
-  padding: 22px 25px;
-
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  border-radius: 3px;
-}
-
-.track-help h3 {
+.track-address h3 {
   margin: 0 0 5px;
-  font-size: 16px;
-}
 
-.track-help p {
-  margin: 0;
-  color: #757575;
   font-size: 13px;
 }
 
-.track-help button {
-  border: 1px solid #2874f0;
-  background: white;
-  color: #2874f0;
-  padding: 9px 20px;
-  border-radius: 2px;
-  font-weight: 600;
-  cursor: pointer;
+.track-address p {
+  max-width: 650px;
+
+  margin: 0 0 7px;
+
+  font-size: 11px;
+
+  line-height: 1.6;
+
+  color: #666;
 }
 
-/* =========================================
-   EMPTY ORDER
-========================================= */
+.track-address span {
+  display: flex;
+  align-items: center;
 
-.track-empty {
-  min-height: 70vh;
+  gap: 6px;
+
+  font-size: 11px;
+
+  color: #777;
+}
+
+
+/* =====================================================
+   ACTIONS
+===================================================== */
+
+.track-actions {
+  display: flex;
+
+  gap: 10px;
+
+  margin-bottom: 18px;
+}
+
+.track-actions button,
+.track-actions a {
+  min-height: 42px;
+
+  padding: 0 17px;
+
+  box-sizing: border-box;
+
+  border-radius: 5px;
 
   display: flex;
   align-items: center;
   justify-content: center;
+
+  gap: 7px;
+
+  font-size: 12px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  text-decoration: none;
+}
+
+.track-help-btn {
+  background: #2874f0;
+
+  color: #fff;
+
+  border: 1px solid #2874f0;
+}
+
+.track-help-btn:hover {
+  background: #1765df;
+}
+
+.track-cancel-btn {
+  background: #fff;
+
+  color: #d93025;
+
+  border: 1px solid #ddd;
+}
+
+.track-cancel-btn:hover {
+  border-color: #d93025;
+}
+
+.track-return-btn {
+  background: #fff;
+
+  color: #2874f0;
+
+  border: 1px solid #2874f0;
+}
+
+
+/* =====================================================
+   VIEW ORDERS
+===================================================== */
+
+.track-view-orders {
+  text-align: center;
+}
+
+.track-view-orders a {
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 7px;
+
+  color: #2874f0;
+
+  text-decoration: none;
+
+  font-size: 13px;
+
+  font-weight: 600;
+}
+
+
+/* =====================================================
+   EMPTY
+===================================================== */
+
+.track-order-empty {
+  min-height: 100vh;
+
+  background: #f5f6f8;
+
+  display: flex;
   flex-direction: column;
 
+  align-items: center;
+  justify-content: center;
+
   text-align: center;
-  background: #f1f3f6;
 }
 
-.empty-icon {
-  width: 80px;
-  height: 80px;
+.track-empty-icon {
+  width: 75px;
+  height: 75px;
 
   border-radius: 50%;
 
-  background: #fff;
+  background: #eef4ff;
+
   color: #2874f0;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  font-size: 32px;
+  font-size: 30px;
 
   margin-bottom: 15px;
 }
 
-.track-empty h2 {
-  margin: 0 0 8px;
+.track-order-empty h2 {
+  margin: 0 0 7px;
+
+  font-size: 21px;
 }
 
-.track-empty p {
-  color: #757575;
-  margin-bottom: 20px;
+.track-order-empty p {
+  margin: 0 0 18px;
+
+  font-size: 13px;
+
+  color: #888;
 }
 
-.shop-now-btn {
-  border: none;
+.track-empty-btn {
+  padding: 10px 18px;
+
+  border-radius: 5px;
+
   background: #2874f0;
-  color: white;
-  padding: 12px 25px;
+
+  color: #fff;
+
+  text-decoration: none;
+
+  font-size: 12px;
+
   font-weight: 600;
-  cursor: pointer;
-  border-radius: 2px;
 }
 
-/* =========================================
-   RESPONSIVE
-========================================= */
 
-@media (max-width: 768px) {
+/* =====================================================
+   TABLET
+===================================================== */
 
-  .track-header {
+@media (max-width: 800px) {
+
+  .track-status-card {
     align-items: flex-start;
+
     flex-direction: column;
-    gap: 15px;
+
+    gap: 18px;
   }
 
-  .continue-shopping {
+  .track-id-box {
     width: 100%;
-  }
 
-  .delivery-summary {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 20px;
-  }
+    padding: 15px 0 0;
 
-  .delivery-status {
+    border-left: none;
+
+    border-top: 1px solid #eee;
+
     text-align: left;
   }
 
-  .tracking-wrapper {
-    overflow-x: auto;
-    min-width: 700px;
-  }
-
-  .track-card:first-of-type {
-    overflow-x: auto;
-  }
-
-  .track-product {
-    align-items: flex-start;
-  }
-
-  .track-product-price {
-    margin-left: auto;
-  }
-
-  .track-help {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 15px;
-  }
-
-  .track-help button {
-    width: 100%;
+  .track-shipment-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
-@media (max-width: 500px) {
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media (max-width: 550px) {
+
+  .track-header-inner {
+    width: 92%;
+  }
 
   .track-header h1 {
-    font-size: 23px;
+    font-size: 19px;
   }
 
-  .track-container {
-    padding: 0 10px;
+  .track-home-btn {
+    width: 38px;
+
+    padding: 0;
+
+    justify-content: center;
+
+    font-size: 0;
   }
 
-  .delivery-summary {
-    padding: 20px;
-  }
-
-  .track-card-header {
-    padding: 17px;
-  }
-
-  .products-list {
-    padding: 0 17px;
-  }
-
-  .track-product-image {
-    width: 70px;
-    height: 70px;
-  }
-
-  .track-product-image img {
-    width: 65px;
-    height: 65px;
-  }
-
-  .track-product {
-    gap: 12px;
-  }
-
-  .track-product-info h3 {
-    font-size: 13px;
-  }
-
-  .track-product-price {
+  .track-home-btn svg {
     font-size: 14px;
   }
 
-  .address-box,
-  .courier-box {
-    padding: 18px;
+  .track-container {
+    width: 92%;
+
+    margin-top: 15px;
+  }
+
+  .track-status-card {
+    padding: 17px;
+  }
+
+  .track-truck-icon {
+    width: 48px;
+    height: 48px;
+
+    font-size: 20px;
+  }
+
+  .track-status-left h2 {
+    font-size: 17px;
+  }
+
+  .track-card-heading {
+    padding: 17px;
+  }
+
+  .track-timeline {
+    padding: 22px 15px;
+  }
+
+  .track-step {
+    min-height: 92px;
+  }
+
+  .track-step-content {
+    padding-left: 10px;
+  }
+
+  .track-step-title {
+    align-items: flex-start;
+
+    flex-direction: column;
+
+    gap: 2px;
+  }
+
+  .track-step-title h3 {
+    font-size: 13px;
+  }
+
+  .track-step-title span {
+    font-size: 9px;
+  }
+
+  .track-step-content p {
+    font-size: 10px;
+  }
+
+  .track-products {
+    padding: 5px 15px 0;
+  }
+
+  .track-product-img {
+    width: 60px;
+    height: 60px;
+  }
+
+  .track-product-details h3 {
+    font-size: 11px;
+  }
+
+  .track-product-row>strong {
+    font-size: 12px;
+  }
+
+  .track-total {
+    padding: 0 15px;
+
+    gap: 20px;
+  }
+
+  .track-shipment-grid {
+    padding: 18px 15px;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 18px 10px;
+  }
+
+  .track-address {
+    padding: 18px 15px;
+  }
+
+  .track-actions {
+    flex-direction: column;
+  }
+
+  .track-actions a,
+  .track-actions button {
+    width: 100%;
   }
 }

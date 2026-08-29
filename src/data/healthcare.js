@@ -100,7 +100,7 @@ const healthcare = [
     returnPolicy: "7 Days Return Eligible",
     stock: true,
     description: "Soft and absorbent cotton roll suitable for wound dressing and personal care.",
-  },
+  }, 
   {
     id: 254,
     name: "Sterile Gauze Pads",

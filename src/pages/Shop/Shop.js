@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import { FaSearch, FaSortAmountDown } from "react-icons/fa";
+import { toast } from "react-toastify";
 
 import ProductCard from "../../components/ProductCard/ProductCard";
 import FilterPanel from "../../components/FilterPanel/FilterPanel";
@@ -67,9 +68,7 @@ const Shop = () => {
   const { category } = useParams();
 
   const currentCategory =
-    category && CATEGORY_DATA[category]
-      ? category
-      : "all";
+    category && CATEGORY_DATA[category] ? category : "all";
 
   /* ==========================================================
      STATES
@@ -158,12 +157,12 @@ const Shop = () => {
   const filteredProducts = useMemo(() => {
     let result = [...products];
 
-    /* SEARCH */
+    /* ========================================================
+       SEARCH
+    ======================================================== */
 
     if (searchTerm.trim()) {
-      const search = searchTerm
-        .toLowerCase()
-        .trim();
+      const search = searchTerm.toLowerCase().trim();
 
       result = result.filter((product) => {
         const name =
@@ -183,7 +182,9 @@ const Shop = () => {
       });
     }
 
-    /* CATEGORY */
+    /* ========================================================
+       CATEGORY
+    ======================================================== */
 
     if (
       selectedCategory !== "all" &&
@@ -201,7 +202,9 @@ const Shop = () => {
       );
     }
 
-    /* PRICE */
+    /* ========================================================
+       PRICE
+    ======================================================== */
 
     if (priceRange !== "all") {
       result = result.filter((product) => {
@@ -229,7 +232,9 @@ const Shop = () => {
       });
     }
 
-    /* RATING */
+    /* ========================================================
+       RATING
+    ======================================================== */
 
     if (selectedRating !== "all") {
       const minimumRating =
@@ -242,7 +247,9 @@ const Shop = () => {
       );
     }
 
-    /* BRAND */
+    /* ========================================================
+       BRAND
+    ======================================================== */
 
     if (selectedBrand !== "all") {
       result = result.filter(
@@ -252,7 +259,9 @@ const Shop = () => {
       );
     }
 
-    /* SORT */
+    /* ========================================================
+       SORT
+    ======================================================== */
 
     switch (sortBy) {
       case "priceLow":
@@ -318,40 +327,99 @@ const Shop = () => {
   ========================================================== */
 
   const handleSearch = (event) => {
-    setSearchTerm(event.target.value);
+    const value = event.target.value;
+
+    setSearchTerm(value);
     setVisibleProducts(12);
   };
 
   const handleSort = (event) => {
-    setSortBy(event.target.value);
+    const value = event.target.value;
+
+    setSortBy(value);
     setVisibleProducts(12);
+
+    if (value === "priceLow") {
+      toast.info("Sorted by Price: Low to High");
+    }
+
+    if (value === "priceHigh") {
+      toast.info("Sorted by Price: High to Low");
+    }
+
+    if (value === "rating") {
+      toast.info("Sorted by Highest Rating");
+    }
+
+    if (value === "name") {
+      toast.info("Sorted by Name: A-Z");
+    }
   };
 
   const handleCategoryChange = (value) => {
     setSelectedCategory(value);
     setVisibleProducts(12);
+
+    const categoryName =
+      CATEGORY_NAMES[value] || "All Products";
+
+    toast.success(
+      `Showing ${categoryName}`
+    );
   };
 
   const handlePriceChange = (value) => {
     setPriceRange(value);
     setVisibleProducts(12);
+
+    if (value !== "all") {
+      toast.info("Price filter applied");
+    }
   };
 
   const handleRatingChange = (value) => {
     setSelectedRating(value);
     setVisibleProducts(12);
+
+    if (value !== "all") {
+      toast.info(
+        `Showing products rated ${value}★ and above`
+      );
+    }
   };
 
   const handleBrandChange = (value) => {
     setSelectedBrand(value);
     setVisibleProducts(12);
+
+    if (value !== "all") {
+      toast.info(`Brand filter: ${value}`);
+    }
   };
 
+  /* ==========================================================
+     LOAD MORE
+  ========================================================== */
+
   const loadMore = () => {
-    setVisibleProducts(
-      (previous) => previous + 12
-    );
+    const newVisibleCount =
+      visibleProducts + 12;
+
+    setVisibleProducts(newVisibleCount);
+
+    if (
+      newVisibleCount >=
+      filteredProducts.length
+    ) {
+      toast.success("All products loaded!");
+    } else {
+      toast.success("More products loaded!");
+    }
   };
+
+  /* ==========================================================
+     RESET FILTERS
+  ========================================================== */
 
   const resetFilters = () => {
     setSelectedCategory(currentCategory);
@@ -361,6 +429,8 @@ const Shop = () => {
     setSearchTerm("");
     setSortBy("default");
     setVisibleProducts(12);
+
+    toast.success("All filters have been cleared");
   };
 
   /* ==========================================================
@@ -387,6 +457,8 @@ const Shop = () => {
 
       <div className="shop-header">
 
+        {/* TITLE */}
+
         <div className="shop-title">
           <h1>
             {CATEGORY_NAMES[selectedCategory] ||
@@ -409,6 +481,21 @@ const Shop = () => {
             value={searchTerm}
             onChange={handleSearch}
           />
+
+          {searchTerm && (
+            <button
+              type="button"
+              className="clear-search"
+              onClick={() => {
+                setSearchTerm("");
+                setVisibleProducts(12);
+                toast.info("Search cleared");
+              }}
+              aria-label="Clear search"
+            >
+              ×
+            </button>
+          )}
         </div>
 
         {/* SORT */}
@@ -449,7 +536,9 @@ const Shop = () => {
 
       <div className="shop-content">
 
-        {/* FILTER */}
+        {/* ==================================================
+            FILTER
+        ================================================== */}
 
         <aside className="shop-filter">
 
@@ -473,9 +562,7 @@ const Shop = () => {
               handleRatingChange
             }
 
-            selectedBrand={
-              selectedBrand
-            }
+            selectedBrand={selectedBrand}
             setSelectedBrand={
               handleBrandChange
             }
@@ -491,23 +578,31 @@ const Shop = () => {
 
         </aside>
 
-        {/* PRODUCTS */}
+        {/* ==================================================
+            PRODUCTS
+        ================================================== */}
 
         <main className="shop-products">
 
-          {/* LOADING */}
+          {/* =================================================
+              LOADING
+          ================================================= */}
 
           {loading && (
             <div className="loading-container">
+
               <div className="loader"></div>
 
               <h3>
                 Loading Products...
               </h3>
+
             </div>
           )}
 
-          {/* EMPTY */}
+          {/* =================================================
+              EMPTY PRODUCTS
+          ================================================= */}
 
           {!loading &&
             filteredProducts.length === 0 && (
@@ -536,11 +631,14 @@ const Shop = () => {
               </div>
             )}
 
-          {/* PRODUCTS */}
+          {/* =================================================
+              PRODUCTS
+          ================================================= */}
 
           {!loading &&
             filteredProducts.length > 0 && (
               <>
+
                 <div className="products-grid">
 
                   {displayedProducts.map(
@@ -555,7 +653,9 @@ const Shop = () => {
 
                 </div>
 
-                {/* LOAD MORE */}
+                {/* =================================================
+                    LOAD MORE
+                ================================================= */}
 
                 {visibleProducts <
                   filteredProducts.length && (
@@ -569,6 +669,7 @@ const Shop = () => {
 
                     </div>
                   )}
+
               </>
             )}
 

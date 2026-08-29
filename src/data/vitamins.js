@@ -474,6 +474,7 @@ const vitamins = [
     description:
       "Nutritional supplement designed for daily wellness support.",
   },
+  
 ];
 
 export default vitamins;

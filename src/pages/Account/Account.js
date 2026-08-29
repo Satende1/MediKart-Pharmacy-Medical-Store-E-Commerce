@@ -1,26 +1,25 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 import {
+  FaUserCircle,
   FaBoxOpen,
   FaHeart,
-  FaLanguage,
-  FaPhoneAlt,
-  FaFileMedical,
-  FaPrescriptionBottleAlt,
+  FaShoppingCart,
   FaMapMarkerAlt,
-  FaWallet,
-  FaStar,
-  FaGift,
-  FaUserCog,
+  FaFileMedical,
+  FaCreditCard,
+  FaBell,
+  FaCog,
   FaQuestionCircle,
-  FaShieldAlt,
   FaSignOutAlt,
   FaChevronRight,
+  FaTruck,
+  FaHistory,
   FaHome,
-  FaShoppingBag,
-  FaBell,
-  FaClipboardList,
+  FaEdit,
+  FaShieldAlt,
+  FaHeadset,
 } from "react-icons/fa";
 
 import "./Account.css";
@@ -28,323 +27,428 @@ import "./Account.css";
 const Account = () => {
   const navigate = useNavigate();
 
-  const user = JSON.parse(localStorage.getItem("user")) || {
-    name: "Satender",
-    phone: "+91-XXXXXXXXXX",
+  const [user, setUser] = useState({
+    name: "MEDIKART User",
+    email: "user@example.com",
+  });
+
+  const [cartCount, setCartCount] = useState(0);
+  const [wishlistCount, setWishlistCount] = useState(0);
+  const [ordersCount, setOrdersCount] = useState(0);
+
+  useEffect(() => {
+    loadAccountData();
+
+    const handleStorage = () => {
+      loadAccountData();
+    };
+
+    window.addEventListener("storage", handleStorage);
+    window.addEventListener("cartUpdated", handleStorage);
+    window.addEventListener("wishlistUpdated", handleStorage);
+
+    return () => {
+      window.removeEventListener("storage", handleStorage);
+      window.removeEventListener("cartUpdated", handleStorage);
+      window.removeEventListener("wishlistUpdated", handleStorage);
+    };
+  }, []);
+
+  const loadAccountData = () => {
+    try {
+      const storedUser = localStorage.getItem("user");
+
+      if (storedUser) {
+        const parsedUser = JSON.parse(storedUser);
+
+        setUser({
+          name: parsedUser.name || "MEDIKART User",
+          email: parsedUser.email || "user@example.com",
+        });
+      }
+
+      const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+      const wishlist = JSON.parse(
+        localStorage.getItem("wishlist") || "[]"
+      );
+      const orders = JSON.parse(
+        localStorage.getItem("orders") || "[]"
+      );
+
+      setCartCount(Array.isArray(cart) ? cart.length : 0);
+      setWishlistCount(Array.isArray(wishlist) ? wishlist.length : 0);
+      setOrdersCount(Array.isArray(orders) ? orders.length : 0);
+    } catch (error) {
+      console.error("Error loading account data:", error);
+    }
   };
 
   const handleLogout = () => {
     localStorage.removeItem("isLoggedIn");
-    localStorage.removeItem("user");
 
     navigate("/login");
   };
 
+  const menuItems = [
+    {
+      icon: <FaBoxOpen />,
+      title: "My Orders",
+      description: "View and manage your orders",
+      path: "/orders",
+      count: ordersCount,
+    },
+    {
+      icon: <FaTruck />,
+      title: "Track Order",
+      description: "Track your current deliveries",
+      path: "/track-order",
+    },
+    {
+      icon: <FaHeart />,
+      title: "My Wishlist",
+      description: "Products you saved",
+      path: "/wishlist",
+      count: wishlistCount,
+    },
+    {
+      icon: <FaShoppingCart />,
+      title: "My Cart",
+      description: "View products in your cart",
+      path: "/cart",
+      count: cartCount,
+    },
+    {
+      icon: <FaMapMarkerAlt />,
+      title: "Saved Addresses",
+      description: "Manage your delivery addresses",
+      path: "/addresses",
+    },
+    {
+      icon: <FaFileMedical />,
+      title: "My Prescriptions",
+      description: "Upload and manage prescriptions",
+      path: "/prescriptions",
+    },
+    {
+      icon: <FaCreditCard />,
+      title: "Payments",
+      description: "Manage payment methods",
+      path: "/payments",
+    },
+    {
+      icon: <FaBell />,
+      title: "Notifications",
+      description: "View your notifications",
+      path: "/notifications",
+    },
+    {
+      icon: <FaCog />,
+      title: "Account Settings",
+      description: "Manage your account preferences",
+      path: "/settings",
+    },
+    {
+      icon: <FaQuestionCircle />,
+      title: "Help & Support",
+      description: "Get help with your MEDIKART account",
+      path: "/help",
+    },
+  ];
+
   return (
     <div className="account-page">
 
-      {/* Header */}
+      {/* =========================================
+          HEADER
+      ========================================= */}
+
       <div className="account-header">
-        <h2>My Account</h2>
+        <div className="account-header-inner">
 
-        <div className="profile-section">
-          <div className="profile-avatar">
-            {user.name?.charAt(0)?.toUpperCase() || "S"}
+          <div>
+            <h1>My Account</h1>
+            <p>Manage your MEDIKART account</p>
           </div>
 
-          <div className="profile-info">
-            <h3>Hi {user.name || "User"}</h3>
-            <p>{user.phone || "+91-XXXXXXXXXX"}</p>
-          </div>
+          <Link to="/" className="account-home-button">
+            <FaHome />
+            Back to Home
+          </Link>
+
         </div>
       </div>
 
 
-      {/* Quick Actions */}
-      <div className="quick-actions">
+      {/* =========================================
+          MAIN
+      ========================================= */}
 
-        <div
-          className="quick-card"
-          onClick={() => navigate("/orders")}
-        >
-          <FaBoxOpen />
-          <span>Orders</span>
-        </div>
+      <main className="account-main">
 
-        <div
-          className="quick-card"
-          onClick={() => navigate("/wishlist")}
-        >
-          <FaHeart />
-          <span>Saved Items</span>
-        </div>
+        {/* =========================================
+            PROFILE CARD
+        ========================================= */}
 
-        <div className="quick-card">
-          <FaLanguage />
-          <span>Language</span>
-        </div>
+        <section className="account-profile-card">
 
-        <div
-          className="quick-card"
-          onClick={() => navigate("/contact")}
-        >
-          <FaPhoneAlt />
-          <span>Contact Us</span>
-        </div>
+          <div className="account-profile-left">
 
-      </div>
+            <div className="account-avatar">
+              <FaUserCircle />
+            </div>
+
+            <div className="account-profile-info">
+
+              <span className="account-welcome">
+                Welcome back,
+              </span>
+
+              <h2>{user.name}</h2>
+
+              <p>{user.email}</p>
+
+              <span className="account-member">
+                <FaShieldAlt />
+                MEDIKART Member
+              </span>
+
+            </div>
+
+          </div>
+
+          <button
+            className="account-edit-button"
+            onClick={() => navigate("/settings")}
+          >
+            <FaEdit />
+            Edit Profile
+          </button>
+
+        </section>
 
 
-      {/* Healthcare Options */}
-      <section className="account-section">
+        {/* =========================================
+            QUICK STATS
+        ========================================= */}
 
-        <h4>Healthcare Options</h4>
+        <section className="account-stats">
 
-        <div
-          className="account-item"
-          onClick={() => navigate("/orders")}
-        >
-          <div className="item-left">
-            <FaClipboardList className="item-icon" />
+          <Link to="/orders" className="account-stat-card">
+
+            <div className="stat-icon orders">
+              <FaBoxOpen />
+            </div>
 
             <div>
-              <span>Medicine Orders</span>
-              <small>Track and manage your medicine orders</small>
+              <strong>{ordersCount}</strong>
+              <span>Orders</span>
+            </div>
+
+          </Link>
+
+
+          <Link to="/wishlist" className="account-stat-card">
+
+            <div className="stat-icon wishlist">
+              <FaHeart />
+            </div>
+
+            <div>
+              <strong>{wishlistCount}</strong>
+              <span>Wishlist</span>
+            </div>
+
+          </Link>
+
+
+          <Link to="/cart" className="account-stat-card">
+
+            <div className="stat-icon cart">
+              <FaShoppingCart />
+            </div>
+
+            <div>
+              <strong>{cartCount}</strong>
+              <span>Cart Items</span>
+            </div>
+
+          </Link>
+
+
+          <Link to="/track-order" className="account-stat-card">
+
+            <div className="stat-icon tracking">
+              <FaTruck />
+            </div>
+
+            <div>
+              <strong>Track</strong>
+              <span>My Delivery</span>
+            </div>
+
+          </Link>
+
+        </section>
+
+
+        {/* =========================================
+            ACCOUNT CONTENT
+        ========================================= */}
+
+        <section className="account-section">
+
+          <div className="account-section-heading">
+            <div>
+              <h2>Account</h2>
+              <p>Manage your MEDIKART activities</p>
             </div>
           </div>
 
-          <FaChevronRight className="arrow" />
-        </div>
+
+          <div className="account-menu-grid">
+
+            {menuItems.map((item, index) => (
+
+              <Link
+                to={item.path}
+                className="account-menu-card"
+                key={index}
+              >
+
+                <div className="account-menu-icon">
+                  {item.icon}
+                </div>
+
+                <div className="account-menu-content">
+
+                  <div className="account-menu-title">
+
+                    <h3>{item.title}</h3>
+
+                    {item.count !== undefined &&
+                      item.count > 0 && (
+                        <span className="account-count">
+                          {item.count}
+                        </span>
+                      )}
+
+                  </div>
+
+                  <p>{item.description}</p>
+
+                </div>
+
+                <FaChevronRight className="account-arrow" />
+
+              </Link>
+
+            ))}
+
+          </div>
+
+        </section>
 
 
-        <div
-          className="account-item"
-          onClick={() => navigate("/prescriptions")}
+        {/* =========================================
+            RECENT ORDER
+        ========================================= */}
+
+        <section className="account-recent-card">
+
+          <div className="recent-header">
+
+            <div>
+              <h2>Recent Activity</h2>
+              <p>Your latest MEDIKART activity</p>
+            </div>
+
+            <Link to="/orders">
+              View All
+              <FaChevronRight />
+            </Link>
+
+          </div>
+
+
+          {ordersCount > 0 ? (
+
+            <div className="recent-order">
+
+              <div className="recent-order-icon">
+                <FaBoxOpen />
+              </div>
+
+              <div className="recent-order-info">
+                <strong>Recent Order</strong>
+                <span>Your latest order is available here.</span>
+              </div>
+
+              <Link to="/orders">
+                View Order
+              </Link>
+
+            </div>
+
+          ) : (
+
+            <div className="empty-activity">
+
+              <FaHistory />
+
+              <h3>No recent orders</h3>
+
+              <p>
+                Once you place an order, you can see it here.
+              </p>
+
+              <Link to="/shop">
+                Start Shopping
+              </Link>
+
+            </div>
+
+          )}
+
+        </section>
+
+
+        {/* =========================================
+            SUPPORT
+        ========================================= */}
+
+        <section className="account-support">
+
+          <div className="support-icon">
+            <FaHeadset />
+          </div>
+
+          <div className="support-content">
+            <h3>Need Help?</h3>
+            <p>
+              Our MEDIKART support team is here to help you.
+            </p>
+          </div>
+
+          <Link to="/help" className="support-button">
+            Contact Support
+          </Link>
+
+        </section>
+
+
+        {/* =========================================
+            LOGOUT
+        ========================================= */}
+
+        <button
+          className="account-logout"
+          onClick={handleLogout}
         >
-          <div className="item-left">
-            <FaPrescriptionBottleAlt className="item-icon" />
-
-            <div>
-              <span>My Prescriptions</span>
-              <small>View and manage your prescriptions</small>
-            </div>
-          </div>
-
-          <FaChevronRight className="arrow" />
-        </div>
-
-
-        <div
-          className="account-item"
-          onClick={() => navigate("/health-records")}
-        >
-          <div className="item-left">
-            <FaFileMedical className="item-icon" />
-
-            <div>
-              <span>Health Records</span>
-              <small>Manage your health documents</small>
-            </div>
-          </div>
-
-          <FaChevronRight className="arrow" />
-        </div>
-
-      </section>
-
-
-      {/* Account Options */}
-      <section className="account-section">
-
-        <h4>Account Options</h4>
-
-        <div
-          className="account-item"
-          onClick={() => navigate("/addresses")}
-        >
-          <div className="item-left">
-            <FaMapMarkerAlt className="item-icon" />
-
-            <div>
-              <span>Saved Addresses</span>
-              <small>Manage your delivery addresses</small>
-            </div>
-          </div>
-
-          <FaChevronRight className="arrow" />
-        </div>
-
-
-        <div
-          className="account-item"
-          onClick={() => navigate("/wallet")}
-        >
-          <div className="item-left">
-            <FaWallet className="item-icon" />
-
-            <div>
-              <span>Payments & Wallet</span>
-              <small>Manage payment methods and wallet</small>
-            </div>
-          </div>
-
-          <FaChevronRight className="arrow" />
-        </div>
-
-
-        <div className="account-item">
-          <div className="item-left">
-            <FaBell className="item-icon" />
-
-            <div>
-              <span>Notifications</span>
-              <small>Manage your notification preferences</small>
-            </div>
-          </div>
-
-          <FaChevronRight className="arrow" />
-        </div>
-
-
-        <div
-          className="account-item"
-          onClick={() => navigate("/settings")}
-        >
-          <div className="item-left">
-            <FaUserCog className="item-icon" />
-
-            <div>
-              <span>Account Settings</span>
-              <small>Manage your profile and preferences</small>
-            </div>
-          </div>
-
-          <FaChevronRight className="arrow" />
-        </div>
-
-      </section>
-
-
-      {/* MEDIKART Rewards */}
-      <section className="account-section">
-
-        <h4>MEDIKART Rewards</h4>
-
-        <div className="account-item">
-
-          <div className="item-left">
-            <FaGift className="item-icon" />
-
-            <div>
-              <span>MEDIKART Rewards</span>
-              <small>Earn points on your healthcare purchases</small>
-            </div>
-          </div>
-
-          <FaChevronRight className="arrow" />
-
-        </div>
-
-
-        <div
-          className="account-item"
-          onClick={() => navigate("/reviews")}
-        >
-
-          <div className="item-left">
-            <FaStar className="item-icon" />
-
-            <div>
-              <span>My Reviews</span>
-              <small>Rate and review your purchases</small>
-            </div>
-          </div>
-
-          <FaChevronRight className="arrow" />
-
-        </div>
-
-      </section>
-
-
-      {/* Help */}
-      <section className="account-section">
-
-        <h4>Help & Information</h4>
-
-        <div
-          className="account-item"
-          onClick={() => navigate("/help")}
-        >
-
-          <div className="item-left">
-            <FaQuestionCircle className="item-icon" />
-
-            <div>
-              <span>Help & Support</span>
-              <small>Get help with your MEDIKART orders</small>
-            </div>
-          </div>
-
-          <FaChevronRight className="arrow" />
-
-        </div>
-
-
-        <div className="account-item">
-
-          <div className="item-left">
-            <FaShieldAlt className="item-icon" />
-
-            <div>
-              <span>Privacy & Policies</span>
-              <small>Terms, privacy and refund policies</small>
-            </div>
-          </div>
-
-          <FaChevronRight className="arrow" />
-
-        </div>
-
-      </section>
-
-
-      {/* Logout */}
-      <button className="logout-btn" onClick={handleLogout}>
-        <FaSignOutAlt />
-        Logout
-      </button>
-
-
-      <p className="app-version">
-        MEDIKART App Version: 1.0.0
-      </p>
-
-
-      {/* Bottom Navigation */}
-      <div className="mobile-bottom-nav">
-
-        <div onClick={() => navigate("/")}>
-          <FaHome />
-          <span>Home</span>
-        </div>
-
-        <div onClick={() => navigate("/shop")}>
-          <FaShoppingBag />
-          <span>Shop</span>
-        </div>
-
-        <div onClick={() => navigate("/orders")}>
-          <FaBoxOpen />
-          <span>Orders</span>
-        </div>
-
-        <div className="active">
-          <FaUserCog />
-          <span>Account</span>
-        </div>
-
-      </div>
+          <FaSignOutAlt />
+          Logout
+        </button>
+
+      </main>
 
     </div>
   );

@@ -1,0 +1,504 @@
+/* ==========================================================
+   ORDER SUCCESS PAGE
+========================================================== */
+
+.order-success-page {
+    min-height: 100vh;
+
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+
+    padding: 50px 20px;
+
+    background: #f5f7f6;
+
+    box-sizing: border-box;
+}
+
+.order-success-container {
+    width: 100%;
+    max-width: 850px;
+
+    background: #ffffff;
+
+    border-radius: 16px;
+
+    padding: 40px;
+
+    box-shadow:
+        0 8px 30px rgba(0, 0, 0, 0.08);
+
+    text-align: center;
+
+    box-sizing: border-box;
+}
+
+/* ==========================================================
+   SUCCESS ICON
+========================================================== */
+
+.success-icon-wrapper {
+    width: 85px;
+    height: 85px;
+
+    margin: 0 auto 20px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #eaf8f0;
+
+    color: #168a55;
+
+    font-size: 70px;
+}
+
+.success-icon-wrapper svg {
+    display: block;
+}
+
+/* ==========================================================
+   HEADING
+========================================================== */
+
+.success-heading h1 {
+    margin: 0 0 10px;
+
+    color: #222;
+
+    font-size: 30px;
+    font-weight: 700;
+}
+
+.success-heading p {
+    margin: 5px 0;
+
+    color: #666;
+
+    font-size: 14px;
+
+    line-height: 1.6;
+}
+
+.success-heading strong {
+    color: #168a55;
+}
+
+/* ==========================================================
+   ORDER ID
+========================================================== */
+
+.success-order-id {
+    margin: 28px auto;
+
+    padding: 20px;
+
+    max-width: 450px;
+
+    background: #f8fffb;
+
+    border: 1px dashed #168a55;
+
+    border-radius: 10px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.success-order-id span {
+    color: #777;
+
+    font-size: 13px;
+
+    margin-bottom: 7px;
+}
+
+.success-order-id strong {
+    color: #168a55;
+
+    font-size: 24px;
+
+    letter-spacing: 1px;
+}
+
+.success-order-id small {
+    margin-top: 7px;
+
+    color: #888;
+
+    font-size: 11px;
+}
+
+/* ==========================================================
+   ORDER INFORMATION
+========================================================== */
+
+.success-order-info {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 15px;
+
+    margin: 25px 0;
+}
+
+.success-info-box {
+    padding: 17px;
+
+    border: 1px solid #e5e5e5;
+
+    border-radius: 9px;
+
+    background: #fff;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 7px;
+}
+
+.success-info-box span {
+    color: #888;
+
+    font-size: 12px;
+}
+
+.success-info-box strong {
+    color: #222;
+
+    font-size: 14px;
+}
+
+/* ==========================================================
+   PRODUCTS
+========================================================== */
+
+.success-products {
+    margin-top: 30px;
+
+    text-align: left;
+
+    border-top: 1px solid #eee;
+
+    padding-top: 25px;
+}
+
+.success-section-title {
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    margin-bottom: 15px;
+}
+
+.success-section-title svg {
+    color: #168a55;
+
+    font-size: 20px;
+}
+
+.success-section-title h2 {
+    margin: 0;
+
+    color: #222;
+
+    font-size: 18px;
+}
+
+.success-product-list {
+    display: flex;
+    flex-direction: column;
+
+    gap: 10px;
+}
+
+.success-product {
+    display: flex;
+
+    align-items: center;
+
+    gap: 15px;
+
+    padding: 12px;
+
+    border: 1px solid #eee;
+
+    border-radius: 8px;
+}
+
+.success-product-image {
+    width: 65px;
+    height: 65px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #f7f7f7;
+
+    border-radius: 7px;
+
+    overflow: hidden;
+
+    color: #168a55;
+}
+
+.success-product-image img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: contain;
+}
+
+.success-product-details {
+    flex: 1;
+
+    text-align: left;
+}
+
+.success-product-details h3 {
+    margin: 0 0 5px;
+
+    color: #222;
+
+    font-size: 14px;
+}
+
+.success-product-details p {
+    margin: 3px 0;
+
+    color: #777;
+
+    font-size: 11px;
+}
+
+.success-product-details strong {
+    color: #444;
+}
+
+.success-product-price {
+    font-size: 15px;
+
+    font-weight: 700;
+
+    color: #168a55;
+}
+
+/* ==========================================================
+   DELIVERY MESSAGE
+========================================================== */
+
+.delivery-success-box {
+    display: flex;
+
+    align-items: center;
+
+    gap: 14px;
+
+    margin-top: 25px;
+
+    padding: 16px;
+
+    text-align: left;
+
+    background: #f7fbff;
+
+    border: 1px solid #dcecf8;
+
+    border-radius: 9px;
+}
+
+.delivery-success-icon {
+    width: 45px;
+    height: 45px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #e8f4ff;
+
+    color: #1976c9;
+
+    font-size: 20px;
+}
+
+.delivery-success-box strong {
+    display: block;
+
+    margin-bottom: 4px;
+
+    color: #222;
+
+    font-size: 14px;
+}
+
+.delivery-success-box p {
+    margin: 0;
+
+    color: #777;
+
+    font-size: 12px;
+}
+
+/* ==========================================================
+   BUTTONS
+========================================================== */
+
+.success-actions {
+    display: flex;
+
+    justify-content: center;
+
+    gap: 12px;
+
+    margin-top: 30px;
+}
+
+.track-order-btn,
+.continue-shopping-btn {
+    min-height: 45px;
+
+    padding: 0 20px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 9px;
+
+    border-radius: 7px;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    text-decoration: none;
+
+    box-sizing: border-box;
+
+    transition: 0.2s ease;
+}
+
+.track-order-btn {
+    border: 1px solid #168a55;
+
+    background: #168a55;
+
+    color: #ffffff;
+}
+
+.track-order-btn:hover {
+    background: #117546;
+    border-color: #117546;
+}
+
+.continue-shopping-btn {
+    border: 1px solid #168a55;
+
+    background: #ffffff;
+
+    color: #168a55;
+}
+
+.continue-shopping-btn:hover {
+    background: #f1faf5;
+}
+
+/* ==========================================================
+   HOME LINK
+========================================================== */
+
+.back-home-link {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    margin-top: 22px;
+
+    color: #777;
+
+    font-size: 12px;
+
+    text-decoration: none;
+}
+
+.back-home-link:hover {
+    color: #168a55;
+}
+
+/* ==========================================================
+   MOBILE
+========================================================== */
+
+@media (max-width: 650px) {
+
+    .order-success-page {
+        padding: 20px 12px;
+    }
+
+    .order-success-container {
+        padding: 25px 16px;
+
+        border-radius: 12px;
+    }
+
+    .success-icon-wrapper {
+        width: 70px;
+        height: 70px;
+
+        font-size: 55px;
+    }
+
+    .success-heading h1 {
+        font-size: 23px;
+    }
+
+    .success-order-id strong {
+        font-size: 20px;
+    }
+
+    .success-order-info {
+        grid-template-columns: 1fr;
+    }
+
+    .success-actions {
+        flex-direction: column;
+    }
+
+    .track-order-btn,
+    .continue-shopping-btn {
+        width: 100%;
+    }
+
+    .success-product {
+        align-items: flex-start;
+    }
+
+    .success-product-image {
+        width: 55px;
+        height: 55px;
+    }
+
+    .success-product-price {
+        font-size: 13px;
+    }
+
+}

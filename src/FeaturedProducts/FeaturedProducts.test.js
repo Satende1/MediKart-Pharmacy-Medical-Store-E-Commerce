@@ -1,89 +1,644 @@
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
+import {
+  render,
+  screen,
+  fireEvent,
+  within,
+  act,
+} from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import FeaturedProducts from "./FeaturedProducts";
-import { toast } from "react-toastify";
-
-// Mock Images
-jest.mock("../assets/products/product1.png", () => "product1.png");
-jest.mock("../assets/products/product2.png", () => "product2.png");
-jest.mock("../assets/products/product3.png", () => "product3.png");
-jest.mock("../assets/products/product4.png", () => "product4.png");
-
-// Mock react-toastify
-jest.mock("react-toastify", () => ({
-  ToastContainer: () => <div>ToastContainer</div>,
-  toast: { success: jest.fn(), },
-}));
 
 describe("FeaturedProducts", () => {
   beforeEach(() => {
     localStorage.clear();
     jest.clearAllMocks();
-    window.dispatchEvent = jest.fn();
   });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  const renderComponent = () => {
+    return render(
+      <MemoryRouter>
+        <FeaturedProducts />
+      </MemoryRouter>
+    );
+  };
+
+  // ==================================================
+  // HEADER
+  // ==================================================
 
   test("renders Featured Products heading", () => {
-    render(<MemoryRouter> <FeaturedProducts /> </MemoryRouter>);
-    expect(screen.getByText("Featured Products")).toBeInTheDocument();
+    renderComponent();
+
+    expect(
+      screen.getByRole("heading", {
+        name: "Featured Products",
+      })
+    ).toBeInTheDocument();
   });
 
-  test("renders all products", () => {
-    render(<MemoryRouter> <FeaturedProducts /> </MemoryRouter>);
-    expect(screen.getByText("Paracetamol Tablets")).toBeInTheDocument();
-    expect(screen.getByText("Vitamin D Capsules")).toBeInTheDocument();
-    expect(screen.getByText("Blood Pressure Monitor")).toBeInTheDocument();
-    expect(screen.getByText("Hand Sanitizer")).toBeInTheDocument();
+  test("renders Featured Products description", () => {
+    renderComponent();
+
+    expect(
+      screen.getByText(
+        "Discover our most popular healthcare products"
+      )
+    ).toBeInTheDocument();
   });
 
-  test("renders View Details buttons", () => {
-    render(<MemoryRouter> <FeaturedProducts /> </MemoryRouter>);
-    expect(screen.getAllByText("View Details")).toHaveLength(4);
+  // ==================================================
+  // PRODUCTS
+  // ==================================================
+
+  test("renders all featured products", () => {
+    renderComponent();
+
+    expect(
+      screen.getByText("Immunity Booster Tablets")
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText("Vitamin D3 60000 IU")
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText("Keratin Shampoo")
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText("Eye Protection Goggles")
+    ).toBeInTheDocument();
   });
 
-  test("renders Add to Cart buttons", () => {
-    render(<MemoryRouter> <FeaturedProducts /> </MemoryRouter>);
+  test("renders exactly four product cards", () => {
+    renderComponent();
 
-    expect(screen.getAllByText("Add to Cart")).toHaveLength(4);
+    const cards =
+      document.querySelectorAll(".product-card");
+
+    expect(cards).toHaveLength(4);
   });
 
-  test("adds product to localStorage cart", () => {
-    render(<MemoryRouter> <FeaturedProducts /> </MemoryRouter>);
+  // ==================================================
+  // PRODUCT PRICES
+  // ==================================================
 
-    fireEvent.click(screen.getAllByText("Add to Cart")[0]);
+  test("renders correct product prices", () => {
+    renderComponent();
 
-    const cart = JSON.parse(localStorage.getItem("cart"));
+    expect(
+      screen.getByText("₹275")
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText("₹120")
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText("₹699")
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText("₹550")
+    ).toBeInTheDocument();
+  });
+
+  // ==================================================
+  // PRODUCT RATINGS
+  // ==================================================
+
+  test("renders correct product ratings", () => {
+    renderComponent();
+
+    expect(
+      screen.getAllByText("⭐ 4.8")
+    ).toHaveLength(2);
+
+    expect(
+      screen.getByText("⭐ 4.9")
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText("⭐ 4.7")
+    ).toBeInTheDocument();
+  });
+
+  // ==================================================
+  // PRODUCT IMAGES
+  // ==================================================
+
+  test("renders all product images", () => {
+    renderComponent();
+
+    expect(
+      screen.getByAltText(
+        "Immunity Booster Tablets"
+      )
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByAltText(
+        "Vitamin D3 60000 IU"
+      )
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByAltText(
+        "Keratin Shampoo"
+      )
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByAltText(
+        "Eye Protection Goggles"
+      )
+    ).toBeInTheDocument();
+  });
+
+  // ==================================================
+  // VIEW DETAILS
+  // ==================================================
+
+  test("renders four View Details links", () => {
+    renderComponent();
+
+    const links = screen.getAllByRole("link", {
+      name: "View Details",
+    });
+
+    expect(links).toHaveLength(4);
+  });
+
+  test("renders correct View Details URLs", () => {
+    renderComponent();
+
+    const links = screen.getAllByRole("link", {
+      name: "View Details",
+    });
+
+    expect(links[0]).toHaveAttribute(
+      "href",
+      "/product/25"
+    );
+
+    expect(links[1]).toHaveAttribute(
+      "href",
+      "/product/8"
+    );
+
+    expect(links[2]).toHaveAttribute(
+      "href",
+      "/product/206"
+    );
+
+    expect(links[3]).toHaveAttribute(
+      "href",
+      "/product/166"
+    );
+  });
+
+  // ==================================================
+  // ADD TO CART BUTTONS
+  // ==================================================
+
+  test("renders four Add to Cart buttons", () => {
+    renderComponent();
+
+    const buttons = screen.getAllByRole("button", {
+      name: "Add to Cart",
+    });
+
+    expect(buttons).toHaveLength(4);
+  });
+
+  // ==================================================
+  // IMMUNITY BOOSTER
+  // ==================================================
+
+  test("adds Immunity Booster Tablets to cart", () => {
+    renderComponent();
+
+    const productName =
+      screen.getByText("Immunity Booster Tablets");
+
+    const productCard =
+      productName.closest(".product-card");
+
+    expect(productCard).not.toBeNull();
+
+    const button = within(productCard).getByRole(
+      "button",
+      {
+        name: "Add to Cart",
+      }
+    );
+
+    fireEvent.click(button);
+
+    const cart = JSON.parse(
+      localStorage.getItem("cart")
+    );
 
     expect(cart).toHaveLength(1);
-    expect(cart[0].name).toBe("Paracetamol Tablets");
+
+    expect(cart[0]).toMatchObject({
+      id: 25,
+      name: "Immunity Booster Tablets",
+      brand: "Himalaya",
+      category: "Vitamins",
+      price: 275,
+      quantity: 1,
+    });
+  });
+
+  // ==================================================
+  // VITAMIN D3
+  // ==================================================
+
+  test("adds Vitamin D3 60000 IU to cart", () => {
+    renderComponent();
+
+    const productName =
+      screen.getByText("Vitamin D3 60000 IU");
+
+    const productCard =
+      productName.closest(".product-card");
+
+    expect(productCard).not.toBeNull();
+
+    const button = within(productCard).getByRole(
+      "button",
+      {
+        name: "Add to Cart",
+      }
+    );
+
+    fireEvent.click(button);
+
+    const cart = JSON.parse(
+      localStorage.getItem("cart")
+    );
+
+    expect(cart).toHaveLength(1);
+
+    expect(cart[0]).toMatchObject({
+      id: 8,
+      name: "Vitamin D3 60000 IU",
+      brand: "Uprise",
+      category: "Vitamins",
+      price: 120,
+      quantity: 1,
+    });
+  });
+
+  // ==================================================
+  // KERATIN SHAMPOO
+  // ==================================================
+
+  test("adds Keratin Shampoo to cart", () => {
+    renderComponent();
+
+    const productName =
+      screen.getByText("Keratin Shampoo");
+
+    const productCard =
+      productName.closest(".product-card");
+
+    expect(productCard).not.toBeNull();
+
+    const button = within(productCard).getByRole(
+      "button",
+      {
+        name: "Add to Cart",
+      }
+    );
+
+    fireEvent.click(button);
+
+    const cart = JSON.parse(
+      localStorage.getItem("cart")
+    );
+
+    expect(cart).toHaveLength(1);
+
+    expect(cart[0]).toMatchObject({
+      id: 206,
+      name: "Keratin Shampoo",
+      brand: "Tresemme",
+      category: "Hair Care",
+      price: 699,
+      quantity: 1,
+    });
+  });
+
+  // ==================================================
+  // EYE PROTECTION GOGGLES
+  // ==================================================
+
+  test("adds Eye Protection Goggles to cart", () => {
+    renderComponent();
+
+    const productName =
+      screen.getByText("Eye Protection Goggles");
+
+    const productCard =
+      productName.closest(".product-card");
+
+    expect(productCard).not.toBeNull();
+
+    const button = within(productCard).getByRole(
+      "button",
+      {
+        name: "Add to Cart",
+      }
+    );
+
+    fireEvent.click(button);
+
+    const cart = JSON.parse(
+      localStorage.getItem("cart")
+    );
+
+    expect(cart).toHaveLength(1);
+
+    expect(cart[0]).toMatchObject({
+      id: 166,
+      name: "Eye Protection Goggles",
+      brand: "Safety",
+      category: "Eye Care",
+      price: 550,
+      quantity: 1,
+    });
+  });
+
+  // ==================================================
+  // EXISTING PRODUCT
+  // ==================================================
+
+  test("increases quantity when product already exists in cart", () => {
+    const existingCart = [
+      {
+        id: 25,
+        name: "Immunity Booster Tablets",
+        brand: "Himalaya",
+        category: "Vitamins",
+        price: 275,
+        quantity: 1,
+      },
+    ];
+
+    localStorage.setItem(
+      "cart",
+      JSON.stringify(existingCart)
+    );
+
+    renderComponent();
+
+    const productName =
+      screen.getByText("Immunity Booster Tablets");
+
+    const productCard =
+      productName.closest(".product-card");
+
+    const button = within(productCard).getByRole(
+      "button",
+      {
+        name: "Add to Cart",
+      }
+    );
+
+    fireEvent.click(button);
+
+    const cart = JSON.parse(
+      localStorage.getItem("cart")
+    );
+
+    expect(cart).toHaveLength(1);
+    expect(cart[0].name).toBe(
+      "Immunity Booster Tablets"
+    );
+    expect(cart[0].quantity).toBe(2);
+  });
+
+  // ==================================================
+  // NO DUPLICATE PRODUCTS
+  // ==================================================
+
+  test("does not create duplicate cart entries", () => {
+    renderComponent();
+
+    const productName =
+      screen.getByText("Immunity Booster Tablets");
+
+    const productCard =
+      productName.closest(".product-card");
+
+    const button = within(productCard).getByRole(
+      "button",
+      {
+        name: "Add to Cart",
+      }
+    );
+
+    fireEvent.click(button);
+    fireEvent.click(button);
+
+    const cart = JSON.parse(
+      localStorage.getItem("cart")
+    );
+
+    expect(cart).toHaveLength(1);
+    expect(cart[0].id).toBe(25);
+    expect(cart[0].quantity).toBe(2);
+  });
+
+  // ==================================================
+  // MULTIPLE PRODUCTS
+  // ==================================================
+
+  test("adds multiple different products to cart", () => {
+    renderComponent();
+
+    const immunityCard =
+      screen
+        .getByText("Immunity Booster Tablets")
+        .closest(".product-card");
+
+    const vitaminCard =
+      screen
+        .getByText("Vitamin D3 60000 IU")
+        .closest(".product-card");
+
+    const immunityButton =
+      within(immunityCard).getByRole("button", {
+        name: "Add to Cart",
+      });
+
+    const vitaminButton =
+      within(vitaminCard).getByRole("button", {
+        name: "Add to Cart",
+      });
+
+    fireEvent.click(immunityButton);
+    fireEvent.click(vitaminButton);
+
+    const cart = JSON.parse(
+      localStorage.getItem("cart")
+    );
+
+    expect(cart).toHaveLength(2);
+
+    expect(cart[0].name).toBe(
+      "Immunity Booster Tablets"
+    );
+
     expect(cart[0].quantity).toBe(1);
+
+    expect(cart[1].name).toBe(
+      "Vitamin D3 60000 IU"
+    );
+
+    expect(cart[1].quantity).toBe(1);
   });
 
-  test("calls toast.success when Add to Cart is clicked", () => {
-    render(<MemoryRouter> <FeaturedProducts /> </MemoryRouter>);
+  // ==================================================
+  // ADDED BUTTON
+  // ==================================================
 
-    fireEvent.click(screen.getAllByText("Add to Cart")[0]);
-    expect(toast.success).toHaveBeenCalled();
+  test("changes Add to Cart to Added after clicking", () => {
+    renderComponent();
+
+    const productName =
+      screen.getByText("Immunity Booster Tablets");
+
+    const productCard =
+      productName.closest(".product-card");
+
+    const button = within(productCard).getByRole(
+      "button",
+      {
+        name: "Add to Cart",
+      }
+    );
+
+    fireEvent.click(button);
+
+    expect(
+      within(productCard).getByRole("button", {
+        name: "✓ Added",
+      })
+    ).toBeInTheDocument();
   });
 
-  test("dispatches cartUpdated event", () => {
-    render(<MemoryRouter> <FeaturedProducts /> </MemoryRouter>);
+  // ==================================================
+  // CART UPDATED EVENT
+  // ==================================================
 
-    fireEvent.click(screen.getAllByText("Add to Cart")[0]);
+  test("dispatches cartUpdated event after adding product", () => {
+    const dispatchSpy = jest.spyOn(
+      window,
+      "dispatchEvent"
+    );
 
-    expect(window.dispatchEvent).toHaveBeenCalled();
+    renderComponent();
+
+    const productName =
+      screen.getByText("Immunity Booster Tablets");
+
+    const productCard =
+      productName.closest(".product-card");
+
+    const button = within(productCard).getByRole(
+      "button",
+      {
+        name: "Add to Cart",
+      }
+    );
+
+    fireEvent.click(button);
+
+    const cartUpdatedCall =
+      dispatchSpy.mock.calls.find(
+        ([event]) => event.type === "cartUpdated"
+      );
+
+    expect(cartUpdatedCall).toBeDefined();
+
+    dispatchSpy.mockRestore();
   });
 
-  test("changes button text to Added", () => {
-    render(<MemoryRouter> <FeaturedProducts /> </MemoryRouter>);
+  // ==================================================
+  // TWO SECOND TIMER
+  // ==================================================
 
-    fireEvent.click(screen.getAllByText("Add to Cart")[0]);
-    expect(screen.getByText("✓ Added")).toBeInTheDocument();
+  test("changes Added back to Add to Cart after 2 seconds", () => {
+    jest.useFakeTimers();
+
+    renderComponent();
+
+    const productName =
+      screen.getByText("Immunity Booster Tablets");
+
+    const productCard =
+      productName.closest(".product-card");
+
+    const button = within(productCard).getByRole(
+      "button",
+      {
+        name: "Add to Cart",
+      }
+    );
+
+    fireEvent.click(button);
+
+    expect(
+      within(productCard).getByRole("button", {
+        name: "✓ Added",
+      })
+    ).toBeInTheDocument();
+
+    act(() => {
+      jest.advanceTimersByTime(2000);
+    });
+
+    expect(
+      within(productCard).getByRole("button", {
+        name: "Add to Cart",
+      })
+    ).toBeInTheDocument();
   });
 
-  test("renders ToastContainer", () => {
-    render(<MemoryRouter> <FeaturedProducts /> </MemoryRouter>);
+  // ==================================================
+  // TOAST
+  // ==================================================
 
-    expect(screen.getByText("ToastContainer")).toBeInTheDocument();
+  test("shows success toast when product is added", async () => {
+    renderComponent();
+
+    const productName =
+      screen.getByText("Immunity Booster Tablets");
+
+    const productCard =
+      productName.closest(".product-card");
+
+    const button = within(productCard).getByRole(
+      "button",
+      {
+        name: "Add to Cart",
+      }
+    );
+
+    fireEvent.click(button);
+
+    expect(
+      await screen.findByText(
+        "Immunity Booster Tablets added to cart!"
+      )
+    ).toBeInTheDocument();
   });
 });

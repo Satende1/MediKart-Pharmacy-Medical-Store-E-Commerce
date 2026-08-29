@@ -59,7 +59,6 @@ import HealthRecords from "./pages/HealthRecords/HealthRecords";
 import Offers from "./pages/Offers/Offers";
 import Notifications from "./pages/Notifications/Notifications";
 import Settings from "./pages/Settings/Settings";
-import TrackOrderPage from "./pages/TrackOrderPage";
 
 function Layout() {
   const location = useLocation();
@@ -127,25 +126,17 @@ function Layout() {
         <Route path="/blog" element={<Blog />} />
         <Route path="/order-history" element={<OrderHistory />} />
         <Route path="/track-order" element={<TrackOrder />} />
+        <Route path="/track-order/:orderId" element={<TrackOrder />} />
+        <Route path="/orders/:orderId" element={<TrackOrder />} />
         <Route path="/reviews" element={<Reviews />} />
         <Route path="/compare-products" element={<CompareProducts />} />
         <Route path="/gallery" element={<Gallery />} />
         <Route path="/faq" element={<FAQ />} />
 
-        {/* Error Pages */}
-        <Route path="*" element={<Error404 />} />
-        <Route path="/500" element={<Error500 />} />
-        <Route path="/no-internet" element={<NoInternet />} />
-        <Route path="/access-denied" element={<AccessDenied />} />
-        <Route path="/maintenance" element={<Maintenance />} />
-        <Route path="/empty" element={<EmptyState />} />
-
+        {/* Account and Dashboard */}
         <Route path="/account" element={<Account />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/orders" element={<Orders />} />
-        <Route path="/wishlist" element={<Wishlist />} />
-        <Route path="/cart" element={<Cart />} />
-        <Route path="/order-history" element={<OrderHistory />} />
         <Route path="/payments" element={<Payments />} />
         <Route path="/addresses" element={<Addresses />} />
         <Route path="/upload-prescription" element={<UploadPrescription />} />
@@ -154,13 +145,15 @@ function Layout() {
         <Route path="/notifications" element={<Notifications />} />
         <Route path="/settings" element={<Settings />} />
 
+        {/* Status / Error Pages */}
+        <Route path="/500" element={<Error500 />} />
+        <Route path="/no-internet" element={<NoInternet />} />
+        <Route path="/access-denied" element={<AccessDenied />} />
+        <Route path="/maintenance" element={<Maintenance />} />
+        <Route path="/empty" element={<EmptyState />} />
 
-        {/* Keep this LAST */}
+        {/* Keep 404 LAST */}
         <Route path="*" element={<Error404 />} />
-        <Route
-          path="/track-order"
-          element={<TrackOrderPage />}
-        />
       </Routes>
 
       <ToastContainer position="top-right" autoClose={2000} theme="colored" />

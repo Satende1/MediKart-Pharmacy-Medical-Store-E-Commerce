@@ -24,13 +24,13 @@ const CartItem = ({ item, onIncrease, onDecrease, onRemove,}) => {
           <span>{item.rating || 4.8}</span>
         </div>
 
-        <h3 className={styles.price}> ₹{Number(item.price).toLocaleString()} </h3>
+        <h3 className={styles.price}> ₹{Number(item.price ?? item.discountedPrice ?? 0).toLocaleString()} </h3>
 
         {/* Quantity */}
         <div className={styles.quantity}>
           <button
             onClick={() => onDecrease(item.id)}
-            disabled = {(item.quantity || 1) === 1}
+            disabled = {(Number(item.quantity) || 1) === 1}
             className={styles.qtyBtn}
           >
             <FaMinus />
@@ -47,7 +47,7 @@ const CartItem = ({ item, onIncrease, onDecrease, onRemove,}) => {
       {/* Right Side */}
       <div className={styles.right}>
         <h2 className={styles.total}>
-          ₹ {(Number(item.price) * (item.quantity || 1)).toLocaleString()}
+          ₹ {((Number(item.price ?? item.discountedPrice) || 0) * (Number(item.quantity) || 1)).toLocaleString()}
         </h2>
 
         <button className={styles.removeBtn} onClick={() => onRemove(item.id)}> <FaTrash /> Remove

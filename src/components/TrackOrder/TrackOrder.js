@@ -1,609 +1,797 @@
 import React, { useEffect, useState } from "react";
-import { FaCheckCircle, FaBoxOpen, FaTruck, FaShippingFast, FaHome, FaMapMarkerAlt, FaArrowLeft, FaPhoneAlt, FaCopy, } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import * as router from "react-router-dom";
+import {
+  FaArrowLeft,
+  FaBoxOpen,
+  FaCheck,
+  FaTruck,
+  FaMapMarkerAlt,
+  FaPhone,
+  FaHeadset,
+  FaTimes,
+  FaUndo,
+  FaCalendarAlt,
+  FaShippingFast,
+  FaBox,
+  FaMotorcycle,
+  FaClipboardCheck,
+  FaHome,
+} from "react-icons/fa";
+import { ToastContainer } from "react-toastify";
 
 import "./TrackOrder.css";
 
+const { Link, useNavigate } = router;
+
 const TrackOrder = () => {
+  const useParamsHook = router.useParams || (() => ({}));
+  const { orderId } = useParamsHook();
   const navigate = useNavigate();
 
   const [order, setOrder] = useState(null);
 
-  // ==============================
-  // GET ORDER FROM LOCAL STORAGE
-  // ==============================
-
   useEffect(() => {
-    const savedOrder = localStorage.getItem("latestOrder");
-
-    if (savedOrder) {
+    const loadOrder = () => {
       try {
-        const parsedOrder = JSON.parse(savedOrder);
-        setOrder(parsedOrder);
+        const raw =
+          localStorage.getItem("orders") ||
+          localStorage.getItem("order") ||
+          "null";
+
+        if (!raw) {
+          setOrder(null);
+          return;
+        }
+
+        const parsed = JSON.parse(raw);
+        if (!parsed) {
+          setOrder(null);
+          return;
+        }
+
+        const storedOrders = Array.isArray(parsed) ? parsed : [parsed];
+
+        if (storedOrders.length === 0) {
+          setOrder(null);
+          return;
+        }
+
+        let selectedOrder;
+
+        if (orderId) {
+          selectedOrder = storedOrders.find(
+            (item) =>
+              String(item.orderId) === String(orderId) ||
+              String(item.id) === String(orderId)
+          );
+        } else {
+          selectedOrder = storedOrders[storedOrders.length - 1];
+        }
+
+        setOrder(selectedOrder || null);
       } catch (error) {
-        console.error("Invalid order data:", error);
+        console.error("Error loading order:", error);
         setOrder(null);
       }
-    }
-  }, []);
+    };
 
-  // ==============================
-  // TRACKING STEPS
-  // ==============================
+    loadOrder();
+  }, [orderId]);
 
-  const trackingSteps = [
-    {
-      id: 1,
-      title: "Order Placed",
-      icon: <FaCheckCircle />,
-    },
-    {
-      id: 2,
-      title: "Packed",
-      icon: <FaBoxOpen />,
-    },
-    {
-      id: 3,
-      title: "Shipped",
-      icon: <FaShippingFast />,
-    },
-    {
-      id: 4,
-      title: "Out for Delivery",
-      icon: <FaTruck />,
-    },
-    {
-      id: 5,
-      title: "Delivered",
-      icon: <FaHome />,
-    },
-  ];
+  /* ==========================================
+     LOADING / EMPTY
+  ========================================== */
 
-  // ==============================
-  // GET CURRENT STEP
-  // ==============================
-
-  const getCurrentStep = (status) => {
-    switch (status?.toLowerCase()) {
-      case "ordered":
-      case "order placed":
-        return 1;
-
-      case "packed":
-        return 2;
-
-      case "shipped":
-        return 3;
-
-      case "out for delivery":
-        return 4;
-
-      case "delivered":
-        return 5;
-
-      default:
-        return 1;
-    }
-  };
-
-  // ==============================
-  // COPY ORDER ID
-  // ==============================
-
-  const copyOrderId = () => {
-    if (order?.orderId) {
-      navigator.clipboard.writeText(order.orderId);
-
-      toast.success("Order ID copied!", {
-        position: "top-right",
-        autoClose: 1500,
-      });
-    }
-  };
-
-  // ==============================
-  // COPY TRACKING ID
-  // ==============================
-
-  const copyTrackingId = () => {
-    if (order?.courier?.trackingId) {
-      navigator.clipboard.writeText(order.courier.trackingId);
-
-      toast.success("Tracking ID copied!", {
-        position: "top-right",
-        autoClose: 1500,
-      });
-    }
-  };
-
-  // ==============================
-  // LOADING
-  // ==============================
-
-  if (order === null) {
+  if (!order && orderId) {
     return (
-      <div className="track-empty">
-        <div className="empty-icon">
+      <div className="track-order-empty">
+        <div className="track-empty-icon">
+          <FaBoxOpen />
+        </div>
+
+        <h2>Order Not Found</h2>
+
+        <p>
+          We couldn't find an order with this order ID.
+        </p>
+
+        <Link to="/orders" className="track-empty-btn">
+          View My Orders
+        </Link>
+      </div>
+    );
+  }
+
+  if (!order) {
+    return (
+      <div className="track-order-empty">
+        <div className="track-empty-icon">
           <FaBoxOpen />
         </div>
 
         <h2>No Order Found</h2>
 
         <p>
-          We couldn't find an order to track.
+          You haven't placed any orders yet.
         </p>
 
-        <button
-          onClick={() => navigate("/shop")}
-          className="shop-now-btn"
-        >
+        <Link to="/shop" className="track-empty-btn">
           Continue Shopping
-        </button>
+        </Link>
       </div>
     );
   }
 
-  const currentStep = getCurrentStep(order.status);
+  /* ==========================================
+     ORDER INFORMATION
+  ========================================== */
 
-  // ==============================
-  // PRODUCTS
-  // ==============================
+  const id =
+    order.orderId ||
+    order.id ||
+    "MK0000000000";
 
-  const products =
-    order.items && order.items.length > 0
-      ? order.items
-      : order.product
-        ? [order.product]
-        : [];
+  const orderDate =
+    order.orderDate ||
+    order.date ||
+    "24 August 2026";
 
-  // ==============================
-  // TOTAL
-  // ==============================
+  const expectedDate =
+    order.expectedDelivery ||
+    order.deliveryDate ||
+    order.estimatedDelivery ||
+    "28 August 2026";
 
-  const calculatedTotal = products.reduce(
-    (total, item) =>
-      total +
-      Number(item.price || 0) *
-      Number(item.quantity || 1),
-    0
-  );
+  const status =
+    order.status ||
+    "Order Placed";
+
+  const trackingId =
+    order.courier?.trackingId ||
+    order.trackingId ||
+    order.trackingNumber ||
+    `MKTRK${String(id).slice(-8)}`;
+
+  const deliveryPartner =
+    order.courier?.name ||
+    order.deliveryPartner ||
+    "MEDIKART Delivery";
+
+  /* ==========================================
+     PRODUCTS
+  ========================================== */
+
+  let products = [];
+
+  if (Array.isArray(order.items)) {
+    products = order.items;
+  } else if (Array.isArray(order.products)) {
+    products = order.products;
+  } else if (order.product) {
+    products = [order.product];
+  }
+
+  /* ==========================================
+     ADDRESS
+  ========================================== */
+
+  const shippingAddress =
+    order.customer ||
+    order.shippingAddress ||
+    order.address ||
+    {};
+
+  const addressName =
+    shippingAddress.name ||
+    order.customerName ||
+    order.name ||
+    "Customer";
+
+  const addressPhone =
+    shippingAddress.phone ||
+    order.phone ||
+    "Not available";
+
+  const addressLine =
+    typeof shippingAddress === "string"
+      ? shippingAddress
+      : [
+        shippingAddress.address,
+        shippingAddress.street,
+        shippingAddress.area,
+        shippingAddress.city,
+        shippingAddress.state,
+        shippingAddress.pincode,
+      ]
+        .filter(Boolean)
+        .join(", ") || "Delivery address not available";
+
+  /* ==========================================
+     STATUS
+  ========================================== */
+
+  const getStatusStep = () => {
+    const currentStatus = String(status).toLowerCase();
+
+    if (
+      currentStatus.includes("cancel")
+    ) {
+      return -1;
+    }
+
+    if (
+      currentStatus.includes("deliver")
+    ) {
+      return 4;
+    }
+
+    if (
+      currentStatus.includes("out")
+    ) {
+      return 3;
+    }
+
+    if (
+      currentStatus.includes("ship") ||
+      currentStatus.includes("transit")
+    ) {
+      return 2;
+    }
+
+    if (
+      currentStatus.includes("pack")
+    ) {
+      return 1;
+    }
+
+    return 0;
+  };
+
+  const currentStep = getStatusStep();
+
+  const steps = [
+    {
+      title: "Order Placed",
+      description: "Your order has been placed successfully.",
+      icon: <FaClipboardCheck />,
+      date: orderDate,
+    },
+    {
+      title: "Packed",
+      description: "Your order has been packed and is ready to ship.",
+      icon: <FaBox />,
+      date: "Completed",
+    },
+    {
+      title: "Shipped",
+      description: "Your order has left the MEDIKART warehouse.",
+      icon: <FaShippingFast />,
+      date: "In Transit",
+    },
+    {
+      title: "Out for Delivery",
+      description: "Your order is out for delivery.",
+      icon: <FaMotorcycle />,
+      date: "Coming Soon",
+    },
+    {
+      title: "Delivered",
+      description: "Your order has been delivered successfully.",
+      icon: <FaCheck />,
+      date: expectedDate,
+    },
+  ];
+
+  /* ==========================================
+     CANCEL ORDER
+  ========================================== */
+
+  const handleCancelOrder = () => {
+    const confirmCancel = window.confirm(
+      "Are you sure you want to cancel this order?"
+    );
+
+    if (!confirmCancel) return;
+
+    try {
+      const storedOrders = JSON.parse(
+        localStorage.getItem("orders") || "[]"
+      );
+
+      const updatedOrders = storedOrders.map((item) => {
+        if (
+          String(item.orderId || item.id) ===
+          String(id)
+        ) {
+          return {
+            ...item,
+            status: "Cancelled",
+          };
+        }
+
+        return item;
+      });
+
+      localStorage.setItem(
+        "orders",
+        JSON.stringify(updatedOrders)
+      );
+
+      setOrder({
+        ...order,
+        status: "Cancelled",
+      });
+    } catch (error) {
+      console.error("Cancel order error:", error);
+    }
+  };
+
+  /* ==========================================
+     RETURN
+  ========================================== */
+
+  const handleReturn = () => {
+    alert(
+      "Return request has been initiated. Our support team will contact you."
+    );
+  };
+
+  /* ==========================================
+     TOTAL
+  ========================================== */
 
   const totalAmount =
-    order.totalAmount !== undefined
-      ? order.totalAmount
-      : calculatedTotal;
+    order.totalAmount ||
+    order.total ||
+    order.grandTotal ||
+    products.reduce(
+      (total, item) =>
+        total +
+        Number(item.price || 0) *
+        Number(item.quantity || 1),
+      0
+    );
 
   return (
-    <>
-      <div className="track-page">
+    <div className="track-order-page">
 
-        {/* =================================
-            BACK BUTTON
-        ================================= */}
+      {/* ======================================
+          HEADER
+      ====================================== */}
 
-        <div className="track-top">
+      <header className="track-header">
+
+        <div className="track-header-inner">
+
           <button
             className="track-back-btn"
+            aria-label="Back"
             onClick={() => navigate(-1)}
           >
             <FaArrowLeft />
-            Back
           </button>
-        </div>
-
-        {/* =================================
-            HEADER
-        ================================= */}
-
-        <div className="track-header">
 
           <div>
-            <h1>Track Order</h1>
+            <h1>{status === "Delivered" ? "Order Delivered" : "Track Order"}</h1>
 
-            <div className="order-id-row">
-              <span>Order ID:</span>
-
-              <strong>
-                {order.orderId || "N/A"}
-              </strong>
-
-              {order.orderId && (
-                <button
-                  className="copy-btn"
-                  onClick={copyOrderId}
-                  title="Copy Order ID"
-                >
-                  <FaCopy />
-                </button>
-              )}
-            </div>
+            <p>
+              Order ID: <strong>{id}</strong>
+              <button
+                type="button"
+                title="Copy Order ID"
+                onClick={() => navigator.clipboard.writeText(id)}
+                style={{ marginLeft: "8px", border: "none", background: "none", cursor: "pointer" }}
+              >
+                📋
+              </button>
+            </p>
+            {status === "Delivered" && (
+              <p>Your order has been delivered successfully</p>
+            )}
           </div>
 
-          <button
-            className="continue-shopping"
-            onClick={() => navigate("/shop")}
+          <Link
+            to="/"
+            className="track-home-btn"
           >
-            Continue Shopping
-          </button>
+            <FaHome />
+            Home
+          </Link>
 
         </div>
 
-        <div className="track-container">
+      </header>
 
-          {/* =================================
-              DELIVERY SUMMARY
-          ================================= */}
 
-          <div className="delivery-summary">
+      {/* ======================================
+          MAIN
+      ====================================== */}
 
-            <div className="delivery-summary-left">
+      <main className="track-container">
 
-              <div className="delivery-truck">
-                <FaTruck />
-              </div>
+        {/* ====================================
+            ORDER STATUS CARD
+        ==================================== */}
 
-              <div>
-                <p className="small-title">
-                  {order.status === "Delivered"
-                    ? "Delivered"
-                    : "Expected Delivery"}
-                </p>
+        <section className="track-status-card">
 
-                <h2>
-                  {order.status === "Delivered"
-                    ? "Order Delivered"
-                    : order.estimatedDelivery ||
-                    "14 Aug"}
-                </h2>
+          <div className="track-status-left">
 
-                <span>
-                  {order.status === "Delivered"
-                    ? "Your order has been delivered successfully"
-                    : "Your order is on the way"}
-                </span>
-              </div>
-
+            <div className="track-truck-icon">
+              <FaTruck />
             </div>
 
-            <div className="delivery-status">
-
+            <div>
               <span>Current Status</span>
 
-              <strong>
-                {order.status || "Order Placed"}
-              </strong>
+              <h2>{status}</h2>
 
+              <p>
+                <FaCalendarAlt />
+                Expected delivery by{" "}
+                <strong>{expectedDate}</strong>
+              </p>
             </div>
 
           </div>
 
-          {/* =================================
-              TRACKING CARD
-          ================================= */}
+          <div className="track-id-box">
+            <span>Tracking ID</span>
+            <strong>{trackingId}</strong>
+          </div>
 
-          <div className="track-card">
+        </section>
 
-            <div className="track-card-header">
 
-              <div>
-                <h2>Delivery Status</h2>
+        {/* ====================================
+            DELIVERY TIMELINE
+        ==================================== */}
 
-                <p>
-                  Follow your order from placement
-                  to delivery
-                </p>
-              </div>
+        <section className="track-card">
 
-              <span className="status-badge">
-                {order.status || "Order Placed"}
-              </span>
+          <div className="track-card-heading">
 
-            </div>
+            <div>
+              <h2>Delivery Tracking</h2>
 
-            <div className="tracking-wrapper">
-
-              {trackingSteps.map(
-                (step, index) => {
-
-                  const completed =
-                    currentStep >= step.id;
-
-                  const active =
-                    currentStep === step.id;
-
-                  return (
-                    <React.Fragment
-                      key={step.id}
-                    >
-
-                      <div
-                        className={`tracking-step ${completed
-                          ? "completed"
-                          : ""
-                          } ${active
-                            ? "active"
-                            : ""
-                          }`}
-                      >
-
-                        <div className="tracking-icon">
-                          {step.icon}
-                        </div>
-
-                        <div className="tracking-info">
-
-                          <strong>
-                            {step.title}
-                          </strong>
-
-                          {completed && (
-                            <span>
-                              Completed
-                            </span>
-                          )}
-
-                        </div>
-
-                      </div>
-
-                      {index <
-                        trackingSteps.length - 1 && (
-                          <div
-                            className={`tracking-connector ${currentStep >
-                              step.id
-                              ? "completed"
-                              : ""
-                              }`}
-                          />
-                        )}
-
-                    </React.Fragment>
-                  );
-                }
-              )}
-
+              <p>
+                Track your order from MEDIKART warehouse
+                to your doorstep.
+              </p>
             </div>
 
           </div>
 
-          {/* =================================
-              ORDER ITEMS
-          ================================= */}
 
-          <div className="track-card">
+          <div className="track-timeline">
 
-            <div className="track-card-header">
+            {steps.map((step, index) => {
 
-              <div>
-                <h2>Order Items</h2>
+              const completed =
+                index < currentStep;
 
-                <p>
-                  {products.length}{" "}
-                  {products.length === 1
-                    ? "Item"
-                    : "Items"}
-                </p>
-              </div>
+              const active =
+                index === currentStep;
 
-            </div>
+              return (
+                <div
+                  key={step.title}
+                  className={`track-step ${completed ? "completed" : ""
+                    } ${active ? "active" : ""
+                    }`}
+                >
 
-            <div className="products-list">
+                  <div className="track-step-left">
 
-              {products.map(
-                (product, index) => (
+                    <div className="track-step-circle">
 
-                  <div
-                    className="track-product"
-                    key={
-                      product.id || index
-                    }
-                  >
-
-                    <div className="track-product-image">
-
-                      <img
-                        src={product.image}
-                        alt={
-                          product.name ||
-                          "Product"
-                        }
-                      />
-
-                    </div>
-
-                    <div className="track-product-info">
-
-                      <h3>
-                        {product.name}
-                      </h3>
-
-                      {product.brand && (
-                        <p>
-                          Brand:{" "}
-                          {product.brand}
-                        </p>
+                      {completed ? (
+                        <FaCheck />
+                      ) : (
+                        step.icon
                       )}
 
-                      <span>
-                        Quantity:{" "}
-                        {product.quantity ||
-                          1}
-                      </span>
-
                     </div>
 
-                    <div className="track-product-price">
-
-                      ₹
-                      {Number(
-                        product.price || 0
-                      ) *
-                        Number(
-                          product.quantity ||
-                          1
-                        )}
-
-                    </div>
+                    {index !== steps.length - 1 && (
+                      <div className="track-step-line" />
+                    )}
 
                   </div>
 
-                )
+
+                  <div className="track-step-content">
+
+                    <div className="track-step-title">
+
+                      <h3>{step.title}</h3>
+
+                      <span>{step.date}</span>
+
+                    </div>
+
+                    <p>
+                      {step.description}
+                    </p>
+
+                    {active && (
+                      <span className="track-active">
+                        Current Status
+                      </span>
+                    )}
+
+                  </div>
+
+                </div>
+              );
+            })}
+
+          </div>
+
+        </section>
+
+
+        {/* ====================================
+            PRODUCTS
+        ==================================== */}
+
+        <section className="track-card">
+
+          <div className="track-card-heading">
+
+            <div>
+              <h2>Order Items</h2>
+
+              <p>
+                {products.length === 1 ? "1 Item" : `${products.length} Items`} included in this order
+              </p>
+            </div>
+
+          </div>
+
+
+          <div className="track-products">
+
+            {products.length > 0 ? (
+              products.map((product, index) => {
+
+                const image =
+                  product.image ||
+                  product.img ||
+                  product.imageUrl;
+
+                const name =
+                  product.name ||
+                  product.title ||
+                  "Healthcare Product";
+
+                const quantity =
+                  product.quantity || 1;
+
+                const productPrice =
+                  Number(product.price || 0);
+
+                return (
+                  <div
+                    className="track-product-row"
+                    key={product.id || index}
+                  >
+
+                    <div className="track-product-img">
+
+                      {image ? (
+                        <img
+                          src={image}
+                          alt={name}
+                        />
+                      ) : (
+                        <FaBoxOpen />
+                      )}
+
+                    </div>
+
+                    <div className="track-product-details">
+
+                      <h3>{name}</h3>
+
+                      {product.brand && (
+                        <p>Brand: <strong>{product.brand}</strong></p>
+                      )}
+
+                      <p>
+                        Quantity: {quantity}
+                      </p>
+
+                    </div>
+
+                    <strong>
+                      ₹
+                      {productPrice.toLocaleString(
+                        "en-IN"
+                      )}
+                    </strong>
+
+                  </div>
+                );
+              })
+            ) : (
+              <div className="track-no-products">
+                <FaBoxOpen />
+                <p>Product information unavailable.</p>
+              </div>
+            )}
+
+          </div>
+
+
+          <div className="track-total">
+
+            <span>Total Amount</span>
+
+            <strong>
+              ₹
+              {Number(totalAmount).toLocaleString(
+                "en-IN"
+              )}
+            </strong>
+
+          </div>
+
+        </section>
+
+
+        {/* ====================================
+            SHIPPING DETAILS
+        ==================================== */}
+
+        <section className="track-card">
+
+          <div className="track-card-heading">
+
+            <div>
+              <h2>Shipment Details</h2>
+            </div>
+
+          </div>
+
+
+          <div className="track-shipment-grid">
+
+            <div>
+              <span>Order ID</span>
+              <strong>{id}</strong>
+            </div>
+
+            <div>
+              <span>Tracking ID</span>
+              <strong>{trackingId}</strong>
+            </div>
+
+            <div>
+              <span>Delivery Partner</span>
+              <strong>{deliveryPartner}</strong>
+            </div>
+
+            <div>
+              <span>Order Date</span>
+              <strong>{orderDate}</strong>
+            </div>
+
+            <div>
+              <span>Expected Delivery</span>
+              <strong>{expectedDate}</strong>
+            </div>
+
+            <div>
+              <span>Payment</span>
+              <strong>
+                {order.paymentMethod || "Online Payment"}
+              </strong>
+            </div>
+
+          </div>
+
+        </section>
+
+
+        {/* ====================================
+            ADDRESS
+        ==================================== */}
+
+        <section className="track-card">
+
+          <div className="track-card-heading">
+
+            <div>
+              <h2>Delivery Address</h2>
+            </div>
+
+          </div>
+
+
+          <div className="track-address">
+
+            <div className="track-address-icon">
+              <FaMapMarkerAlt />
+            </div>
+
+            <div>
+
+              <h3>{addressName}</h3>
+
+              <p>
+                {addressLine}
+              </p>
+
+              {addressPhone && (
+                <span>
+                  <FaPhone />
+                  {addressPhone}
+                </span>
               )}
 
             </div>
 
-            <div className="track-total">
-
-              <span>Total Amount</span>
-
-              <strong>
-                ₹{totalAmount}
-              </strong>
-
-            </div>
-
           </div>
 
-          {/* =================================
-              DELIVERY ADDRESS
-          ================================= */}
+        </section>
 
-          <div className="track-card">
 
-            <div className="track-card-header">
+        {/* ====================================
+            ACTIONS
+        ==================================== */}
 
-              <h2>Delivery Address</h2>
+        <section className="track-actions">
 
-            </div>
+          <Link
+            to="/contact"
+            className="track-help-btn"
+          >
+            <FaHeadset />
+            Contact Us
+          </Link>
 
-            <div className="address-box">
+          {currentStep < 2 &&
+            status !== "Cancelled" && (
+              <button
+                className="track-cancel-btn"
+                onClick={handleCancelOrder}
+              >
+                <FaTimes />
+                Cancel Order
+              </button>
+            )}
 
-              <div className="address-icon">
-                <FaMapMarkerAlt />
-              </div>
-
-              <div className="address-content">
-
-                <h3>
-                  {order.customer?.name ||
-                    order.name ||
-                    "Customer"}
-                </h3>
-
-                <p>
-                  {order.customer?.address ||
-                    order.address ||
-                    "Delivery address not available"}
-                </p>
-
-                {(order.customer?.phone ||
-                  order.phone) && (
-                    <p className="mobile-number">
-                      <FaPhoneAlt />
-
-                      Mobile:{" "}
-                      {order.customer?.phone ||
-                        order.phone}
-                    </p>
-                  )}
-
-              </div>
-
-            </div>
-
-          </div>
-
-          {/* =================================
-              DELIVERY PARTNER
-          ================================= */}
-
-          <div className="track-card">
-
-            <div className="track-card-header">
-
-              <h2>Delivery Partner</h2>
-
-            </div>
-
-            <div className="courier-box">
-
-              <div className="courier-icon">
-                <FaTruck />
-              </div>
-
-              <div className="courier-info">
-
-                <h3>
-                  {order.courier?.name ||
-                    "MEDIKART Delivery"}
-                </h3>
-
-                <p>
-                  Tracking ID:
-                  <strong>
-                    {" "}
-                    {order.courier
-                      ?.trackingId ||
-                      "Not available"}
-                  </strong>
-
-                  {order.courier
-                    ?.trackingId && (
-                      <button
-                        className="copy-tracking"
-                        onClick={
-                          copyTrackingId
-                        }
-                      >
-                        <FaCopy />
-                      </button>
-                    )}
-                </p>
-
-              </div>
-
-            </div>
-
-          </div>
-
-          {/* =================================
-              HELP SECTION
-          ================================= */}
-
-          <div className="track-help">
-
-            <div>
-
-              <h3>
-                Need help with your order?
-              </h3>
-
-              <p>
-                Contact MEDIKART support for
-                assistance with your delivery.
-              </p>
-
-            </div>
-
+          {currentStep === 4 && (
             <button
-              onClick={() =>
-                navigate("/contact")
-              }
+              className="track-return-btn"
+              onClick={handleReturn}
             >
-              Contact Us
+              <FaUndo />
+              Return Order
             </button>
+          )}
 
-          </div>
+        </section>
+
+
+        {/* ====================================
+            ORDERS
+        ==================================== */}
+
+        <div className="track-view-orders">
+
+          <Link to="/orders">
+            <FaBoxOpen />
+            View All Orders
+          </Link>
 
         </div>
 
-      </div>
+      </main>
 
       <ToastContainer />
-
-    </>
+    </div>
   );
 };
 

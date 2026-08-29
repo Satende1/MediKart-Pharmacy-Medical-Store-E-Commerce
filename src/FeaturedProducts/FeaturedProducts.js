@@ -4,39 +4,82 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./FeaturedProducts.css";
 
-import product1 from "../assets/products/product1.png";
-import product2 from "../assets/products/product2.png";
-import product3 from "../assets/products/product3.png";
-import product4 from "../assets/products/product4.png";
+import immunityBooster from "../assets/vitamins/immunity-booster.png";
+import vitaminD3 from "../assets/vitamins/vitamin-d3.png";
+import hair7 from "../assets/hairCare/hair7.png";
+import SafetyGoggles from "../assets/EyeCare/eye17.png";
 
 const products = [
   {
-    id: 9001,
-    name: "Paracetamol Tablets",
-    price: 10,
+    id: 25,
+    name: "Immunity Booster Tablets",
+    brand: "Himalaya",
+    category: "Vitamins",
+    price: 275,
+    originalPrice: 325,
+    discount: 15,
     rating: 4.8,
-    image: product1,
+    reviews: 1540,
+    image: immunityBooster,
+    packSize: "60 Tablets",
+    expiry: "24 Months",
+    stock: 40,
+    description:
+      "Nutritional supplement designed for daily wellness support.",
   },
   {
-    id: 9007,
-    name: "Vitamin D Capsules",
-    price: 300,
-    rating: 4.7,
-    image: product2,
+    id: 8,
+    name: "Vitamin D3 60000 IU",
+    brand: "Uprise",
+    category: "Vitamins",
+    price: 120,
+    originalPrice: 145,
+    discount: 17,
+    rating: 4.8,
+    reviews: 2100,
+    image: vitaminD3,
+    packSize: "8 Capsules",
+    expiry: "24 Months",
+    stock: 40,
+    description:
+      "Vitamin D3 supplement supplied in capsule form.",
   },
   {
-    id: 9002,
-    name: "Blood Pressure Monitor",
-    price: 1300,
+    id: 206,
+    name: "Keratin Shampoo",
+    brand: "Tresemme",
+    category: "Hair Care",
+    originalPrice: 799,
+    price: 699,
     rating: 4.9,
-    image: product3,
+    reviews: 1430,
+    discount: 13,
+    image: hair7,
+    packSize: "580ml",
+    expiry: "24 Months",
+    delivery: "2-3 Business Days",
+    returnPolicy: "7 Days Return Eligible",
+    stock: true,
+    description:
+      "Keratin shampoo formulated to cleanse hair while helping improve smoothness."
   },
   {
-    id: 9003,
-    name: "Hand Sanitizer",
-    price: 100,
-    rating: 4.6,
-    image: product4,
+    id: 166,
+    name: "Eye Protection Goggles",
+    brand: "Safety",
+    category: "Eye Care",
+    originalPrice: 688,
+    price: 550,
+    rating: 4.7,
+    reviews: 940,
+    discount: 20,
+    image: SafetyGoggles,
+    packSize: "1 Piece",
+    expiry: "5 Years",
+    delivery: "3-5 Business Days",
+    returnPolicy: "7 Days Return Eligible",
+    stock: true,
+    description: "Protective goggles for medical and industrial use."
   },
 ];
 function FeaturedProducts() {
@@ -144,8 +187,8 @@ function FeaturedProducts() {
 
                     <button
                       className={`cart-btn ${addedItems[product.id]
-                          ? "added"
-                          : ""
+                        ? "added"
+                        : ""
                         }`}
                       onClick={() =>
                         handleAddToCart(product)

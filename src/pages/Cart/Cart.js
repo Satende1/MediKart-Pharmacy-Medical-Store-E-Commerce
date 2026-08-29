@@ -72,19 +72,37 @@ const Cart = () => {
 
   // Totals
   const totalItems = cartItems.reduce(
-    (sum, item) => sum + (item.quantity || 1),
+    (sum, item) => sum + (Number(item.quantity) || 1),
     0
   );
 
   const subtotal = cartItems.reduce(
     (sum, item) =>
-      sum + item.price * (item.quantity || 1),
+      sum + (Number(item.price ?? item.discountedPrice) || 0) * (Number(item.quantity) || 1),
     0
   );
 
   const discount = Math.round(subtotal * 0.1);
 
-  const delivery = subtotal > 499 ? 0 : 50;
+  // Delivery charge: ₹10 for low order (<499), FREE for >=499, +₹50 for Medical Devices & Premium Healthcare
+  const isSpecialCategory = (category) => {
+    if (!category) return false;
+    const cat = String(category).toLowerCase().replace(/[-_]/g, " ");
+    return (
+      cat.includes("medical device") ||
+      cat.includes("medicaldevices") ||
+      cat.includes("device") ||
+      cat.includes("premium healthcare") ||
+      cat.includes("premiumhealthcare") ||
+      cat.includes("premium")
+    );
+  };
+
+  const hasSpecialItem = cartItems.some((item) => isSpecialCategory(item.category));
+
+  const baseDelivery = subtotal >= 499 ? 0 : 10;
+  const specialSurcharge = hasSpecialItem ? 50 : 0;
+  const delivery = baseDelivery + specialSurcharge;
 
   const totalAmount =
     subtotal - discount + delivery;
@@ -133,6 +151,7 @@ const Cart = () => {
           {/* Right */}
           <div className={styles.rightSection}>
             <CartSummary
+              cartItems={cartItems}
               totalItems={totalItems}
               subtotal={subtotal}
               discount={discount}
