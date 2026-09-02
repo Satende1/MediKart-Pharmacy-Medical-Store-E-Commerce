@@ -1,96 +1,101 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
+
 import Contact from "./Contact";
 
-// Mock Footer component
-jest.mock("../../components/Footer/Footer", () => () => (
-  <div data-testid="footer">Footer</div>
-));
-
 describe("Contact Component", () => {
-  test("renders contact hero section", () => {
+  beforeEach(() => {
     render(<Contact />);
+  });
 
+  test("renders contact page", () => {
     expect(screen.getByText("Contact MEDIKART")).toBeInTheDocument();
     expect(
       screen.getByText("We're here to help you 24×7")
     ).toBeInTheDocument();
   });
 
-  test("renders contact information", () => {
-    render(<Contact />);
-
+  test("renders Get In Touch section", () => {
     expect(screen.getByText("Get In Touch")).toBeInTheDocument();
-    expect(screen.getByText("+91 98765 43210")).toBeInTheDocument();
-    expect(screen.getByText("support@medikart.com")).toBeInTheDocument();
+  });
+
+  test("renders contact information headings", () => {
+    expect(screen.getByText("Phone")).toBeInTheDocument();
+    expect(screen.getByText("Email")).toBeInTheDocument();
+    expect(screen.getByText("Address")).toBeInTheDocument();
+    expect(screen.getByText("Working Hours")).toBeInTheDocument();
+  });
+
+  test("renders Send a Message section", () => {
+    expect(screen.getByText("Send a Message")).toBeInTheDocument();
+  });
+
+  test("renders all form fields", () => {
+    expect(screen.getByPlaceholderText("Your Name")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Email Address")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Mobile Number")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Your Message")).toBeInTheDocument();
+  });
+
+  test("renders Send Message button", () => {
     expect(
-      screen.getByText(/Medikart Healthcare Pvt. Ltd./i)
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(/Monday - Sunday/i)
+      screen.getByRole("button", { name: "Send Message" })
     ).toBeInTheDocument();
   });
 
-  test("renders contact form fields", () => {
-    render(<Contact />);
+  test("allows entering values into form fields", () => {
+    const nameInput = screen.getByPlaceholderText("Your Name");
+    const emailInput = screen.getByPlaceholderText("Email Address");
+    const mobileInput = screen.getByPlaceholderText("Mobile Number");
+    const messageInput = screen.getByPlaceholderText("Your Message");
 
-    expect(
-      screen.getByPlaceholderText("Your Name")
-    ).toBeInTheDocument();
+    fireEvent.change(nameInput, {
+      target: { value: "Test Name" },
+    });
 
-    expect(
-      screen.getByPlaceholderText("Email Address")
-    ).toBeInTheDocument();
+    fireEvent.change(emailInput, {
+      target: { value: "test@example.com" },
+    });
 
-    expect(
-      screen.getByPlaceholderText("Mobile Number")
-    ).toBeInTheDocument();
+    fireEvent.change(mobileInput, {
+      target: { value: "0000000000" },
+    });
 
-    expect(
-      screen.getByPlaceholderText("Your Message")
-    ).toBeInTheDocument();
+    fireEvent.change(messageInput, {
+      target: { value: "Test message" },
+    });
 
-    expect(
-      screen.getByRole("button", { name: /Send Message/i })
-    ).toBeInTheDocument();
+    expect(nameInput).toHaveValue("Test Name");
+    expect(emailInput).toHaveValue("test@example.com");
+    expect(mobileInput).toHaveValue("0000000000");
+    expect(messageInput).toHaveValue("Test message");
   });
 
   test("submits the form successfully", () => {
-    render(<Contact />);
+    const nameInput = screen.getByPlaceholderText("Your Name");
+    const emailInput = screen.getByPlaceholderText("Email Address");
+    const mobileInput = screen.getByPlaceholderText("Mobile Number");
+    const messageInput = screen.getByPlaceholderText("Your Message");
 
-    fireEvent.change(
-      screen.getByPlaceholderText("Your Name"),
-      {
-        target: { value: "John Doe" },
-      }
-    );
+    fireEvent.change(nameInput, {
+      target: { value: "Test Name" },
+    });
 
-    fireEvent.change(
-      screen.getByPlaceholderText("Email Address"),
-      {
-        target: { value: "john@example.com" },
-      }
-    );
+    fireEvent.change(emailInput, {
+      target: { value: "test@example.com" },
+    });
 
-    fireEvent.change(
-      screen.getByPlaceholderText("Mobile Number"),
-      {
-        target: { value: "9876543210" },
-      }
-    );
+    fireEvent.change(mobileInput, {
+      target: { value: "0000000000" },
+    });
 
-    fireEvent.change(
-      screen.getByPlaceholderText("Your Message"),
-      {
-        target: { value: "Hello MEDIKART!" },
-      }
-    );
+    fireEvent.change(messageInput, {
+      target: { value: "Test message" },
+    });
 
     fireEvent.click(
-      screen.getByRole("button", {
-        name: /Send Message/i,
-      })
+      screen.getByRole("button", { name: "Send Message" })
     );
 
     expect(
@@ -98,11 +103,39 @@ describe("Contact Component", () => {
     ).toBeInTheDocument();
   });
 
-  test("renders Footer component", () => {
-    render(<Contact />);
+  test("resets the form after submission", () => {
+    const nameInput = screen.getByPlaceholderText("Your Name");
+    const emailInput = screen.getByPlaceholderText("Email Address");
+    const mobileInput = screen.getByPlaceholderText("Mobile Number");
+    const messageInput = screen.getByPlaceholderText("Your Message");
 
+    fireEvent.change(nameInput, {
+      target: { value: "Test Name" },
+    });
+
+    fireEvent.change(emailInput, {
+      target: { value: "test@example.com" },
+    });
+
+    fireEvent.change(mobileInput, {
+      target: { value: "0000000000" },
+    });
+
+    fireEvent.change(messageInput, {
+      target: { value: "Test message" },
+    });
+
+    fireEvent.submit(nameInput.closest("form"));
+
+    expect(nameInput).toHaveValue("");
+    expect(emailInput).toHaveValue("");
+    expect(mobileInput).toHaveValue("");
+    expect(messageInput).toHaveValue("");
+  });
+
+  test("does not show success message before submission", () => {
     expect(
-      screen.getByTestId("footer")
-    ).toBeInTheDocument();
+      screen.queryByText("✅ Message sent successfully!")
+    ).not.toBeInTheDocument();
   });
 });

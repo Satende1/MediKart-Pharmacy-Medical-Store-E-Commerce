@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import Footer from "../../components/Footer/Footer";
+
 import {
     FaCheck,
     FaMapMarkerAlt,
@@ -60,23 +60,10 @@ const Checkout = () => {
             const storedCart = JSON.parse(
                 localStorage.getItem("cart") || "[]"
             );
-            const storedBuyNow = JSON.parse(
-                localStorage.getItem("buyNow") || "null"
+
+            setCartItems(
+                Array.isArray(storedCart) ? storedCart : []
             );
-
-            let items = [];
-
-            if (Array.isArray(storedCart) && storedCart.length > 0) {
-                items = storedCart;
-            } else if (storedBuyNow) {
-                items = [storedBuyNow];
-            }
-
-            if (routeProductId && storedBuyNow && Number(storedBuyNow.id) !== Number(routeProductId)) {
-                items = [storedBuyNow];
-            }
-
-            setCartItems(items);
         } catch (error) {
             console.error("Failed to load cart:", error);
             setCartItems([]);

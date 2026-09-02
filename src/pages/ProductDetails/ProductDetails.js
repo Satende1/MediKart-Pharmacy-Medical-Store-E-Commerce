@@ -7,6 +7,7 @@ import {
   FaBolt,
   FaStar,
 } from "react-icons/fa";
+
 import products from "../../data/products";
 
 import ProductGallery from "../../components/ProductGallery/ProductGallery";
@@ -15,7 +16,6 @@ import ProductSpecifications from "../../components/ProductSpecifications/Produc
 import RelatedProducts from "../../components/RelatedProducts/RelatedProducts";
 
 import "./ProductDetails.css";
-import Footer from "../../components/Footer/Footer";
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -397,19 +397,40 @@ const ProductDetails = () => {
     };
 
     // ==========================================
-    // REMOVE NORMAL CART
+    // KEEP EXISTING CART AND ADD BUYNOW PRODUCT
     // ==========================================
 
-    localStorage.removeItem("cart");
+    const existingCart = JSON.parse(
+      localStorage.getItem("cart") || "[]"
+    );
 
-    // ==========================================
-    // SAVE BUY NOW PRODUCT
-    // ==========================================
+    const productExists = existingCart.find(
+      (item) => Number(item.id) === Number(buyNowProduct.id)
+    );
+
+    if (!productExists) {
+      existingCart.push(buyNowProduct);
+    } else {
+      // Update quantity if product already in cart
+      const index = existingCart.findIndex(
+        (item) => Number(item.id) === Number(buyNowProduct.id)
+      );
+      if (index !== -1) {
+        existingCart[index].quantity = 
+          (existingCart[index].quantity || 1) + quantity;
+      }
+    }
 
     localStorage.setItem(
-      "buyNow",
-      JSON.stringify(buyNowProduct)
+      "cart",
+      JSON.stringify(existingCart)
     );
+
+    // ==========================================
+    // REMOVE BUY NOW FLAG
+    // ==========================================
+
+    localStorage.removeItem("buyNow");
 
     // ==========================================
     // UPDATE NAVBAR

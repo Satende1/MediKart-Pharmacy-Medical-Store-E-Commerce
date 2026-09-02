@@ -85,10 +85,8 @@ const Offers = () => {
 
                     </div>
                 ))}
-            </div>
+            </div><Footer/>
         </div>
-
-
     );
 };
 
