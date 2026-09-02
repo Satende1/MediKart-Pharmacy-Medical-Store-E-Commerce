@@ -1,7 +1,14 @@
 import React from "react";
 import { render, screen, fireEvent, cleanup } from "@testing-library/react";
 import { BrowserRouter } from "react-router-dom";
+import { toast } from "react-toastify";
 import ProductCard from "./ProductCard";
+
+jest.mock("react-toastify", () => ({
+  toast: {
+    success: jest.fn(),
+  },
+}));
 
 afterEach(() => {
   cleanup();
@@ -88,8 +95,6 @@ describe("ProductCard Component", () => {
   });
 
   test("adds product to cart", () => {
-    window.alert = jest.fn();
-
     renderProductCard();
 
     const cartButton = screen.getByRole("button", {
@@ -107,7 +112,7 @@ describe("ProductCard Component", () => {
     expect(cart[0].name).toBe("Paracetamol");
     expect(cart[0].quantity).toBe(1);
 
-    expect(window.alert).toHaveBeenCalledWith(
+    expect(toast.success).toHaveBeenCalledWith(
       "Paracetamol added to cart!"
     );
   });

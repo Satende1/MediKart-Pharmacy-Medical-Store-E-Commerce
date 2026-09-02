@@ -1,7 +1,6 @@
 import React from "react";
 import { FaHeartbeat, FaShieldAlt, FaTruck, FaUsers, FaAward, FaPhoneAlt, } from "react-icons/fa";
 
-import Footer from "../../components/Footer/Footer";
 import "./About.css";
 
 function About() {
@@ -96,8 +95,6 @@ function About() {
           <p>Phone : +91 98765 43210</p>
         </section>
       </div>
-
-      <Footer />
     </>
   );
 }

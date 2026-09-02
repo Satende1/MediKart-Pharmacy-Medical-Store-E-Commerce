@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-
 import {
     FaCheckCircle,
     FaBox,
@@ -18,7 +17,6 @@ import {
 
 import { toast } from "react-toastify";
 
-import Footer from "../../components/Footer/Footer.js";
 import "./Orders.css";
 
 const Orders = () => {
@@ -909,9 +907,6 @@ const Orders = () => {
                 </div>
             )}
 
-            {/* FOOTER */}
-
-            <Footer />
         </div>
     );
 };

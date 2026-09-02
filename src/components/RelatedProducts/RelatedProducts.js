@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import styles from "./RelatedProducts.module.css";
 
 
@@ -24,6 +25,7 @@ const RelatedProducts = ({ products }) => {
     // Update Navbar Cart Count
 
     window.dispatchEvent(new Event("cartUpdated"));
+    toast.success(`${product.name} added to cart!`);
     setAdded(prev => ({ ...prev, [product.id]: true }));
     setTimeout(() => {
       setAdded(prev => ({

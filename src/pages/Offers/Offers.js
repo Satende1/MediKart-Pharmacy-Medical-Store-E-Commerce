@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Footer from "../../components/Footer/Footer";
 import {
     FaGift,
     FaTag,
@@ -86,6 +87,8 @@ const Offers = () => {
                 ))}
             </div>
         </div>
+
+
     );
 };
 

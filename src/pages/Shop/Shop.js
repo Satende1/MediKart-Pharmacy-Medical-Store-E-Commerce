@@ -16,7 +16,6 @@ import womenCare from "../../data/womensHealth";
 import hairCare from "../../data/HairCare";
 import eyeCare from "../../data/eye-care";
 import premiumHealthcare from "../../data/premium-healthcare";
-
 import "./Shop.css";
 
 /* ============================================================

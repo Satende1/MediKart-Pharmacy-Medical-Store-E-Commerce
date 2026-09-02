@@ -7,19 +7,17 @@ import {
   FaBolt,
   FaStar,
 } from "react-icons/fa";
-
 import products from "../../data/products";
 
 import ProductGallery from "../../components/ProductGallery/ProductGallery";
 import QuantitySelector from "../../components/QuantitySelector/QuantitySelector";
 import ProductSpecifications from "../../components/ProductSpecifications/ProductSpecifications";
 import RelatedProducts from "../../components/RelatedProducts/RelatedProducts";
-import Footer from "../../components/Footer/Footer";
 
 import "./ProductDetails.css";
+import Footer from "../../components/Footer/Footer";
 
 const ProductDetails = () => {
-
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -28,32 +26,26 @@ const ProductDetails = () => {
   // ==========================================
 
   const product = products.find(
-    (item) =>
-      Number(item.id) === Number(id)
+    (item) => Number(item.id) === Number(id)
   );
 
   // ==========================================
   // STATES
   // ==========================================
 
-  const [quantity, setQuantity] =
-    useState(1);
+  const [quantity, setQuantity] = useState(1);
 
-  const [wishlist, setWishlist] =
-    useState(false);
+  const [wishlist, setWishlist] = useState(false);
 
-  const [isAdded, setIsAdded] =
-    useState(false);
+  const [isAdded, setIsAdded] = useState(false);
 
-  const [loading, setLoading] =
-    useState(true);
+  const [loading, setLoading] = useState(true);
 
   // ==========================================
   // PRODUCT CHANGE
   // ==========================================
 
   useEffect(() => {
-
     setQuantity(1);
     setLoading(true);
 
@@ -66,9 +58,7 @@ const ProductDetails = () => {
       setLoading(false);
     }, 700);
 
-    return () =>
-      clearTimeout(timer);
-
+    return () => clearTimeout(timer);
   }, [id]);
 
   // ==========================================
@@ -76,25 +66,26 @@ const ProductDetails = () => {
   // ==========================================
 
   useEffect(() => {
-
     if (!product) return;
 
-    const wishlistData =
-      JSON.parse(
-        localStorage.getItem(
-          "wishlist"
-        )
-      ) || [];
+    try {
+      const wishlistData =
+        JSON.parse(localStorage.getItem("wishlist")) || [];
 
-    const exists =
-      wishlistData.some(
+      const exists = wishlistData.some(
         (item) =>
-          Number(item.id) ===
-          Number(product.id)
+          Number(item.id) === Number(product.id)
       );
 
-    setWishlist(exists);
+      setWishlist(exists);
+    } catch (error) {
+      console.error(
+        "Failed to load wishlist:",
+        error
+      );
 
+      setWishlist(false);
+    }
   }, [product]);
 
   // ==========================================
@@ -102,16 +93,13 @@ const ProductDetails = () => {
   // ==========================================
 
   if (loading) {
-
     return (
       <div className="loadingContainer">
-
         <div className="loader"></div>
 
         <h2>
           Loading Product...
         </h2>
-
       </div>
     );
   }
@@ -121,10 +109,8 @@ const ProductDetails = () => {
   // ==========================================
 
   if (!product) {
-
     return (
       <div className="not-found">
-
         <h2>
           Product Not Found
         </h2>
@@ -136,13 +122,10 @@ const ProductDetails = () => {
 
         <button
           className="back-shop-btn"
-          onClick={() =>
-            navigate("/shop")
-          }
+          onClick={() => navigate("/shop")}
         >
           Go to Shop
         </button>
-
       </div>
     );
   }
@@ -156,11 +139,13 @@ const ProductDetails = () => {
     product.price
   );
 
-  const sellingPrice =
-    Number(product.price);
+  const sellingPrice = Number(
+    product.price
+  );
 
-  const discount =
-    Number(product.discount || 0);
+  const discount = Number(
+    product.discount || 0
+  );
 
   // ==========================================
   // TOTAL
@@ -186,64 +171,67 @@ const ProductDetails = () => {
   // ==========================================
 
   const handleAddToCart = () => {
+    // Remove Buy Now mode
+    localStorage.removeItem("buyNow");
 
-    // Remove old buyNow
-    localStorage.removeItem(
-      "buyNow"
-    );
+    let cart = [];
 
-    const cart =
-      JSON.parse(
-        localStorage.getItem(
-          "cart"
-        )
-      ) || [];
-
-    const existingProduct =
-      cart.find(
-        (item) =>
-          Number(item.id) ===
-          Number(product.id)
+    try {
+      cart =
+        JSON.parse(
+          localStorage.getItem("cart")
+        ) || [];
+    } catch (error) {
+      console.error(
+        "Failed to load cart:",
+        error
       );
+
+      cart = [];
+    }
+
+    const existingProduct = cart.find(
+      (item) =>
+        Number(item.id) ===
+        Number(product.id)
+    );
 
     let updatedCart;
 
-    // Product already exists
+    // ==========================================
+    // PRODUCT ALREADY EXISTS
+    // ==========================================
+
     if (existingProduct) {
+      updatedCart = cart.map((item) => {
+        if (
+          Number(item.id) ===
+          Number(product.id)
+        ) {
+          return {
+            ...item,
 
-      updatedCart =
-        cart.map((item) => {
+            price: sellingPrice,
 
-          if (
-            Number(item.id) ===
-            Number(product.id)
-          ) {
+            originalPrice:
+              originalPrice,
 
-            return {
-              ...item,
+            quantity:
+              Number(
+                item.quantity || 1
+              ) + quantity,
+          };
+        }
 
-              price:
-                sellingPrice,
-
-              originalPrice:
-                originalPrice,
-
-              quantity:
-                Number(
-                  item.quantity ||
-                  1
-                ) +
-                quantity,
-            };
-          }
-
-          return item;
-        });
+        return item;
+      });
     }
 
-    // New product
-    else {
+    // ==========================================
+    // NEW PRODUCT
+    // ==========================================
 
+    else {
       updatedCart = [
         ...cart,
 
@@ -266,30 +254,37 @@ const ProductDetails = () => {
             product.image ||
             "/images/medicine-placeholder.png",
 
-          price:
-            sellingPrice,
+          price: sellingPrice,
 
           originalPrice:
             originalPrice,
 
-          quantity:
-            quantity,
+          quantity: quantity,
         },
       ];
     }
 
-    // Save cart
+    // ==========================================
+    // SAVE CART
+    // ==========================================
+
     localStorage.setItem(
       "cart",
       JSON.stringify(updatedCart)
     );
 
-    // Navbar cart update
+    // ==========================================
+    // UPDATE NAVBAR CART
+    // ==========================================
+
     window.dispatchEvent(
       new Event("cartUpdated")
     );
 
-    // Added message
+    // ==========================================
+    // ADDED MESSAGE
+    // ==========================================
+
     setIsAdded(true);
 
     setTimeout(() => {
@@ -302,23 +297,33 @@ const ProductDetails = () => {
   // ==========================================
 
   const handleWishlist = () => {
+    let wishlistData = [];
 
-    let wishlistData =
-      JSON.parse(
-        localStorage.getItem(
-          "wishlist"
-        )
-      ) || [];
-
-    const exists =
-      wishlistData.some(
-        (item) =>
-          Number(item.id) ===
-          Number(product.id)
+    try {
+      wishlistData =
+        JSON.parse(
+          localStorage.getItem("wishlist")
+        ) || [];
+    } catch (error) {
+      console.error(
+        "Failed to load wishlist:",
+        error
       );
 
-    if (exists) {
+      wishlistData = [];
+    }
 
+    const exists = wishlistData.some(
+      (item) =>
+        Number(item.id) ===
+        Number(product.id)
+    );
+
+    // ==========================================
+    // REMOVE FROM WISHLIST
+    // ==========================================
+
+    if (exists) {
       wishlistData =
         wishlistData.filter(
           (item) =>
@@ -327,9 +332,13 @@ const ProductDetails = () => {
         );
 
       setWishlist(false);
+    }
 
-    } else {
+    // ==========================================
+    // ADD TO WISHLIST
+    // ==========================================
 
+    else {
       wishlistData.push({
         ...product,
       });
@@ -337,11 +346,13 @@ const ProductDetails = () => {
       setWishlist(true);
     }
 
+    // ==========================================
+    // SAVE WISHLIST
+    // ==========================================
+
     localStorage.setItem(
       "wishlist",
-      JSON.stringify(
-        wishlistData
-      )
+      JSON.stringify(wishlistData)
     );
 
     window.dispatchEvent(
@@ -354,9 +365,11 @@ const ProductDetails = () => {
   // ==========================================
 
   const handleBuyNow = () => {
+    // ==========================================
+    // CREATE SELECTED PRODUCT
+    // ==========================================
 
     const buyNowProduct = {
-
       ...product,
 
       id: product.id,
@@ -375,35 +388,52 @@ const ProductDetails = () => {
         product.image ||
         "/images/medicine-placeholder.png",
 
-      price:
-        sellingPrice,
+      price: sellingPrice,
 
       originalPrice:
         originalPrice,
 
-      quantity:
-        quantity,
+      quantity: quantity,
     };
 
-    // Remove cart checkout mode
-    localStorage.removeItem(
-      "cart"
-    );
+    // ==========================================
+    // REMOVE NORMAL CART
+    // ==========================================
 
-    // Save Buy Now
+    localStorage.removeItem("cart");
+
+    // ==========================================
+    // SAVE BUY NOW PRODUCT
+    // ==========================================
+
     localStorage.setItem(
       "buyNow",
-      JSON.stringify(
-        buyNowProduct
-      )
+      JSON.stringify(buyNowProduct)
     );
 
-    // Navbar cart update
+    // ==========================================
+    // UPDATE NAVBAR
+    // ==========================================
+
     window.dispatchEvent(
       new Event("cartUpdated")
     );
 
-    navigate("/checkout");
+    // ==========================================
+    // IMPORTANT
+    // GO TO PRODUCT-SPECIFIC CHECKOUT
+    //
+    // Example:
+    // Product ID = 8
+    //
+    // /product/8
+    //       ↓
+    // /checkout/8
+    // ==========================================
+
+    navigate(
+      `/checkout/${product.id}`
+    );
   };
 
   // ==========================================
@@ -429,69 +459,67 @@ const ProductDetails = () => {
   // ==========================================
 
   return (
-
     <div className="product-page">
 
-      {/* TOP BAR */}
+      {/* ==========================================
+          TOP BAR
+      ========================================== */}
 
       <div className="product-topbar">
 
         <button
           className="back-btn"
-          onClick={() =>
-            navigate(-1)
-          }
+          onClick={() => navigate(-1)}
         >
           ← Back
         </button>
 
       </div>
 
-      {/* PRODUCT MAIN */}
+      {/* ==========================================
+          PRODUCT MAIN
+      ========================================== */}
 
       <div className="product-wrapper">
 
-        {/* LEFT */}
+        {/* ========================================
+            LEFT COLUMN
+        ======================================== */}
 
         <div className="left-column">
 
           <ProductGallery
-            images={
-              productImages
-            }
+            images={productImages}
           />
 
         </div>
 
-        {/* RIGHT */}
+        {/* ========================================
+            RIGHT COLUMN
+        ======================================== */}
 
         <div className="right-column">
 
-          {/* NAME */}
+          {/* PRODUCT NAME */}
 
           <h1 className="product-name">
-
             {product.name}
-
           </h1>
 
           {/* BRAND */}
 
           {product.brand && (
-
             <p className="product-brand">
-
               Brand:{" "}
-
               <strong>
                 {product.brand}
               </strong>
-
             </p>
-
           )}
 
-          {/* RATING */}
+          {/* ======================================
+              RATING
+          ====================================== */}
 
           <div className="rating-box">
 
@@ -499,62 +527,52 @@ const ProductDetails = () => {
 
               <FaStar />
 
-              {product.rating ||
-                4.5}
+              {product.rating || 4.5}
 
             </div>
 
             <span>
-
-              {product.reviews ||
-                0}{" "}
-              Ratings
-
+              {product.reviews || 0} Ratings
             </span>
 
           </div>
 
-          {/* PRICE */}
+          {/* ======================================
+              PRICE
+          ====================================== */}
 
           <div className="price-box">
 
             <span className="discount-price">
 
               ₹
-              {sellingPrice.toFixed(
-                2
-              )}
+              {sellingPrice.toFixed(2)}
 
             </span>
 
             {originalPrice >
               sellingPrice && (
-
                 <span className="actual-price">
 
                   ₹
-                  {originalPrice.toFixed(
-                    2
-                  )}
+                  {originalPrice.toFixed(2)}
 
                 </span>
-
               )}
 
             {discount > 0 && (
-
               <span className="discount">
 
-                {discount}%
-                OFF
+                {discount}% OFF
 
               </span>
-
             )}
 
           </div>
 
-          {/* DESCRIPTION */}
+          {/* ======================================
+              DESCRIPTION
+          ====================================== */}
 
           <div className="description">
 
@@ -563,15 +581,15 @@ const ProductDetails = () => {
             </h3>
 
             <p>
-
               {product.description ||
                 "No description available for this product."}
-
             </p>
 
           </div>
 
-          {/* QUANTITY */}
+          {/* ======================================
+              QUANTITY
+          ====================================== */}
 
           <div className="quantity-area">
 
@@ -580,17 +598,15 @@ const ProductDetails = () => {
             </h3>
 
             <QuantitySelector
-              quantity={
-                quantity
-              }
-              setQuantity={
-                setQuantity
-              }
+              quantity={quantity}
+              setQuantity={setQuantity}
             />
 
           </div>
 
-          {/* TOTAL */}
+          {/* ======================================
+              TOTAL
+          ====================================== */}
 
           <div className="total-box">
 
@@ -602,9 +618,7 @@ const ProductDetails = () => {
 
               <strong>
                 ₹
-                {sellingPrice.toFixed(
-                  2
-                )}
+                {sellingPrice.toFixed(2)}
               </strong>
 
             </div>
@@ -629,25 +643,25 @@ const ProductDetails = () => {
 
               <strong>
                 ₹
-                {totalAmount.toFixed(
-                  2
-                )}
+                {totalAmount.toFixed(2)}
               </strong>
 
             </div>
 
           </div>
 
-          {/* BUTTONS */}
+          {/* ======================================
+              BUTTONS
+          ====================================== */}
 
           <div className="button-group">
 
-            {/* CART */}
+            {/* ====================================
+                ADD TO CART
+            ==================================== */}
 
             <button
-              className={`cart-btn ${isAdded
-                  ? "added"
-                  : ""
+              className={`cart-btn ${isAdded ? "added" : ""
                 }`}
               onClick={
                 handleAddToCart
@@ -662,7 +676,9 @@ const ProductDetails = () => {
 
             </button>
 
-            {/* BUY NOW */}
+            {/* ====================================
+                BUY NOW
+            ==================================== */}
 
             <button
               className="buy-btn"
@@ -677,12 +693,12 @@ const ProductDetails = () => {
 
             </button>
 
-            {/* WISHLIST */}
+            {/* ====================================
+                WISHLIST
+            ==================================== */}
 
             <button
-              className={`wish-btn ${wishlist
-                  ? "active"
-                  : ""
+              className={`wish-btn ${wishlist ? "active" : ""
                 }`}
               onClick={
                 handleWishlist
@@ -699,28 +715,23 @@ const ProductDetails = () => {
 
       </div>
 
-      {/* SPECIFICATIONS */}
+      {/* ==========================================
+          SPECIFICATIONS
+      ========================================== */}
 
       <ProductSpecifications
         product={product}
       />
 
-      {/* RELATED */}
+      {/* ==========================================
+          RELATED PRODUCTS
+      ========================================== */}
 
-      {relatedProducts.length >
-        0 && (
-
-          <RelatedProducts
-            products={
-              relatedProducts
-            }
-          />
-
-        )}
-
-      {/* FOOTER */}
-
-      <Footer />
+      {relatedProducts.length > 0 && (
+        <RelatedProducts
+          products={relatedProducts}
+        />
+      )}
 
     </div>
   );

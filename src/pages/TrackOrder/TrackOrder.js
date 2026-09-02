@@ -19,7 +19,6 @@ import { useNavigate, useParams, useLocation, Link } from "react-router-dom";
 import { toast } from "react-toastify";
 
 import "./TrackOrder.css";
-import Footer from "../../components/Footer/Footer";
 
 const TrackOrder = () => {
     const navigate = useNavigate();
@@ -560,8 +559,6 @@ const TrackOrder = () => {
                     </div>
                 )}
             </div>
-
-            <Footer />
         </div>
     );
 };

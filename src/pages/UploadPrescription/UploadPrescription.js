@@ -28,8 +28,9 @@ const UploadPrescription = () => {
 
         alert("Prescription uploaded successfully!");
     };
-
+<>
     return (
+        
         <div className="upload-page">
 
             <div className="upload-card">
@@ -87,6 +88,7 @@ const UploadPrescription = () => {
 
         </div>
     );
+    </>
 };
 
 export default UploadPrescription;

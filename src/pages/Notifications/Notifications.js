@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Footer from "../../components/Footer/Footer";
 import {
     FaBell,
     FaShoppingBag,
@@ -89,6 +90,8 @@ const Notifications = () => {
                 ))
             )}
         </div>
+
+
     );
 };
 

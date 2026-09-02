@@ -83,8 +83,9 @@ const Payments = () => {
                     </div>
                 ))
             )}
-
         </div>
+
+
     );
 };
 

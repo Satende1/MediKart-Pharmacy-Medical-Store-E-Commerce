@@ -1,16 +1,31 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-
-import { FaCheck, FaMapMarkerAlt, FaCreditCard, FaUniversity, FaMoneyBillWave, FaTruck, FaBolt, FaClock, FaPlus, FaMinus, } from "react-icons/fa";
+import { useNavigate, useParams } from "react-router-dom";
+import Footer from "../../components/Footer/Footer";
+import {
+    FaCheck,
+    FaMapMarkerAlt,
+    FaCreditCard,
+    FaUniversity,
+    FaMoneyBillWave,
+    FaTruck,
+    FaBolt,
+    FaClock,
+    FaPlus,
+    FaMinus,
+    FaLocationArrow,
+    FaEdit,
+    FaMap,
+} from "react-icons/fa";
 
 import "./Checkout.css";
 
 const Checkout = () => {
     const navigate = useNavigate();
+    const { id: routeProductId } = useParams();
 
-    // =======================STATES==================================
+    // ======================= STATES =======================
+
     const [step, setStep] = useState(1);
-
     const [cartItems, setCartItems] = useState([]);
 
     const [address, setAddress] = useState({
@@ -26,29 +41,49 @@ const Checkout = () => {
     const [deliveryType, setDeliveryType] = useState("normal");
     const [orderId, setOrderId] = useState("");
 
-    /* =========================================================
-       LOAD CART
-    ========================================================= */
+    // NEW:
+    // Address mode = map or manual
+    const [addressMode, setAddressMode] = useState("form");
+
+    // NEW:
+    // Delivery distance
+    const [deliveryDistance, setDeliveryDistance] = useState("short");
+
+    // NEW:
+    // Location loading
+    const [locationLoading, setLocationLoading] = useState(false);
+
+    // ======================= LOAD CART =======================
 
     useEffect(() => {
         try {
             const storedCart = JSON.parse(
-                localStorage.getItem("cart")
+                localStorage.getItem("cart") || "[]"
+            );
+            const storedBuyNow = JSON.parse(
+                localStorage.getItem("buyNow") || "null"
             );
 
-            if (Array.isArray(storedCart)) {
-                setCartItems(storedCart);
-            } else {
-                setCartItems([]);
+            let items = [];
+
+            if (Array.isArray(storedCart) && storedCart.length > 0) {
+                items = storedCart;
+            } else if (storedBuyNow) {
+                items = [storedBuyNow];
             }
+
+            if (routeProductId && storedBuyNow && Number(storedBuyNow.id) !== Number(routeProductId)) {
+                items = [storedBuyNow];
+            }
+
+            setCartItems(items);
         } catch (error) {
             console.error("Failed to load cart:", error);
             setCartItems([]);
         }
-    }, []);
+    }, [routeProductId]);
 
-    // ===================== LOAD SAVED ADDRESS====================================
-
+    // ======================= LOAD SAVED ADDRESS =======================
 
     useEffect(() => {
         try {
@@ -65,14 +100,26 @@ const Checkout = () => {
                     state: savedAddress.state || "",
                     pincode: savedAddress.pincode || "",
                 });
+
+                if (savedAddress.addressMode) {
+                    setAddressMode(savedAddress.addressMode);
+                }
+
+                if (savedAddress.deliveryDistance) {
+                    setDeliveryDistance(
+                        savedAddress.deliveryDistance
+                    );
+                }
             }
         } catch (error) {
-            console.error("Failed to load address:", error);
+            console.error(
+                "Failed to load address:",
+                error
+            );
         }
     }, []);
 
-    // =========================GET PRODUCT PRICE================================
-
+    // ======================= GET PRICE =======================
 
     const getPrice = (item) => {
         return Number(
@@ -83,23 +130,27 @@ const Checkout = () => {
         );
     };
 
-    // =========================PRODUCT TOTAL================================
+    // ======================= PRODUCT TOTAL =======================
 
+    const productTotal = cartItems.reduce(
+        (total, item) => {
+            const price = getPrice(item);
+            const quantity = Number(
+                item.quantity || 1
+            );
 
-    const productTotal = cartItems.reduce((total, item) => {
-        const price = getPrice(item);
-        const quantity = Number(item.quantity || 1);
+            return total + price * quantity;
+        },
+        0
+    );
 
-        return total + price * quantity;
-    }, 0);
+    // ======================= DISCOUNT =======================
 
-    // =======================DISCOUNT==================================
+    const discount = Math.round(
+        productTotal * 0.1
+    );
 
-
-    const discount = Math.round(productTotal * 0.1);
-
-    // ========================SPECIAL CATEGORY=================================
-
+    // ======================= SPECIAL CATEGORY =======================
 
     const isSpecialCategory = (category) => {
         if (!category) {
@@ -120,60 +171,55 @@ const Checkout = () => {
         );
     };
 
-    /* =========================================================
-       CHECK SPECIAL ITEMS
-    ========================================================= */
+    // ======================= SPECIAL ITEM =======================
 
     const hasSpecialItem = cartItems.some((item) =>
         isSpecialCategory(item.category)
     );
 
-    /* =========================================================
-       DELIVERY CHARGES
-    ========================================================= */
+    // ======================= DELIVERY CHARGES =======================
 
-    const baseDelivery = productTotal >= 499 ? 0 : 10;
+    const baseDelivery =
+        productTotal >= 499 ? 0 : 10;
 
-    const specialSurcharge = hasSpecialItem ? 50 : 0;
+    const specialSurcharge =
+        hasSpecialItem ? 50 : 0;
 
     const normalDeliveryCharge =
         baseDelivery + specialSurcharge;
 
-    /* =========================================================
-       DELIVERY ELIGIBILITY
-    ========================================================= */
+    // ======================= DELIVERY ELIGIBILITY =======================
 
-    const expressAvailable = productTotal >= 299;
+    const expressAvailable =
+        productTotal >= 299;
 
-    const todayAvailable = productTotal >= 999;
+    const todayAvailable =
+        productTotal >= 999;
 
-    /* =========================================================
-       CURRENT DELIVERY CHARGE
-    ========================================================= */
+    // ======================= CURRENT DELIVERY CHARGE =======================
 
     let deliveryCharge = 0;
 
     if (deliveryType === "normal") {
-        deliveryCharge = normalDeliveryCharge;
+        deliveryCharge =
+            normalDeliveryCharge;
     }
 
     if (deliveryType === "express") {
-        deliveryCharge = 49 + specialSurcharge;
+        deliveryCharge =
+            49 + specialSurcharge;
     }
 
     if (deliveryType === "today") {
-        deliveryCharge = 99 + specialSurcharge;
+        deliveryCharge =
+            99 + specialSurcharge;
     }
 
-    /* =========================================================
-       PLATFORM FEE
-    ========================================================= */
+    // ======================= PLATFORM FEE =======================
 
     const platformFee = 0;
 
-    /* =========================================================
-       TOTAL AMOUNT
-    ========================================================= */
+    // ======================= TOTAL =======================
 
     const totalAmount =
         productTotal -
@@ -181,80 +227,53 @@ const Checkout = () => {
         deliveryCharge +
         platformFee;
 
-    /* =========================================================
-       REMOVE ITEM
-    ========================================================= */
+    // =====================================================
+    // DELIVERY DISTANCE / TIME
+    // =====================================================
 
-    const removeItem = (id) => {
-        const updatedCart = cartItems.filter(
-            (item) => item.id !== id
-        );
+    const getDeliveryTime = () => {
+        if (deliveryDistance === "short") {
+            return "20–30 minutes";
+        }
 
-        setCartItems(updatedCart);
+        if (deliveryDistance === "medium") {
+            return "45–60 minutes";
+        }
 
-        localStorage.setItem(
-            "cart",
-            JSON.stringify(updatedCart)
-        );
-
-        window.dispatchEvent(
-            new Event("cartUpdated")
-        );
+        return "1.5–2.5 hours";
     };
 
-    /* =========================================================
-       UPDATE QUANTITY
-    ========================================================= */
+    const getDistanceLabel = () => {
+        if (deliveryDistance === "short") {
+            return "Short distance";
+        }
 
-    const updateQuantity = (id, change) => {
-        const updatedCart = cartItems
-            .map((item) => {
-                if (item.id === id) {
-                    const currentQuantity = Number(
-                        item.quantity || 1
-                    );
+        if (deliveryDistance === "medium") {
+            return "Medium distance";
+        }
 
-                    const newQuantity =
-                        currentQuantity + change;
-
-                    if (newQuantity < 1) {
-                        return item;
-                    }
-
-                    return {
-                        ...item,
-                        quantity: newQuantity,
-                    };
-                }
-
-                return item;
-            })
-            .filter(Boolean);
-
-        setCartItems(updatedCart);
-
-        localStorage.setItem(
-            "cart",
-            JSON.stringify(updatedCart)
-        );
-
-        window.dispatchEvent(
-            new Event("cartUpdated")
-        );
+        return "Long distance";
     };
 
-    /* =========================================================
-       GET DELIVERY DATE
-    ========================================================= */
+    // ======================= DELIVERY DATE =======================
 
     const getDeliveryDate = () => {
         const today = new Date();
 
+        // For short/medium/long distance,
+        // today delivery shows time.
+
         if (deliveryType === "today") {
-            return "Today (Within 4-6 Hours)";
+            return `Today • ${getDeliveryTime()}`;
         }
 
         if (deliveryType === "express") {
+            if (
+                deliveryDistance === "short"
+            ) {
+                return `Today • ${getDeliveryTime()}`;
+            }
+
             const tomorrow = new Date(today);
 
             tomorrow.setDate(
@@ -269,8 +288,17 @@ const Checkout = () => {
                         day: "numeric",
                         month: "short",
                     }
-                )
+                ) +
+                ` • ${getDeliveryTime()}`
             );
+        }
+
+        // Normal delivery
+
+        if (
+            deliveryDistance === "short"
+        ) {
+            return `Today • ${getDeliveryTime()}`;
         }
 
         const expectedDate = new Date(today);
@@ -288,18 +316,27 @@ const Checkout = () => {
                     month: "short",
                     year: "numeric",
                 }
-            )
+            ) +
+            ` • ${getDeliveryTime()}`
         );
     };
 
-    /* =========================================================
-       NORMAL DELIVERY DISPLAY DATE
-    ========================================================= */
+    // ======================= NORMAL DELIVERY DATE =======================
 
     const getNormalDeliveryDate = () => {
+        if (deliveryDistance === "short") {
+            return "Today";
+        }
+
+        if (deliveryDistance === "medium") {
+            return "Today";
+        }
+
         const date = new Date();
 
-        date.setDate(date.getDate() + 5);
+        date.setDate(
+            date.getDate() + 2
+        );
 
         return date.toLocaleDateString(
             "en-IN",
@@ -310,32 +347,169 @@ const Checkout = () => {
         );
     };
 
-    /* =========================================================
-       ADDRESS CHANGE
-    ========================================================= */
+    // =====================================================
+    // CHOOSE LOCATION ON MAP
+    // =====================================================
+
+    const chooseLocationOnMap = () => {
+        if (!navigator.geolocation) {
+            alert(
+                "Location services are not supported by your browser."
+            );
+            return;
+        }
+
+        setLocationLoading(true);
+
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const latitude =
+                    position.coords.latitude;
+
+                const longitude =
+                    position.coords.longitude;
+
+                /*
+                 * Browser geolocation gives coordinates.
+                 *
+                 * A real application can send these coordinates
+                 * to Google Maps / Mapbox / OpenStreetMap reverse
+                 * geocoding API to get the complete address.
+                 */
+
+                setAddress((previous) => ({
+                    ...previous,
+                    address: `Location selected on map (${latitude.toFixed(
+                        6
+                    )}, ${longitude.toFixed(6)})`,
+                }));
+
+                setAddressMode("map");
+
+                setLocationLoading(false);
+
+                alert(
+                    "Your current location has been selected."
+                );
+            },
+            (error) => {
+                console.error(
+                    "Location error:",
+                    error
+                );
+
+                setLocationLoading(false);
+
+                alert(
+                    "Unable to get your location. Please allow location access or fill the address manually."
+                );
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 0,
+            }
+        );
+    };
+
+    // ======================= REMOVE ITEM =======================
+
+    const removeItem = (id) => {
+        const updatedCart =
+            cartItems.filter(
+                (item) => item.id !== id
+            );
+
+        setCartItems(updatedCart);
+
+        localStorage.setItem(
+            "cart",
+            JSON.stringify(updatedCart)
+        );
+
+        window.dispatchEvent(
+            new Event("cartUpdated")
+        );
+    };
+
+    // ======================= UPDATE QUANTITY =======================
+
+    const updateQuantity = (
+        id,
+        change
+    ) => {
+        const updatedCart =
+            cartItems.map((item) => {
+                if (item.id === id) {
+                    const currentQuantity =
+                        Number(
+                            item.quantity || 1
+                        );
+
+                    const newQuantity =
+                        currentQuantity +
+                        change;
+
+                    if (newQuantity < 1) {
+                        return item;
+                    }
+
+                    return {
+                        ...item,
+                        quantity:
+                            newQuantity,
+                    };
+                }
+
+                return item;
+            });
+
+        setCartItems(updatedCart);
+
+        localStorage.setItem(
+            "cart",
+            JSON.stringify(updatedCart)
+        );
+
+        window.dispatchEvent(
+            new Event("cartUpdated")
+        );
+    };
+
+    // ======================= ADDRESS CHANGE =======================
 
     const handleAddressChange = (e) => {
-        const { name, value } = e.target;
+        const {
+            name,
+            value,
+        } = e.target;
 
         setAddress((previous) => ({
             ...previous,
             [name]: value,
         }));
+
+        // If user starts editing,
+        // switch to manual address mode.
+        setAddressMode("form");
     };
 
-    /* =========================================================
-       ADDRESS VALIDATION
-    ========================================================= */
+    // =====================================================
+    // ADDRESS VALIDATION
+    // =====================================================
 
     const validateAddress = () => {
         if (!address.name.trim()) {
-            alert("Please enter your name.");
+            alert(
+                "Please enter your name."
+            );
             return false;
         }
 
         if (
-            !address.phone.trim() ||
-            address.phone.length !== 10
+            !/^\d{10}$/.test(
+                address.phone.trim()
+            )
         ) {
             alert(
                 "Please enter a valid 10-digit phone number."
@@ -351,77 +525,87 @@ const Checkout = () => {
         }
 
         if (!address.city.trim()) {
-            alert("Please enter your city.");
+            alert(
+                "Please enter your city."
+            );
             return false;
         }
 
         if (!address.state.trim()) {
-            alert("Please enter your state.");
+            alert(
+                "Please enter your state."
+            );
             return false;
         }
 
         if (
-            !address.pincode.trim() ||
-            address.pincode.length !== 6
+            !/^\d{6}$/.test(
+                address.pincode.trim()
+            )
         ) {
-            alert("Please enter a valid 6-digit pincode.");
+            alert(
+                "Please enter a valid 6-digit pincode."
+            );
             return false;
         }
 
         return true;
     };
 
-    /* =========================================================
-       STEP 1 → STEP 2
-    ========================================================= */
+    // ======================= STEP 1 → STEP 2 =======================
 
     const continueToAddress = () => {
         if (cartItems.length === 0) {
-            alert("Your cart is empty.");
+            alert(
+                "Your cart is empty."
+            );
             return;
         }
 
         setStep(2);
     };
 
-    /* =========================================================
-       STEP 2 → STEP 3
-    ========================================================= */
+    // ======================= STEP 2 → STEP 3 =======================
 
     const continueToPayment = () => {
         if (!validateAddress()) {
             return;
         }
 
+        const addressToSave = {
+            ...address,
+            addressMode,
+            deliveryDistance,
+        };
+
         localStorage.setItem(
             "deliveryAddress",
-            JSON.stringify(address)
+            JSON.stringify(
+                addressToSave
+            )
         );
 
         setStep(3);
     };
 
-    /* =========================================================
-       PLACE ORDER
-    ========================================================= */
+    // =====================================================
+    // PLACE ORDER
+    // =====================================================
 
     const placeOrder = () => {
         if (!paymentMethod) {
-            alert("Please select a payment method.");
+            alert(
+                "Please select a payment method."
+            );
             return;
         }
 
         if (cartItems.length === 0) {
-            alert("Your cart is empty.");
+            alert(
+                "Your cart is empty."
+            );
             return;
         }
-
-        /*
-         * Generate unique MediKart Order ID.
-         *
-         * Example:
-         * MK7822001722
-         */
 
         const generatedOrderId =
             "MK" +
@@ -429,13 +613,18 @@ const Checkout = () => {
                 .toString()
                 .slice(-10);
 
-        setOrderId(generatedOrderId);
+        setOrderId(
+            generatedOrderId
+        );
 
         const newOrder = {
-            orderId: generatedOrderId,
+            orderId:
+                generatedOrderId,
 
             orderDate:
-                new Date().toLocaleDateString("en-IN"),
+                new Date().toLocaleDateString(
+                    "en-IN"
+                ),
 
             items: cartItems,
 
@@ -445,9 +634,18 @@ const Checkout = () => {
 
             deliveryType,
 
+            deliveryDistance,
+
+            deliveryDistanceLabel:
+                getDistanceLabel(),
+
+            deliveryTime:
+                getDeliveryTime(),
+
             deliveryCharge,
 
-            productAmount: productTotal,
+            productAmount:
+                productTotal,
 
             discount,
 
@@ -458,7 +656,8 @@ const Checkout = () => {
             estimatedDelivery:
                 getDeliveryDate(),
 
-            status: "Order Confirmed",
+            status:
+                "Order Confirmed",
         };
 
         let existingOrders = [];
@@ -466,7 +665,9 @@ const Checkout = () => {
         try {
             existingOrders =
                 JSON.parse(
-                    localStorage.getItem("orders")
+                    localStorage.getItem(
+                        "orders"
+                    )
                 ) || [];
         } catch (error) {
             console.error(
@@ -477,35 +678,45 @@ const Checkout = () => {
             existingOrders = [];
         }
 
-        existingOrders.unshift(newOrder);
+        existingOrders.unshift(
+            newOrder
+        );
 
         localStorage.setItem(
             "orders",
-            JSON.stringify(existingOrders)
+            JSON.stringify(
+                existingOrders
+            )
         );
 
-        /*
-         * Clear cart after successful order
-         */
+        // Clear cart
 
-        localStorage.removeItem("cart");
+        localStorage.removeItem(
+            "cart"
+        );
+
+        localStorage.removeItem(
+            "buyNow"
+        );
 
         setCartItems([]);
 
         window.dispatchEvent(
-            new Event("ordersUpdated")
+            new Event(
+                "ordersUpdated"
+            )
         );
 
         window.dispatchEvent(
-            new Event("cartUpdated")
+            new Event(
+                "cartUpdated"
+            )
         );
 
         setStep(5);
     };
 
-    /* =========================================================
-       EMPTY CART
-    ========================================================= */
+    // ======================= EMPTY CART =======================
 
     if (
         cartItems.length === 0 &&
@@ -513,15 +724,20 @@ const Checkout = () => {
     ) {
         return (
             <div className="checkout-empty">
-                <h2>Your Cart is Empty</h2>
+                <h2>
+                    Your Cart is Empty
+                </h2>
 
                 <p>
-                    Add products before checkout.
+                    Add products before
+                    checkout.
                 </p>
 
                 <button
                     onClick={() =>
-                        navigate("/shop")
+                        navigate(
+                            "/shop"
+                        )
                     }
                 >
                     Continue Shopping
@@ -530,19 +746,14 @@ const Checkout = () => {
         );
     }
 
-    /* =========================================================
-       RENDER
-    ========================================================= */
+    // ======================= RENDER =======================
 
     return (
         <div className="checkout-page">
 
-            {/* =================================================
-                HEADER
-            ================================================= */}
+            {/* ================= HEADER ================= */}
 
             <div className="checkout-header">
-
                 <h1>
                     MediKart Checkout
                 </h1>
@@ -550,12 +761,9 @@ const Checkout = () => {
                 <span>
                     100% Secure Checkout
                 </span>
-
             </div>
 
-            {/* =================================================
-                STEP INDICATOR
-            ================================================= */}
+            {/* ================= STEP INDICATOR ================= */}
 
             <div className="checkout-steps">
 
@@ -664,9 +872,9 @@ const Checkout = () => {
 
             </div>
 
-            {/* =================================================
+            {/* =====================================================
                 STEP 1 - ORDER
-            ================================================= */}
+            ===================================================== */}
 
             {step === 1 && (
                 <div className="checkout-card">
@@ -674,18 +882,23 @@ const Checkout = () => {
                     <div
                         className="card-heading"
                         style={{
-                            display: "flex",
+                            display:
+                                "flex",
                             justifyContent:
                                 "space-between",
-                            alignItems: "center",
+                            alignItems:
+                                "center",
                         }}
                     >
 
                         <div
                             style={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "14px",
+                                display:
+                                    "flex",
+                                alignItems:
+                                    "center",
+                                gap:
+                                    "14px",
                             }}
                         >
 
@@ -694,17 +907,18 @@ const Checkout = () => {
                             </div>
 
                             <div>
-
                                 <h2>
                                     Your Order
                                 </h2>
 
                                 <p>
-                                    Review medicines and
-                                    healthcare items in
+                                    Review
+                                    medicines
+                                    and
+                                    healthcare
+                                    items in
                                     your bag.
                                 </p>
-
                             </div>
 
                         </div>
@@ -716,18 +930,25 @@ const Checkout = () => {
                                     "#eef5ff",
                                 color:
                                     "#2874f0",
-                                fontWeight: "700",
-                                fontSize: "13px",
+                                fontWeight:
+                                    "700",
+                                fontSize:
+                                    "13px",
                                 padding:
                                     "5px 12px",
                                 borderRadius:
                                     "16px",
                             }}
                         >
-                            {cartItems.length}{" "}
-                            {cartItems.length === 1
-                                ? "Item"
-                                : "Items"}
+                            {
+                                cartItems.length
+                            }{" "}
+                            {
+                                cartItems.length ===
+                                    1
+                                    ? "Item"
+                                    : "Items"
+                            }
                         </span>
 
                     </div>
@@ -737,456 +958,460 @@ const Checkout = () => {
                     <div
                         className="checkout-products"
                         style={{
-                            display: "flex",
+                            display:
+                                "flex",
                             flexDirection:
                                 "column",
-                            gap: "14px",
-                            marginTop: "16px",
+                            gap:
+                                "14px",
+                            marginTop:
+                                "16px",
                         }}
                     >
 
-                        {cartItems.map((item) => {
+                        {cartItems.map(
+                            (item) => {
 
-                            const unitPrice =
-                                Number(
-                                    getPrice(item)
-                                );
+                                const unitPrice =
+                                    Number(
+                                        getPrice(
+                                            item
+                                        )
+                                    );
 
-                            const quantity =
-                                Number(
-                                    item.quantity || 1
-                                );
+                                const quantity =
+                                    Number(
+                                        item.quantity ||
+                                        1
+                                    );
 
-                            const itemTotal =
-                                unitPrice *
-                                quantity;
+                                const itemTotal =
+                                    unitPrice *
+                                    quantity;
 
-                            const isSpecial =
-                                isSpecialCategory(
-                                    item.category
-                                );
+                                const isSpecial =
+                                    isSpecialCategory(
+                                        item.category
+                                    );
 
-                            const productName =
-                                item.name ||
-                                item.title ||
-                                "Healthcare Product";
+                                const productName =
+                                    item.name ||
+                                    item.title ||
+                                    "Healthcare Product";
 
-                            return (
-                                <div
-                                    className="checkout-product"
-                                    key={item.id}
-                                    data-testid={`checkout-product-${item.id}`}
-                                    style={{
-                                        display:
-                                            "flex",
-                                        alignItems:
-                                            "center",
-                                        justifyContent:
-                                            "space-between",
-                                        padding:
-                                            "16px",
-                                        background:
-                                            "#fafbfc",
-                                        borderRadius:
-                                            "10px",
-                                        border:
-                                            "1px solid #eef0f3",
-                                        gap: "16px",
-                                    }}
-                                >
-
-                                    {/* PRODUCT INFO */}
-
+                                return (
                                     <div
+                                        className="checkout-product"
+                                        key={
+                                            item.id
+                                        }
+                                        data-testid={`checkout-product-${item.id}`}
                                         style={{
                                             display:
                                                 "flex",
                                             alignItems:
                                                 "center",
-                                            gap: "14px",
-                                            flex: 1,
+                                            justifyContent:
+                                                "space-between",
+                                            padding:
+                                                "16px",
+                                            background:
+                                                "#fafbfc",
+                                            borderRadius:
+                                                "10px",
+                                            border:
+                                                "1px solid #eef0f3",
+                                            gap:
+                                                "16px",
                                         }}
                                     >
 
-                                        {/* IMAGE */}
-
                                         <div
-                                            className="product-image"
                                             style={{
-                                                width:
-                                                    "64px",
-                                                height:
-                                                    "64px",
-                                                borderRadius:
-                                                    "8px",
-                                                background:
-                                                    "#ffffff",
-                                                border:
-                                                    "1px solid #e1e4e8",
                                                 display:
                                                     "flex",
                                                 alignItems:
                                                     "center",
-                                                justifyContent:
-                                                    "center",
-                                                overflow:
-                                                    "hidden",
-                                                flexShrink:
-                                                    0,
-                                            }}
-                                        >
-
-                                            {item.image ? (
-                                                <img
-                                                    src={
-                                                        item.image
-                                                    }
-                                                    alt={
-                                                        productName
-                                                    }
-                                                    style={{
-                                                        width:
-                                                            "100%",
-                                                        height:
-                                                            "100%",
-                                                        objectFit:
-                                                            "contain",
-                                                    }}
-                                                />
-                                            ) : (
-                                                <span
-                                                    style={{
-                                                        fontSize:
-                                                            "24px",
-                                                    }}
-                                                >
-                                                    💊
-                                                </span>
-                                            )}
-
-                                        </div>
-
-                                        {/* INFO */}
-
-                                        <div
-                                            className="product-info"
-                                            style={{
-                                                flex: 1,
+                                                gap:
+                                                    "14px",
+                                                flex:
+                                                    1,
                                             }}
                                         >
 
                                             <div
+                                                className="product-image"
                                                 style={{
+                                                    width:
+                                                        "64px",
+                                                    height:
+                                                        "64px",
+                                                    borderRadius:
+                                                        "8px",
+                                                    background:
+                                                        "#ffffff",
+                                                    border:
+                                                        "1px solid #e1e4e8",
                                                     display:
                                                         "flex",
                                                     alignItems:
                                                         "center",
-                                                    gap: "8px",
-                                                    flexWrap:
-                                                        "wrap",
+                                                    justifyContent:
+                                                        "center",
+                                                    overflow:
+                                                        "hidden",
+                                                    flexShrink:
+                                                        0,
                                                 }}
                                             >
 
-                                                <h3
-                                                    style={{
-                                                        margin:
-                                                            0,
-                                                        fontSize:
-                                                            "15px",
-                                                        fontWeight:
-                                                            "700",
-                                                        color:
-                                                            "#222",
-                                                    }}
-                                                >
-                                                    {productName}
-                                                </h3>
-
-                                                {isSpecial && (
+                                                {item.image ? (
+                                                    <img
+                                                        src={
+                                                            item.image
+                                                        }
+                                                        alt={
+                                                            productName
+                                                        }
+                                                        style={{
+                                                            width:
+                                                                "100%",
+                                                            height:
+                                                                "100%",
+                                                            objectFit:
+                                                                "contain",
+                                                        }}
+                                                    />
+                                                ) : (
                                                     <span
                                                         style={{
                                                             fontSize:
-                                                                "11px",
-                                                            background:
-                                                                "#fff3cd",
-                                                            color:
-                                                                "#856404",
-                                                            fontWeight:
-                                                                "700",
-                                                            padding:
-                                                                "2px 8px",
-                                                            borderRadius:
-                                                                "10px",
+                                                                "24px",
                                                         }}
                                                     >
-                                                        Special Care
+                                                        💊
                                                     </span>
                                                 )}
 
                                             </div>
 
-                                            <p
-                                                style={{
-                                                    margin:
-                                                        "4px 0 6px",
-                                                    color:
-                                                        "#666",
-                                                    fontSize:
-                                                        "13px",
-                                                }}
-                                            >
-                                                {item.brand
-                                                    ? `Brand: ${item.brand} | `
-                                                    : ""}
-                                                {item.category ||
-                                                    "Healthcare"}
-                                            </p>
-
                                             <div
+                                                className="product-info"
                                                 style={{
-                                                    display:
-                                                        "flex",
-                                                    alignItems:
-                                                        "center",
-                                                    gap:
-                                                        "10px",
+                                                    flex:
+                                                        1,
                                                 }}
                                             >
 
-                                                <strong
-                                                    data-testid={`unit-price-${item.id}`}
+                                                <div
                                                     style={{
-                                                        fontSize:
-                                                            "15px",
-                                                        color:
-                                                            "#2874f0",
+                                                        display:
+                                                            "flex",
+                                                        alignItems:
+                                                            "center",
+                                                        gap:
+                                                            "8px",
+                                                        flexWrap:
+                                                            "wrap",
                                                     }}
                                                 >
-                                                    ₹
-                                                    {unitPrice}
-                                                </strong>
 
-                                                <span
+                                                    <h3
+                                                        style={{
+                                                            margin:
+                                                                0,
+                                                            fontSize:
+                                                                "15px",
+                                                            fontWeight:
+                                                                "700",
+                                                            color:
+                                                                "#222",
+                                                        }}
+                                                    >
+                                                        {
+                                                            productName
+                                                        }
+                                                    </h3>
+
+                                                    {isSpecial && (
+                                                        <span
+                                                            style={{
+                                                                fontSize:
+                                                                    "11px",
+                                                                background:
+                                                                    "#fff3cd",
+                                                                color:
+                                                                    "#856404",
+                                                                fontWeight:
+                                                                    "700",
+                                                                padding:
+                                                                    "2px 8px",
+                                                                borderRadius:
+                                                                    "10px",
+                                                            }}
+                                                        >
+                                                            Special Care
+                                                        </span>
+                                                    )}
+
+                                                </div>
+
+                                                <p
                                                     style={{
-                                                        fontSize:
-                                                            "12px",
+                                                        margin:
+                                                            "4px 0 6px",
                                                         color:
-                                                            "#888",
+                                                            "#666",
+                                                        fontSize:
+                                                            "13px",
                                                     }}
                                                 >
-                                                    each
-                                                </span>
+                                                    {item.brand
+                                                        ? `Brand: ${item.brand} | `
+                                                        : ""}
+                                                    {item.category ||
+                                                        "Healthcare"}
+                                                </p>
+
+                                                <div
+                                                    style={{
+                                                        display:
+                                                            "flex",
+                                                        alignItems:
+                                                            "center",
+                                                        gap:
+                                                            "10px",
+                                                    }}
+                                                >
+
+                                                    <strong
+                                                        data-testid={`unit-price-${item.id}`}
+                                                        style={{
+                                                            fontSize:
+                                                                "15px",
+                                                            color:
+                                                                "#2874f0",
+                                                        }}
+                                                    >
+                                                        ₹
+                                                        {
+                                                            unitPrice
+                                                        }
+                                                    </strong>
+
+                                                    <span
+                                                        style={{
+                                                            fontSize:
+                                                                "12px",
+                                                            color:
+                                                                "#888",
+                                                        }}
+                                                    >
+                                                        each
+                                                    </span>
+
+                                                </div>
 
                                             </div>
 
                                         </div>
 
-                                    </div>
-
-                                    {/* RIGHT SIDE */}
-
-                                    <div
-                                        style={{
-                                            display:
-                                                "flex",
-                                            alignItems:
-                                                "center",
-                                            gap: "16px",
-                                        }}
-                                    >
-
-                                        {/* QUANTITY */}
-
                                         <div
-                                            className="quantity-box"
                                             style={{
                                                 display:
                                                     "flex",
                                                 alignItems:
                                                     "center",
-                                                background:
-                                                    "#ffffff",
-                                                border:
-                                                    "1px solid #d1d5db",
-                                                borderRadius:
-                                                    "6px",
-                                                overflow:
-                                                    "hidden",
+                                                gap:
+                                                    "16px",
                                             }}
                                         >
 
-                                            {/* MINUS */}
-
-                                            <button
-                                                type="button"
-                                                aria-label={`Decrease quantity of ${productName}`}
-                                                data-testid={`decrease-${item.id}`}
-                                                onClick={() =>
-                                                    updateQuantity(
-                                                        item.id,
-                                                        -1
-                                                    )
-                                                }
-                                                style={{
-                                                    padding:
-                                                        "6px 10px",
-                                                    border:
-                                                        "none",
-                                                    background:
-                                                        "transparent",
-                                                    cursor:
-                                                        quantity <=
-                                                            1
-                                                            ? "not-allowed"
-                                                            : "pointer",
-                                                    color:
-                                                        quantity <=
-                                                            1
-                                                            ? "#ccc"
-                                                            : "#333",
-                                                }}
-                                                disabled={
-                                                    quantity <=
-                                                    1
-                                                }
-                                            >
-                                                <FaMinus
-                                                    size={11}
-                                                />
-                                            </button>
-
-                                            {/* QUANTITY VALUE */}
-
-                                            <span
-                                                data-testid={`quantity-${item.id}`}
-                                                style={{
-                                                    padding:
-                                                        "0 10px",
-                                                    fontWeight:
-                                                        "700",
-                                                    fontSize:
-                                                        "14px",
-                                                }}
-                                            >
-                                                {quantity}
-                                            </span>
-
-                                            {/* PLUS */}
-
-                                            <button
-                                                type="button"
-                                                aria-label={`Increase quantity of ${productName}`}
-                                                data-testid={`increase-${item.id}`}
-                                                onClick={() =>
-                                                    updateQuantity(
-                                                        item.id,
-                                                        1
-                                                    )
-                                                }
-                                                style={{
-                                                    padding:
-                                                        "6px 10px",
-                                                    border:
-                                                        "none",
-                                                    background:
-                                                        "transparent",
-                                                    cursor:
-                                                        "pointer",
-                                                    color:
-                                                        "#333",
-                                                }}
-                                            >
-                                                <FaPlus
-                                                    size={11}
-                                                />
-                                            </button>
-
-                                        </div>
-
-                                        {/* ITEM TOTAL */}
-
-                                        <div
-                                            style={{
-                                                textAlign:
-                                                    "right",
-                                                minWidth:
-                                                    "80px",
-                                            }}
-                                        >
-
-                                            <span
+                                            <div
+                                                className="quantity-box"
                                                 style={{
                                                     display:
-                                                        "block",
-                                                    fontSize:
-                                                        "11px",
-                                                    color:
-                                                        "#888",
+                                                        "flex",
+                                                    alignItems:
+                                                        "center",
+                                                    background:
+                                                        "#ffffff",
+                                                    border:
+                                                        "1px solid #d1d5db",
+                                                    borderRadius:
+                                                        "6px",
+                                                    overflow:
+                                                        "hidden",
                                                 }}
                                             >
-                                                Total
-                                            </span>
 
-                                            <strong
-                                                data-testid={`item-total-${item.id}`}
+                                                <button
+                                                    type="button"
+                                                    aria-label={`Decrease quantity of ${productName}`}
+                                                    data-testid={`decrease-${item.id}`}
+                                                    onClick={() =>
+                                                        updateQuantity(
+                                                            item.id,
+                                                            -1
+                                                        )
+                                                    }
+                                                    disabled={
+                                                        quantity <=
+                                                        1
+                                                    }
+                                                    style={{
+                                                        padding:
+                                                            "6px 10px",
+                                                        border:
+                                                            "none",
+                                                        background:
+                                                            "transparent",
+                                                        cursor:
+                                                            quantity <=
+                                                                1
+                                                                ? "not-allowed"
+                                                                : "pointer",
+                                                        color:
+                                                            quantity <=
+                                                                1
+                                                                ? "#ccc"
+                                                                : "#333",
+                                                    }}
+                                                >
+                                                    <FaMinus
+                                                        size={
+                                                            11
+                                                        }
+                                                    />
+                                                </button>
+
+                                                <span
+                                                    data-testid={`quantity-${item.id}`}
+                                                    style={{
+                                                        padding:
+                                                            "0 10px",
+                                                        fontWeight:
+                                                            "700",
+                                                        fontSize:
+                                                            "14px",
+                                                    }}
+                                                >
+                                                    {
+                                                        quantity
+                                                    }
+                                                </span>
+
+                                                <button
+                                                    type="button"
+                                                    aria-label={`Increase quantity of ${productName}`}
+                                                    data-testid={`increase-${item.id}`}
+                                                    onClick={() =>
+                                                        updateQuantity(
+                                                            item.id,
+                                                            1
+                                                        )
+                                                    }
+                                                    style={{
+                                                        padding:
+                                                            "6px 10px",
+                                                        border:
+                                                            "none",
+                                                        background:
+                                                            "transparent",
+                                                        cursor:
+                                                            "pointer",
+                                                        color:
+                                                            "#333",
+                                                    }}
+                                                >
+                                                    <FaPlus
+                                                        size={
+                                                            11
+                                                        }
+                                                    />
+                                                </button>
+
+                                            </div>
+
+                                            <div
                                                 style={{
-                                                    fontSize:
-                                                        "16px",
-                                                    color:
-                                                        "#111827",
+                                                    textAlign:
+                                                        "right",
+                                                    minWidth:
+                                                        "80px",
                                                 }}
                                             >
-                                                ₹
-                                                {itemTotal.toLocaleString()}
-                                            </strong>
+
+                                                <span
+                                                    style={{
+                                                        display:
+                                                            "block",
+                                                        fontSize:
+                                                            "11px",
+                                                        color:
+                                                            "#888",
+                                                    }}
+                                                >
+                                                    Total
+                                                </span>
+
+                                                <strong
+                                                    data-testid={`item-total-${item.id}`}
+                                                    style={{
+                                                        fontSize:
+                                                            "16px",
+                                                        color:
+                                                            "#111827",
+                                                    }}
+                                                >
+                                                    ₹
+                                                    {itemTotal.toLocaleString()}
+                                                </strong>
+
+                                            </div>
+
+                                            <button
+                                                type="button"
+                                                aria-label={`Remove ${productName}`}
+                                                data-testid={`remove-${item.id}`}
+                                                onClick={() =>
+                                                    removeItem(
+                                                        item.id
+                                                    )
+                                                }
+                                                title="Remove item"
+                                                style={{
+                                                    background:
+                                                        "#fee2e2",
+                                                    border:
+                                                        "none",
+                                                    color:
+                                                        "#dc2626",
+                                                    padding:
+                                                        "7px 10px",
+                                                    borderRadius:
+                                                        "6px",
+                                                    cursor:
+                                                        "pointer",
+                                                    fontSize:
+                                                        "12px",
+                                                    fontWeight:
+                                                        "600",
+                                                }}
+                                            >
+                                                ✕
+                                            </button>
 
                                         </div>
 
-                                        {/* DELETE */}
-
-                                        <button
-                                            type="button"
-                                            aria-label={`Remove ${productName}`}
-                                            data-testid={`remove-${item.id}`}
-                                            onClick={() =>
-                                                removeItem(
-                                                    item.id
-                                                )
-                                            }
-                                            title="Remove item"
-                                            style={{
-                                                background:
-                                                    "#fee2e2",
-                                                border:
-                                                    "none",
-                                                color:
-                                                    "#dc2626",
-                                                padding:
-                                                    "7px 10px",
-                                                borderRadius:
-                                                    "6px",
-                                                cursor:
-                                                    "pointer",
-                                                fontSize:
-                                                    "12px",
-                                                fontWeight:
-                                                    "600",
-                                            }}
-                                        >
-                                            ✕
-                                        </button>
-
                                     </div>
-
-                                </div>
-                            );
-                        })}
+                                );
+                            }
+                        )}
 
                     </div>
 
-                    {/* =================================================
-                        PRICE SUMMARY
-                    ================================================= */}
+                    {/* PRICE SUMMARY */}
 
                     <div
                         style={{
@@ -1203,8 +1428,6 @@ const Checkout = () => {
                         }}
                     >
 
-                        {/* SUBTOTAL */}
-
                         <div
                             style={{
                                 display:
@@ -1219,7 +1442,6 @@ const Checkout = () => {
                                     "#4b5563",
                             }}
                         >
-
                             <span>
                                 Items Subtotal
                             </span>
@@ -1234,10 +1456,7 @@ const Checkout = () => {
                                 ₹
                                 {productTotal.toLocaleString()}
                             </strong>
-
                         </div>
-
-                        {/* DISCOUNT */}
 
                         {discount > 0 && (
                             <div
@@ -1254,7 +1473,6 @@ const Checkout = () => {
                                         "#16a34a",
                                 }}
                             >
-
                                 <span>
                                     Flat 10% Discount
                                 </span>
@@ -1263,11 +1481,8 @@ const Checkout = () => {
                                     - ₹
                                     {discount.toLocaleString()}
                                 </strong>
-
                             </div>
                         )}
-
-                        {/* DELIVERY */}
 
                         <div
                             style={{
@@ -1283,7 +1498,6 @@ const Checkout = () => {
                                     "#4b5563",
                             }}
                         >
-
                             <span>
                                 Delivery Charges
                             </span>
@@ -1302,10 +1516,7 @@ const Checkout = () => {
                                     ? "FREE"
                                     : `₹${normalDeliveryCharge}`}
                             </strong>
-
                         </div>
-
-                        {/* SPECIAL CHARGE */}
 
                         {hasSpecialItem && (
                             <div
@@ -1324,14 +1535,15 @@ const Checkout = () => {
                                         "10px",
                                 }}
                             >
-                                ℹ️ Includes ₹50 special
-                                handling for Medical
-                                Devices / Premium
-                                Healthcare items.
+                                ℹ️ Includes ₹50
+                                special handling
+                                for Medical
+                                Devices /
+                                Premium
+                                Healthcare
+                                items.
                             </div>
                         )}
-
-                        {/* FINAL */}
 
                         <div
                             style={{
@@ -1347,7 +1559,6 @@ const Checkout = () => {
                                     "6px",
                             }}
                         >
-
                             <span
                                 style={{
                                     fontSize:
@@ -1377,12 +1588,9 @@ const Checkout = () => {
                                     normalDeliveryCharge
                                 ).toLocaleString()}
                             </strong>
-
                         </div>
 
                     </div>
-
-                    {/* CONTINUE */}
 
                     <button
                         className="continue-btn"
@@ -1411,8 +1619,6 @@ const Checkout = () => {
                                 "700",
                             cursor:
                                 "pointer",
-                            transition:
-                                "background 0.2s",
                         }}
                     >
                         Proceed to Delivery
@@ -1422,12 +1628,14 @@ const Checkout = () => {
                 </div>
             )}
 
-            {/* =================================================
+            {/* =====================================================
                 STEP 2 - ADDRESS
-            ================================================= */}
+            ===================================================== */}
 
             {step === 2 && (
                 <div className="checkout-card">
+
+                    {/* ADDRESS HEADER */}
 
                     <div className="card-heading">
 
@@ -1436,20 +1644,168 @@ const Checkout = () => {
                         </div>
 
                         <div>
-
                             <h2>
                                 Delivery Address
                             </h2>
 
                             <p>
-                                Enter where you want
-                                your MediKart order
+                                Enter where you
+                                want your
+                                MediKart order
                                 delivered.
                             </p>
-
                         </div>
 
                     </div>
+
+                    {/* =================================================
+                        ADDRESS MODE
+                    ================================================= */}
+
+                    <div
+                        style={{
+                            display:
+                                "grid",
+                            gridTemplateColumns:
+                                "1fr 1fr",
+                            gap:
+                                "12px",
+                            margin:
+                                "20px 0",
+                        }}
+                    >
+
+                        {/* MAP */}
+
+                        <button
+                            type="button"
+                            onClick={
+                                chooseLocationOnMap
+                            }
+                            style={{
+                                display:
+                                    "flex",
+                                alignItems:
+                                    "center",
+                                justifyContent:
+                                    "center",
+                                gap:
+                                    "10px",
+                                padding:
+                                    "14px",
+                                border:
+                                    addressMode ===
+                                        "map"
+                                        ? "2px solid #2874f0"
+                                        : "1px solid #d1d5db",
+                                borderRadius:
+                                    "10px",
+                                background:
+                                    addressMode ===
+                                        "map"
+                                        ? "#eff6ff"
+                                        : "#fff",
+                                color:
+                                    "#2874f0",
+                                fontWeight:
+                                    "700",
+                                cursor:
+                                    "pointer",
+                            }}
+                        >
+                            <FaMap />
+
+                            {locationLoading
+                                ? "Getting Location..."
+                                : "Choose on Map"}
+                        </button>
+
+                        {/* FORM */}
+
+                        <button
+                            type="button"
+                            onClick={() =>
+                                setAddressMode(
+                                    "form"
+                                )
+                            }
+                            style={{
+                                display:
+                                    "flex",
+                                alignItems:
+                                    "center",
+                                justifyContent:
+                                    "center",
+                                gap:
+                                    "10px",
+                                padding:
+                                    "14px",
+                                border:
+                                    addressMode ===
+                                        "form"
+                                        ? "2px solid #2874f0"
+                                        : "1px solid #d1d5db",
+                                borderRadius:
+                                    "10px",
+                                background:
+                                    addressMode ===
+                                        "form"
+                                        ? "#eff6ff"
+                                        : "#fff",
+                                color:
+                                    "#2874f0",
+                                fontWeight:
+                                    "700",
+                                cursor:
+                                    "pointer",
+                            }}
+                        >
+                            <FaEdit />
+
+                            Fill Details
+                        </button>
+
+                    </div>
+
+                    {/* MAP SELECTED MESSAGE */}
+
+                    {addressMode ===
+                        "map" && (
+                            <div
+                                style={{
+                                    display:
+                                        "flex",
+                                    alignItems:
+                                        "center",
+                                    gap:
+                                        "10px",
+                                    background:
+                                        "#ecfdf5",
+                                    border:
+                                        "1px solid #bbf7d0",
+                                    color:
+                                        "#166534",
+                                    padding:
+                                        "12px 14px",
+                                    borderRadius:
+                                        "8px",
+                                    marginBottom:
+                                        "16px",
+                                    fontSize:
+                                        "14px",
+                                    fontWeight:
+                                        "600",
+                                }}
+                            >
+                                <FaLocationArrow />
+
+                                Location selected.
+                                Please complete
+                                your name, phone,
+                                city, state and
+                                pincode below.
+                            </div>
+                        )}
 
                     {/* ADDRESS FORM */}
 
@@ -1593,20 +1949,345 @@ const Checkout = () => {
 
                     </div>
 
-                    {/* =================================================
-                        DELIVERY OPTIONS
-                    ================================================= */}
+                    {/* =====================================================
+                        DELIVERY DISTANCE
+                    ===================================================== */}
+
+                    <div
+                        style={{
+                            marginTop:
+                                "25px",
+                            padding:
+                                "18px",
+                            background:
+                                "#f8fafc",
+                            border:
+                                "1px solid #e2e8f0",
+                            borderRadius:
+                                "12px",
+                        }}
+                    >
+
+                        <h2
+                            style={{
+                                margin:
+                                    "0 0 6px",
+                                fontSize:
+                                    "18px",
+                            }}
+                        >
+                            Delivery Distance
+                        </h2>
+
+                        <p
+                            style={{
+                                margin:
+                                    "0 0 15px",
+                                color:
+                                    "#64748b",
+                                fontSize:
+                                    "13px",
+                            }}
+                        >
+                            Delivery time is
+                            estimated based
+                            on how far the
+                            delivery location
+                            is from the
+                            MediKart delivery
+                            point.
+                        </p>
+
+                        <div
+                            style={{
+                                display:
+                                    "grid",
+                                gridTemplateColumns:
+                                    "repeat(3, 1fr)",
+                                gap:
+                                    "10px",
+                            }}
+                        >
+
+                            {/* SHORT */}
+
+                            <button
+                                type="button"
+                                onClick={() =>
+                                    setDeliveryDistance(
+                                        "short"
+                                    )
+                                }
+                                style={{
+                                    padding:
+                                        "14px 10px",
+                                    border:
+                                        deliveryDistance ===
+                                            "short"
+                                            ? "2px solid #16a34a"
+                                            : "1px solid #d1d5db",
+                                    background:
+                                        deliveryDistance ===
+                                            "short"
+                                            ? "#f0fdf4"
+                                            : "#fff",
+                                    borderRadius:
+                                        "10px",
+                                    cursor:
+                                        "pointer",
+                                    textAlign:
+                                        "center",
+                                }}
+                            >
+
+                                <FaBolt
+                                    style={{
+                                        color:
+                                            "#16a34a",
+                                        fontSize:
+                                            "18px",
+                                    }}
+                                />
+
+                                <strong
+                                    style={{
+                                        display:
+                                            "block",
+                                        marginTop:
+                                            "6px",
+                                    }}
+                                >
+                                    Short
+                                </strong>
+
+                                <small>
+                                    0–5 km
+                                </small>
+
+                                <span
+                                    style={{
+                                        display:
+                                            "block",
+                                        marginTop:
+                                            "5px",
+                                        color:
+                                            "#16a34a",
+                                        fontWeight:
+                                            "700",
+                                    }}
+                                >
+                                    20–30 min
+                                </span>
+
+                            </button>
+
+                            {/* MEDIUM */}
+
+                            <button
+                                type="button"
+                                onClick={() =>
+                                    setDeliveryDistance(
+                                        "medium"
+                                    )
+                                }
+                                style={{
+                                    padding:
+                                        "14px 10px",
+                                    border:
+                                        deliveryDistance ===
+                                            "medium"
+                                            ? "2px solid #2874f0"
+                                            : "1px solid #d1d5db",
+                                    background:
+                                        deliveryDistance ===
+                                            "medium"
+                                            ? "#eff6ff"
+                                            : "#fff",
+                                    borderRadius:
+                                        "10px",
+                                    cursor:
+                                        "pointer",
+                                    textAlign:
+                                        "center",
+                                }}
+                            >
+
+                                <FaTruck
+                                    style={{
+                                        color:
+                                            "#2874f0",
+                                        fontSize:
+                                            "18px",
+                                    }}
+                                />
+
+                                <strong
+                                    style={{
+                                        display:
+                                            "block",
+                                        marginTop:
+                                            "6px",
+                                    }}
+                                >
+                                    Medium
+                                </strong>
+
+                                <small>
+                                    5–15 km
+                                </small>
+
+                                <span
+                                    style={{
+                                        display:
+                                            "block",
+                                        marginTop:
+                                            "5px",
+                                        color:
+                                            "#2874f0",
+                                        fontWeight:
+                                            "700",
+                                    }}
+                                >
+                                    45–60 min
+                                </span>
+
+                            </button>
+
+                            {/* LONG */}
+
+                            <button
+                                type="button"
+                                onClick={() =>
+                                    setDeliveryDistance(
+                                        "long"
+                                    )
+                                }
+                                style={{
+                                    padding:
+                                        "14px 10px",
+                                    border:
+                                        deliveryDistance ===
+                                            "long"
+                                            ? "2px solid #f97316"
+                                            : "1px solid #d1d5db",
+                                    background:
+                                        deliveryDistance ===
+                                            "long"
+                                            ? "#fff7ed"
+                                            : "#fff",
+                                    borderRadius:
+                                        "10px",
+                                    cursor:
+                                        "pointer",
+                                    textAlign:
+                                        "center",
+                                }}
+                            >
+
+                                <FaClock
+                                    style={{
+                                        color:
+                                            "#f97316",
+                                        fontSize:
+                                            "18px",
+                                    }}
+                                />
+
+                                <strong
+                                    style={{
+                                        display:
+                                            "block",
+                                        marginTop:
+                                            "6px",
+                                    }}
+                                >
+                                    Long
+                                </strong>
+
+                                <small>
+                                    15+ km
+                                </small>
+
+                                <span
+                                    style={{
+                                        display:
+                                            "block",
+                                        marginTop:
+                                            "5px",
+                                        color:
+                                            "#f97316",
+                                        fontWeight:
+                                            "700",
+                                    }}
+                                >
+                                    1.5–2.5 hrs
+                                </span>
+
+                            </button>
+
+                        </div>
+
+                        {/* CURRENT DELIVERY TIME */}
+
+                        <div
+                            style={{
+                                marginTop:
+                                    "15px",
+                                padding:
+                                    "12px",
+                                background:
+                                    "#ffffff",
+                                border:
+                                    "1px solid #e5e7eb",
+                                borderRadius:
+                                    "8px",
+                                display:
+                                    "flex",
+                                alignItems:
+                                    "center",
+                                gap:
+                                    "10px",
+                            }}
+                        >
+
+                            <FaClock
+                                style={{
+                                    color:
+                                        "#2874f0",
+                                }}
+                            />
+
+                            <span>
+                                Estimated delivery
+                                time:
+                            </span>
+
+                            <strong>
+                                {
+                                    getDeliveryTime()
+                                }
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                    {/* =====================================================
+                        CHOOSE DELIVERY OPTION
+                    ===================================================== */}
 
                     <div className="delivery-section">
 
                         <h2>
-                            Choose Delivery Option
+                            Choose Delivery
+                            Option
                         </h2>
 
                         <p className="delivery-subtitle">
-                            Faster delivery is
-                            available on eligible
-                            orders.
+                            Delivery time is
+                            adjusted according
+                            to the delivery
+                            distance.
                         </p>
 
                         {/* NORMAL */}
@@ -1647,9 +2328,26 @@ const Checkout = () => {
                                 <span>
                                     Delivery by{" "}
                                     <b>
-                                        {getNormalDeliveryDate()}
+                                        {
+                                            getNormalDeliveryDate()
+                                        }
                                     </b>
                                 </span>
+
+                                <small
+                                    style={{
+                                        color:
+                                            "#2874f0",
+                                        fontWeight:
+                                            "700",
+                                    }}
+                                >
+                                    Estimated time:
+                                    {" "}
+                                    {
+                                        getDeliveryTime()
+                                    }
+                                </small>
 
                             </div>
 
@@ -1705,14 +2403,18 @@ const Checkout = () => {
                                 <span>
                                     Delivery in{" "}
                                     <b>
-                                        1–2 days
+                                        {
+                                            getDeliveryTime()
+                                        }
                                     </b>
                                 </span>
 
                                 {!expressAvailable && (
                                     <small>
-                                        Available for
-                                        orders above
+                                        Available
+                                        for
+                                        orders
+                                        above
                                         ₹299
                                     </small>
                                 )}
@@ -1772,10 +2474,26 @@ const Checkout = () => {
                                     </b>
                                 </span>
 
+                                <small
+                                    style={{
+                                        color:
+                                            "#16a34a",
+                                        fontWeight:
+                                            "700",
+                                    }}
+                                >
+                                    Within{" "}
+                                    {
+                                        getDeliveryTime()
+                                    }
+                                </small>
+
                                 {!todayAvailable && (
                                     <small>
-                                        Available for
-                                        orders above
+                                        Available
+                                        for
+                                        orders
+                                        above
                                         ₹999
                                     </small>
                                 )}
@@ -1789,8 +2507,6 @@ const Checkout = () => {
                         </label>
 
                     </div>
-
-                    {/* BUTTONS */}
 
                     <div className="button-row">
 
@@ -1809,7 +2525,8 @@ const Checkout = () => {
                                 continueToPayment
                             }
                         >
-                            Continue to Payment
+                            Continue to
+                            Payment
                         </button>
 
                     </div>
@@ -1817,9 +2534,9 @@ const Checkout = () => {
                 </div>
             )}
 
-            {/* =================================================
+            {/* =====================================================
                 STEP 3 - PAYMENT
-            ================================================= */}
+            ===================================================== */}
 
             {step === 3 && (
                 <div className="checkout-card">
@@ -1837,15 +2554,14 @@ const Checkout = () => {
                             </h2>
 
                             <p>
-                                Select your preferred
+                                Select your
+                                preferred
                                 payment method.
                             </p>
 
                         </div>
 
                     </div>
-
-                    {/* PAYMENT OPTIONS */}
 
                     <div className="payment-options">
 
@@ -1870,7 +2586,8 @@ const Checkout = () => {
                                 }
                                 onChange={(e) =>
                                     setPaymentMethod(
-                                        e.target.value
+                                        e.target
+                                            .value
                                     )
                                 }
                             />
@@ -1878,16 +2595,16 @@ const Checkout = () => {
                             <FaCreditCard />
 
                             <div>
-
                                 <strong>
-                                    Credit / Debit Card
+                                    Credit / Debit
+                                    Card
                                 </strong>
 
                                 <span>
-                                    Visa, Mastercard,
+                                    Visa,
+                                    Mastercard,
                                     RuPay
                                 </span>
-
                             </div>
 
                         </label>
@@ -1913,7 +2630,8 @@ const Checkout = () => {
                                 }
                                 onChange={(e) =>
                                     setPaymentMethod(
-                                        e.target.value
+                                        e.target
+                                            .value
                                     )
                                 }
                             />
@@ -1921,15 +2639,14 @@ const Checkout = () => {
                             <FaUniversity />
 
                             <div>
-
                                 <strong>
                                     Net Banking
                                 </strong>
 
                                 <span>
-                                    All major banks
+                                    All major
+                                    banks
                                 </span>
-
                             </div>
 
                         </label>
@@ -1955,7 +2672,8 @@ const Checkout = () => {
                                 }
                                 onChange={(e) =>
                                     setPaymentMethod(
-                                        e.target.value
+                                        e.target
+                                            .value
                                     )
                                 }
                             />
@@ -1963,7 +2681,6 @@ const Checkout = () => {
                             <FaMoneyBillWave />
 
                             <div>
-
                                 <strong>
                                     Cash on Delivery
                                 </strong>
@@ -1972,7 +2689,6 @@ const Checkout = () => {
                                     Pay when the
                                     order arrives
                                 </span>
-
                             </div>
 
                         </label>
@@ -2021,7 +2737,8 @@ const Checkout = () => {
                                     </option>
 
                                     <option>
-                                        State Bank of India
+                                        State Bank of
+                                        India
                                     </option>
 
                                     <option>
@@ -2037,7 +2754,8 @@ const Checkout = () => {
                                     </option>
 
                                     <option>
-                                        Punjab National Bank
+                                        Punjab National
+                                        Bank
                                     </option>
 
                                 </select>
@@ -2045,9 +2763,46 @@ const Checkout = () => {
                             </div>
                         )}
 
-                    {/* =================================================
-                        PAYMENT SUMMARY
-                    ================================================= */}
+                    {/* DELIVERY ESTIMATE */}
+
+                    <div
+                        style={{
+                            marginTop:
+                                "18px",
+                            padding:
+                                "14px",
+                            background:
+                                "#eff6ff",
+                            border:
+                                "1px solid #bfdbfe",
+                            borderRadius:
+                                "8px",
+                            display:
+                                "flex",
+                            alignItems:
+                                "center",
+                            gap:
+                                "10px",
+                            color:
+                                "#1e40af",
+                        }}
+                    >
+
+                        <FaClock />
+
+                        <span>
+                            Estimated delivery:
+                        </span>
+
+                        <strong>
+                            {
+                                getDeliveryTime()
+                            }
+                        </strong>
+
+                    </div>
+
+                    {/* PAYMENT SUMMARY */}
 
                     <div className="payment-summary">
 
@@ -2116,8 +2871,6 @@ const Checkout = () => {
 
                     </div>
 
-                    {/* BUTTONS */}
-
                     <div className="button-row">
 
                         <button
@@ -2136,9 +2889,12 @@ const Checkout = () => {
 
                                 setStep(4);
 
-                                setTimeout(() => {
-                                    placeOrder();
-                                }, 800);
+                                setTimeout(
+                                    () => {
+                                        placeOrder();
+                                    },
+                                    800
+                                );
 
                             }}
                         >
@@ -2150,9 +2906,9 @@ const Checkout = () => {
                 </div>
             )}
 
-            {/* =================================================
+            {/* =====================================================
                 STEP 4 - PROCESSING
-            ================================================= */}
+            ===================================================== */}
 
             {step === 4 && (
                 <div className="processing-card">
@@ -2173,9 +2929,9 @@ const Checkout = () => {
                 </div>
             )}
 
-            {/* =================================================
+            {/* =====================================================
                 STEP 5 - SUCCESS
-            ================================================= */}
+            ===================================================== */}
 
             {step === 5 && (
                 <div className="success-card">
@@ -2185,7 +2941,8 @@ const Checkout = () => {
                     </div>
 
                     <h1>
-                        Order Placed Successfully!
+                        Order Placed
+                        Successfully!
                     </h1>
 
                     <p>
@@ -2252,11 +3009,41 @@ const Checkout = () => {
                         <div>
 
                             <span>
+                                Delivery Distance
+                            </span>
+
+                            <strong>
+                                {
+                                    getDistanceLabel()
+                                }
+                            </strong>
+
+                        </div>
+
+                        <div>
+
+                            <span>
+                                Delivery Time
+                            </span>
+
+                            <strong>
+                                {
+                                    getDeliveryTime()
+                                }
+                            </strong>
+
+                        </div>
+
+                        <div>
+
+                            <span>
                                 Estimated Delivery
                             </span>
 
                             <strong>
-                                {getDeliveryDate()}
+                                {
+                                    getDeliveryDate()
+                                }
                             </strong>
 
                         </div>
@@ -2294,7 +3081,9 @@ const Checkout = () => {
                         <button
                             className="secondary"
                             onClick={() =>
-                                navigate("/shop")
+                                navigate(
+                                    "/shop"
+                                )
                             }
                         >
                             Continue Shopping
@@ -2304,8 +3093,9 @@ const Checkout = () => {
 
                 </div>
             )}
-
         </div>
+
+
     );
 };
 

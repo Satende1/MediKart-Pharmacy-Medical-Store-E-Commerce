@@ -13,7 +13,7 @@ import "./Register.css";
 
 import registerImage from "../../assets/register/register.png";
 
-const Register = () => {
+const Register = ({ onClose, onSwitchToLogin }) => {
   const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
@@ -37,6 +37,24 @@ const Register = () => {
     setError("");
   };
 
+  const handleClose = () => {
+    if (typeof onClose === "function") {
+      onClose();
+      return;
+    }
+
+    navigate("/");
+  };
+
+  const handleBackToLogin = () => {
+    if (typeof onSwitchToLogin === "function") {
+      onSwitchToLogin();
+      return;
+    }
+
+    navigate("/login");
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -57,19 +75,35 @@ const Register = () => {
       return;
     }
 
-    // Save user information
+    const registeredUser = {
+      name,
+      email,
+      password,
+      username: name,
+    };
+
+    localStorage.setItem(
+      "registeredUser",
+      JSON.stringify(registeredUser)
+    );
+
     localStorage.setItem(
       "user",
-      JSON.stringify({
-        name,
-        email,
-        password,
-      })
+      JSON.stringify(registeredUser)
     );
 
     localStorage.setItem("isLoggedIn", "true");
+    localStorage.setItem("username", name);
 
-    navigate("/");
+    window.dispatchEvent(new Event("userUpdated"));
+
+    alert("Registration successful!");
+
+    if (typeof onSwitchToLogin === "function") {
+      onSwitchToLogin();
+    } else {
+      navigate("/login");
+    }
   };
 
   return (
@@ -81,7 +115,7 @@ const Register = () => {
 
           <button
             className="register-close"
-            onClick={() => navigate("/")}
+            onClick={handleClose}
             aria-label="Close"
           >
             <FaTimes />
@@ -192,7 +226,13 @@ const Register = () => {
 
             <div className="register-login">
               Already have an account?
-              <Link to="/login"> Login</Link>
+              <button
+                type="button"
+                className="login-link-button"
+                onClick={handleBackToLogin}
+              >
+                Login
+              </button>
             </div>
 
           </div>

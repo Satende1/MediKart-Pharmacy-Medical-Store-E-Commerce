@@ -11,6 +11,8 @@ import {
 } from "react-icons/fa";
 
 import Login from "../Login/Login";
+import Register from "../Register/Register";
+import ForgotPassword from "../ForgotPassword/ForgotPassword";
 
 function UserActions() {
   const navigate = useNavigate();
@@ -18,7 +20,7 @@ function UserActions() {
   const [cartCount, setCartCount] = useState(0);
   const [wishlistCount, setWishlistCount] = useState(0);
   const [username, setUsername] = useState("");
-  const [showLogin, setShowLogin] = useState(false);
+  const [authModal, setAuthModal] = useState(null);
   const [showAccountDropdown, setShowAccountDropdown] =
     useState(false);
 
@@ -98,7 +100,7 @@ function UserActions() {
   // ==============================
 
   const handleLoginSuccess = () => {
-    setShowLogin(false);
+    setAuthModal(null);
     setShowAccountDropdown(false);
 
     updateCount();
@@ -173,7 +175,7 @@ function UserActions() {
             className={styles.accountBtn}
             onClick={() => {
               if (!username) {
-                setShowLogin(true);
+                setAuthModal("login");
               } else {
                 setShowAccountDropdown(
                   (prev) => !prev
@@ -362,36 +364,47 @@ function UserActions() {
           LOGIN POPUP
       ============================== */}
 
-      {showLogin && (
+      {authModal && (
         <div
           className={styles.overlay}
-          onClick={() =>
-            setShowLogin(false)
-          }
+          onClick={() => setAuthModal(null)}
         >
 
           <div
             className={styles.popup}
-            onClick={(e) =>
-              e.stopPropagation()
-            }
+            onClick={(e) => e.stopPropagation()}
           >
 
             <button
               type="button"
               className={styles.closeBtn}
-              onClick={() =>
-                setShowLogin(false)
-              }
+              onClick={() => setAuthModal(null)}
             >
               ✕
             </button>
 
-            <Login
-              onLoginSuccess={
-                handleLoginSuccess
-              }
-            />
+            {authModal === "login" && (
+              <Login
+                onClose={() => setAuthModal(null)}
+                onLoginSuccess={handleLoginSuccess}
+                onSwitchToRegister={() => setAuthModal("register")}
+                onSwitchToForgotPassword={() => setAuthModal("forgot")}
+              />
+            )}
+
+            {authModal === "register" && (
+              <Register
+                onClose={() => setAuthModal(null)}
+                onSwitchToLogin={() => setAuthModal("login")}
+              />
+            )}
+
+            {authModal === "forgot" && (
+              <ForgotPassword
+                onClose={() => setAuthModal(null)}
+                onSwitchToLogin={() => setAuthModal("login")}
+              />
+            )}
 
           </div>
 

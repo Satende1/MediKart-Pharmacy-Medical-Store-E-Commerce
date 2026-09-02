@@ -11,6 +11,10 @@ jest.mock("./components/Navbar/Navbar", () => () => (
   <div>Navbar</div>
 ));
 
+jest.mock("./components/Footer/Footer", () => () => (
+  <div data-testid="footer">Footer</div>
+));
+
 jest.mock("./ScrollToTop/ScrollToTop", () => () => (
   <div data-testid="scroll-to-top" />
 ));
@@ -280,6 +284,14 @@ describe("MediKart App Routing", () => {
     expect(
       screen.getByText("Navbar")
     ).toBeInTheDocument();
+  });
+
+  test("renders only one footer across the app", () => {
+    renderApp("/");
+
+    expect(
+      screen.getAllByTestId("footer")
+    ).toHaveLength(1);
   });
 
   /* =======================================================

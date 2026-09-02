@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 import { FaHeart } from "react-icons/fa";
 import styles from "./ProductCard.module.css";
 
@@ -36,7 +37,7 @@ const ProductCard = ({ product, showWishlist = true }) => {
 
     window.dispatchEvent(new Event("cartUpdated"));
 
-    alert(`${product.name} added to cart!`);
+    toast.success(`${product.name} added to cart!`);
   };
 
   // Wishlist

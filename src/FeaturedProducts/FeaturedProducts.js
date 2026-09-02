@@ -205,9 +205,6 @@ function FeaturedProducts() {
           </div>
         </div>
       </section>
-
-      {/* Toast Container */}
-      <ToastContainer />
     </>
   );
 }

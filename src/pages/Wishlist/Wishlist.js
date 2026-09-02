@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 
 import WishlistItem from "../../components/WishlistItem/WishlistItem";
 import EmptyState from "../../components/EmptyState/EmptyState";
-import Footer from "../../components/Footer/Footer";
 
 import emptyWishlist from "../../assets/empty-wishlist.png";
 
@@ -79,8 +78,6 @@ const Wishlist = () => {
           buttonText="Continue Shopping"
           buttonLink="/shop"
         />
-
-        <Footer />
       </>
     );
   }
@@ -112,8 +109,6 @@ const Wishlist = () => {
           </Link>
         </div>
       </div>
-
-      <Footer />
     </>
   );
 };

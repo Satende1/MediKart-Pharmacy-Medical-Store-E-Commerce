@@ -4,7 +4,6 @@ import styles from "./Cart.module.css";
 import CartItem from "../../components/CartItem/CartItem";
 import CartSummary from "../../components/CartSummary/CartSummary";
 import EmptyState from "../../components/EmptyState/EmptyState";
-import Footer from "../../components/Footer/Footer";
 
 import emptyCart from "../../assets/empty-cart.png";
 import Address from "../../components/Address/Address";
@@ -118,8 +117,6 @@ const Cart = () => {
           buttonText="Continue Shopping"
           buttonLink="/shop"
         />
-
-        <Footer />
       </>
     );
   }
@@ -162,7 +159,6 @@ const Cart = () => {
         </div>
       </div>
       <Address />
-      <Footer />
     </>
   );
 };

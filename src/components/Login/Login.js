@@ -12,9 +12,15 @@ import {
   FaTimes,
 } from "react-icons/fa";
 
+import image from "../../assets/Login.png";
 import "./Login.css";
 
-const Login = ({ onClose }) => {
+const Login = ({
+  onClose,
+  onLoginSuccess,
+  onSwitchToRegister,
+  onSwitchToForgotPassword,
+}) => {
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
@@ -25,19 +31,41 @@ const Login = ({ onClose }) => {
   /* =====================================================
      CLOSE LOGIN
   ===================================================== */
-
   const handleClose = () => {
     if (typeof onClose === "function") {
       onClose();
-    } else {
-      navigate("/");
+      return;
     }
+
+    if (typeof onLoginSuccess === "function") {
+      onLoginSuccess();
+      return;
+    }
+
+    navigate("/");
+  };
+
+  const handleOpenRegister = () => {
+    if (typeof onSwitchToRegister === "function") {
+      onSwitchToRegister();
+      return;
+    }
+
+    navigate("/register");
+  };
+
+  const handleOpenForgotPassword = () => {
+    if (typeof onSwitchToForgotPassword === "function") {
+      onSwitchToForgotPassword();
+      return;
+    }
+
+    navigate("/forgot-password");
   };
 
   /* =====================================================
      CLOSE WHEN CLICKING OUTSIDE
   ===================================================== */
-
   const handleOverlayClick = (e) => {
     if (e.target === e.currentTarget) {
       handleClose();
@@ -45,107 +73,88 @@ const Login = ({ onClose }) => {
   };
 
   /* =====================================================
+     SAVE LOGIN SESSION
+  ===================================================== */
+  const saveLoginSession = (user) => {
+    localStorage.setItem("isLoggedIn", "true");
+
+    localStorage.setItem(
+      "username",
+      user.name || user.username || user.email
+    );
+
+    localStorage.setItem("user", JSON.stringify(user));
+
+    if (remember) {
+      localStorage.setItem("rememberMe", "true");
+    } else {
+      localStorage.removeItem("rememberMe");
+    }
+
+    // Notify Navbar and other components
+    window.dispatchEvent(new Event("userUpdated"));
+  };
+
+  /* =====================================================
      LOGIN
   ===================================================== */
-
   const handleLogin = (e) => {
     e.preventDefault();
 
-    if (!email.trim() || !password.trim()) {
-      alert("Please enter email and password.");
+    const enteredEmail = email.trim().toLowerCase();
+    const enteredPassword = password;
+
+    /* =================================================
+       VALIDATION
+    ================================================= */
+    if (!enteredEmail || !enteredPassword.trim()) {
+      alert("Please enter email/username and password.");
       return;
     }
 
     let registeredUser = null;
 
+    /* =================================================
+       GET REGISTERED USER
+    ================================================= */
     try {
-      const storedUser =
-        localStorage.getItem("registeredUser");
+      const storedUser = localStorage.getItem("registeredUser");
 
       if (storedUser) {
         registeredUser = JSON.parse(storedUser);
       }
     } catch (error) {
-      console.error(
-        "Error reading registered user:",
-        error
-      );
+      console.error("Error reading registered user:", error);
     }
 
     /* =================================================
        REGISTERED USER LOGIN
     ================================================= */
-
     if (registeredUser) {
-      const enteredEmail =
-        email.trim().toLowerCase();
-
       const registeredEmail =
-        registeredUser.email
-          ?.trim()
-          .toLowerCase();
+        registeredUser.email?.trim().toLowerCase() || "";
 
       const registeredUsername =
-        registeredUser.username
-          ?.trim()
-          .toLowerCase();
+        registeredUser.username?.trim().toLowerCase() || "";
 
-      if (
-        enteredEmail !== registeredEmail &&
-        enteredEmail !== registeredUsername
-      ) {
-        alert(
-          "Email or username is incorrect."
-        );
+      const isEmailOrUsernameCorrect =
+        enteredEmail === registeredEmail ||
+        enteredEmail === registeredUsername;
+
+      if (!isEmailOrUsernameCorrect) {
+        alert("Email or username is incorrect.");
         return;
       }
 
-      if (
-        password !== registeredUser.password
-      ) {
+      if (enteredPassword !== registeredUser.password) {
         alert("Incorrect password.");
         return;
       }
 
       /* LOGIN SUCCESS */
+      saveLoginSession(registeredUser);
 
-      localStorage.setItem(
-        "isLoggedIn",
-        "true"
-      );
-
-      localStorage.setItem(
-        "username",
-        registeredUser.name ||
-        registeredUser.username ||
-        registeredUser.email
-      );
-
-      localStorage.setItem(
-        "user",
-        JSON.stringify(registeredUser)
-      );
-
-      /* REMEMBER ME */
-
-      if (remember) {
-        localStorage.setItem(
-          "rememberMe",
-          "true"
-        );
-      } else {
-        localStorage.removeItem(
-          "rememberMe"
-        );
-      }
-
-      /* UPDATE NAVBAR */
-
-      window.dispatchEvent(
-        new Event("userUpdated")
-      );
-
-      /* CLOSE LOGIN */
+      alert("Login successful!");
 
       handleClose();
 
@@ -155,61 +164,29 @@ const Login = ({ onClose }) => {
     /* =================================================
        DEMO LOGIN
     ================================================= */
-
-    const enteredEmail =
-      email.trim().toLowerCase();
-
     if (
-      enteredEmail ===
-      "admin@medikart.com" &&
-      password === "123456"
+      enteredEmail === "admin@medikart.com" &&
+      enteredPassword === "123456"
     ) {
-      localStorage.setItem(
-        "isLoggedIn",
-        "true"
-      );
+      const demoUser = {
+        name: "Satender",
+        username: "Satender",
+        email: "admin@medikart.com",
+      };
 
-      localStorage.setItem(
-        "username",
-        "Satender"
-      );
+      saveLoginSession(demoUser);
 
-      localStorage.setItem(
-        "user",
-        JSON.stringify({
-          name: "Satender",
-          username: "Satender",
-          email: "admin@medikart.com",
-        })
-      );
-
-      /* REMEMBER ME */
-
-      if (remember) {
-        localStorage.setItem(
-          "rememberMe",
-          "true"
-        );
-      } else {
-        localStorage.removeItem(
-          "rememberMe"
-        );
-      }
-
-      /* UPDATE NAVBAR */
-
-      window.dispatchEvent(
-        new Event("userUpdated")
-      );
-
-      /* CLOSE */
+      alert("Login successful!");
 
       handleClose();
-    } else {
-      alert(
-        "Invalid email/username or password."
-      );
+
+      return;
     }
+
+    /* =================================================
+       INVALID LOGIN
+    ================================================= */
+    alert("Invalid email/username or password.");
   };
 
   return (
@@ -220,17 +197,13 @@ const Login = ({ onClose }) => {
       {/* =================================================
           LOGIN POPUP
       ================================================= */}
-
       <div
         className="login-popup"
-        onMouseDown={(e) =>
-          e.stopPropagation()
-        }
+        onMouseDown={(e) => e.stopPropagation()}
       >
         {/* =================================================
             CLOSE BUTTON
         ================================================= */}
-
         <button
           type="button"
           className="login-close-button"
@@ -244,22 +217,19 @@ const Login = ({ onClose }) => {
         {/* =================================================
             LEFT IMAGE
         ================================================= */}
-
         <div className="auth-image-section">
           <img
-            src="/images/login.png"
+            src={image}
             alt="MEDIKART Login"
             className="auth-image"
           />
 
           <div className="image-overlay">
-            <h1>
-              Welcome to MEDIKART
-            </h1>
+            <h1>Welcome to MEDIKART</h1>
 
             <p>
               Your trusted online healthcare
-              & pharmacy partner.
+              &amp; pharmacy partner.
             </p>
           </div>
         </div>
@@ -267,79 +237,59 @@ const Login = ({ onClose }) => {
         {/* =================================================
             RIGHT FORM
         ================================================= */}
-
         <div className="auth-form-section">
           <div className="auth-form-box">
 
             {/* LOGO */}
-
             <div className="auth-logo">
               <span>MEDI</span>
               <strong>KART</strong>
             </div>
 
             {/* HEADING */}
-
             <h2>Login</h2>
 
             <p className="auth-subtitle">
-              Login to continue shopping with
-              MEDIKART
+              Login to continue shopping with MEDIKART
             </p>
 
             {/* =================================================
                 FORM
             ================================================= */}
-
             <form onSubmit={handleLogin}>
 
-              {/* EMAIL */}
-
+              {/* EMAIL / USERNAME */}
               <div className="input-group">
-                <FaUser
-                  className="input-icon"
-                />
+                <FaUser className="input-icon" />
 
                 <input
                   type="text"
                   placeholder="Email or Username"
                   value={email}
-                  onChange={(e) =>
-                    setEmail(e.target.value)
-                  }
+                  onChange={(e) => setEmail(e.target.value)}
                   autoComplete="username"
+                  aria-label="Email or Username"
                 />
               </div>
 
               {/* PASSWORD */}
-
               <div className="input-group">
-                <FaLock
-                  className="input-icon"
-                />
+                <FaLock className="input-icon" />
 
                 <input
-                  type={
-                    showPassword
-                      ? "text"
-                      : "password"
-                  }
+                  type={showPassword ? "text" : "password"}
                   placeholder="Password"
                   value={password}
-                  onChange={(e) =>
-                    setPassword(e.target.value)
-                  }
+                  onChange={(e) => setPassword(e.target.value)}
                   autoComplete="current-password"
+                  aria-label="Password"
                 />
 
                 <button
                   type="button"
                   className="password-eye"
                   onClick={() =>
-                    setShowPassword(
-                      (previous) =>
-                        !previous
-                    )
+                    setShowPassword((previous) => !previous)
                   }
                   aria-label={
                     showPassword
@@ -352,18 +302,13 @@ const Login = ({ onClose }) => {
                       : "Show password"
                   }
                 >
-                  {showPassword ? (
-                    <FaEyeSlash />
-                  ) : (
-                    <FaEye />
-                  )}
+                  {showPassword ? <FaEyeSlash /> : <FaEye />}
                 </button>
               </div>
 
               {/* =================================================
                   OPTIONS
               ================================================= */}
-
               <div className="login-options">
 
                 <label>
@@ -371,38 +316,34 @@ const Login = ({ onClose }) => {
                     type="checkbox"
                     checked={remember}
                     onChange={(e) =>
-                      setRemember(
-                        e.target.checked
-                      )
+                      setRemember(e.target.checked)
                     }
                   />
 
-                  <span>
-                    Remember me
-                  </span>
+                  <span>Remember me</span>
                 </label>
 
-                <Link to="/forgot-password">
+                <button
+                  type="button"
+                  className="forgot-password-link"
+                  onClick={handleOpenForgotPassword}
+                >
                   Forgot Password?
-                </Link>
-
+                </button>
               </div>
 
               {/* LOGIN BUTTON */}
-
               <button
                 type="submit"
                 className="auth-button"
               >
                 Login
               </button>
-
             </form>
 
             {/* =================================================
                 OR
             ================================================= */}
-
             <div className="or-divider">
               <span>OR</span>
             </div>
@@ -410,7 +351,6 @@ const Login = ({ onClose }) => {
             {/* =================================================
                 SOCIAL LOGIN
             ================================================= */}
-
             <div className="social-login">
 
               <button
@@ -442,18 +382,19 @@ const Login = ({ onClose }) => {
             {/* =================================================
                 REGISTER
             ================================================= */}
-
             <p className="switch-auth">
-              Don't have an account?
-
-              <Link to="/register">
+              Don't have an account?{" "}
+              <button
+                type="button"
+                className="register-link-button"
+                onClick={handleOpenRegister}
+              >
                 Create Account
-              </Link>
+              </button>
             </p>
 
           </div>
         </div>
-
       </div>
     </div>
   );

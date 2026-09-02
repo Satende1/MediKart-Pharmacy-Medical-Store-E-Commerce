@@ -3,6 +3,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import Navbar from "./components/Navbar/Navbar";
+import Footer from "./components/Footer/Footer";
 import ScrollToTop from "./ScrollToTop/ScrollToTop";
 
 // Pages
@@ -23,13 +24,14 @@ import ProductDetails from "./pages/ProductDetails/ProductDetails";
 import Wishlist from "./pages/Wishlist/Wishlist";
 import Cart from "./pages/Cart/Cart";
 import OrderConfirmation from "./pages/OrderConfirmation/OrderConfirmation";
-
+import OrderDetails from "./pages/Orders/OrderDetails";
 import OrderHistory from "./pages/OrderHistory/OrderHistory";
 import QuantitySelector from "./components/QuantitySelector/QuantitySelector";
 import RelatedProducts from "./components/RelatedProducts/RelatedProducts";
 import ProductSpecifications from "./components/ProductSpecifications/ProductSpecifications";
 
 import Checkout from "./pages/Checkout/Checkout";
+
 import PrivacyPolicy from "./pages/PrivacyPolicy/PrivacyPolicy";
 import TermsConditions from "./pages/TermsConditions/TermsConditions";
 import ShippingPolicy from "./pages/ShippingPolicy/ShippingPolicy";
@@ -42,6 +44,7 @@ import CompareProducts from "./pages/CompareProducts/CompareProducts";
 import Gallery from "./pages/Gallery/Gallery";
 import FAQ from "./pages/FAQ/FAQ";
 import Feedback from "./components/Feedback/Feedback";
+
 import Error404 from "./pages/Error404/Error404";
 import Error500 from "./pages/Error500/Error500";
 import NoInternet from "./pages/NoInternet/NoInternet";
@@ -63,7 +66,7 @@ import Settings from "./pages/Settings/Settings";
 function Layout() {
   const location = useLocation();
 
-  // Hide Navbar on Login, Register and Forgot Password pages
+  // Hide Navbar on authentication pages
   const hideNavbar =
     location.pathname === "/login" ||
     location.pathname === "/register" ||
@@ -76,93 +79,340 @@ function Layout() {
       {!hideNavbar && <Navbar />}
 
       <Routes>
-        {/* Shop by Category - Dynamic Routes */}
-        <Route path="/shop" element={<Shop />} />
-        <Route path="/shop/:category" element={<Shop />} />
 
-        {/* Home */}
+        {/* =====================================================
+            HOME
+        ===================================================== */}
+
         <Route path="/" element={<Home />} />
 
-        {/* Authentication */}
+        {/* =====================================================
+            AUTHENTICATION
+        ===================================================== */}
+
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/feedback" element={<Feedback />} />
 
-        {/* Main Pages */}
+        {/* =====================================================
+            MAIN PAGES
+        ===================================================== */}
+
         <Route path="/about" element={<About />} />
         <Route path="/categories" element={<Categories />} />
         <Route path="/contact" element={<Contact />} />
 
-        {/* Product Listing */}
-        <Route path="/products" element={<ProductListingPage />} />
-        <Route path="/product-listing" element={<ProductListing />} />
+        {/* =====================================================
+            SHOP
+        ===================================================== */}
 
-        {/* Product Details */}
-        <Route path="/product/:id" element={<ProductDetails />} />
+        <Route path="/shop" element={<Shop />} />
+        <Route path="/shop/:category" element={<Shop />} />
 
+        {/* =====================================================
+            PRODUCT LISTING
+        ===================================================== */}
 
-        {/* Wishlist */}
-        <Route path="/wishlist" element={<Wishlist />} />
+        <Route
+          path="/products"
+          element={<ProductListingPage />}
+        />
 
-        {/* Cart */}
-        <Route path="/cart" element={<Cart />} />
-        <Route path="/checkout" element={<Checkout />} />
-        <Route path="/order-confirmation" element={<OrderConfirmation />} />
+        <Route
+          path="/product-listing"
+          element={<ProductListing />}
+        />
 
-        {/* Demo Components */}
-        <Route path="/quantity-selector" element={<QuantitySelector quantity={1} setQuantity={() => { }} />} />
+        {/* =====================================================
+            PRODUCT DETAILS
 
-        <Route path="/related-products" element={<RelatedProducts />} />
+            Example:
+            /product/123
+            /product/2001
+            /product/1101
+        ===================================================== */}
 
-        <Route path="/product-specifications" element={<ProductSpecifications product={[0]} />} />
+        <Route
+          path="/product/:id"
+          element={<ProductDetails />}
+        />
 
+        {/* =====================================================
+            CHECKOUT
 
-        {/* Policies and Information Pages */}
-        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-        <Route path="/terms-conditions" element={<TermsConditions />} />
-        <Route path="/shipping-policy" element={<ShippingPolicy />} />
-        <Route path="/careers" element={<Careers />} />
-        <Route path="/blog" element={<Blog />} />
-        <Route path="/order-history" element={<OrderHistory />} />
-        <Route path="/track-order" element={<TrackOrder />} />
-        <Route path="/track-order/:orderId" element={<TrackOrder />} />
-        <Route path="/orders/:orderId" element={<TrackOrder />} />
-        <Route path="/reviews" element={<Reviews />} />
-        <Route path="/compare-products" element={<CompareProducts />} />
-        <Route path="/gallery" element={<Gallery />} />
-        <Route path="/faq" element={<FAQ />} />
+            CART CHECKOUT:
+            /checkout
 
-        {/* Account and Dashboard */}
-        <Route path="/account" element={<Account />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/orders" element={<Orders />} />
-        <Route path="/payments" element={<Payments />} />
-        <Route path="/addresses" element={<Addresses />} />
-        <Route path="/upload-prescription" element={<UploadPrescription />} />
-        <Route path="/health-records" element={<HealthRecords />} />
-        <Route path="/offers" element={<Offers />} />
-        <Route path="/notifications" element={<Notifications />} />
-        <Route path="/settings" element={<Settings />} />
+            BUY NOW CHECKOUT:
+            /checkout/123
+            /checkout/2001
+            /checkout/1101
 
-        {/* Status / Error Pages */}
-        <Route path="/500" element={<Error500 />} />
-        <Route path="/no-internet" element={<NoInternet />} />
-        <Route path="/access-denied" element={<AccessDenied />} />
-        <Route path="/maintenance" element={<Maintenance />} />
-        <Route path="/empty" element={<EmptyState />} />
+            :id is the PRODUCT ID
+        ===================================================== */}
 
-        {/* Keep 404 LAST */}
-        <Route path="*" element={<Error404 />} />
+        <Route
+          path="/checkout"
+          element={<Checkout />}
+        />
+
+        <Route
+          path="/checkout/:id"
+          element={<Checkout />}
+        />
+
+        {/* =====================================================
+            WISHLIST
+        ===================================================== */}
+
+        <Route
+          path="/wishlist"
+          element={<Wishlist />}
+        />
+
+        {/* =====================================================
+            CART
+        ===================================================== */}
+
+        <Route
+          path="/cart"
+          element={<Cart />}
+        />
+
+        {/* =====================================================
+            ORDER CONFIRMATION
+        ===================================================== */}
+
+        <Route
+          path="/order-confirmation"
+          element={<OrderConfirmation />}
+        />
+
+        {/* =====================================================
+            DEMO COMPONENTS
+        ===================================================== */}
+
+        <Route
+          path="/quantity-selector"
+          element={
+            <QuantitySelector
+              quantity={1}
+              setQuantity={() => { }}
+            />
+          }
+        />
+
+        <Route
+          path="/related-products"
+          element={<RelatedProducts />}
+        />
+
+        {/* Single Order */}
+        <Route
+          path="/orders/:id"
+          element={<OrderDetails />}
+        />
+
+        <Route
+          path="/product-specifications"
+          element={
+            <ProductSpecifications product={[0]} />
+          }
+        />
+
+        {/* =====================================================
+            POLICIES / INFORMATION
+        ===================================================== */}
+
+        <Route
+          path="/privacy-policy"
+          element={<PrivacyPolicy />}
+        />
+
+        <Route
+          path="/terms-conditions"
+          element={<TermsConditions />}
+        />
+
+        <Route
+          path="/shipping-policy"
+          element={<ShippingPolicy />}
+        />
+
+        <Route
+          path="/careers"
+          element={<Careers />}
+        />
+
+        <Route
+          path="/blog"
+          element={<Blog />}
+        />
+
+        {/* =====================================================
+            ORDERS
+        ===================================================== */}
+
+        <Route
+          path="/order-history"
+          element={<OrderHistory />}
+        />
+
+        <Route
+          path="/orders"
+          element={<Orders />}
+        />
+
+        <Route
+          path="/orders/:orderId"
+          element={<TrackOrder />}
+        />
+
+        {/* =====================================================
+            TRACK ORDER
+        ===================================================== */}
+
+        <Route
+          path="/track-order"
+          element={<TrackOrder />}
+        />
+
+        <Route
+          path="/track-order/:orderId"
+          element={<TrackOrder />}
+        />
+
+        {/* =====================================================
+            OTHER PAGES
+        ===================================================== */}
+
+        <Route
+          path="/reviews"
+          element={<Reviews />}
+        />
+
+        <Route
+          path="/compare-products"
+          element={<CompareProducts />}
+        />
+
+        <Route
+          path="/gallery"
+          element={<Gallery />}
+        />
+
+        <Route
+          path="/faq"
+          element={<FAQ />}
+        />
+
+        {/* =====================================================
+            ACCOUNT
+        ===================================================== */}
+
+        <Route
+          path="/account"
+          element={<Account />}
+        />
+
+        <Route
+          path="/profile"
+          element={<Profile />}
+        />
+
+        <Route
+          path="/payments"
+          element={<Payments />}
+        />
+
+        <Route
+          path="/addresses"
+          element={<Addresses />}
+        />
+
+        <Route
+          path="/upload-prescription"
+          element={<UploadPrescription />}
+        />
+
+        <Route
+          path="/health-records"
+          element={<HealthRecords />}
+        />
+
+        <Route
+          path="/offers"
+          element={<Offers />}
+        />
+
+        <Route
+          path="/notifications"
+          element={<Notifications />}
+        />
+
+        <Route
+          path="/settings"
+          element={<Settings />}
+        />
+
+        {/* =====================================================
+            STATUS / ERROR PAGES
+        ===================================================== */}
+
+        <Route
+          path="/500"
+          element={<Error500 />}
+        />
+
+        <Route
+          path="/no-internet"
+          element={<NoInternet />}
+        />
+
+        <Route
+          path="/access-denied"
+          element={<AccessDenied />}
+        />
+
+        <Route
+          path="/maintenance"
+          element={<Maintenance />}
+        />
+
+        <Route
+          path="/empty"
+          element={<EmptyState />}
+        />
+
+        {/* =====================================================
+            404 - MUST BE LAST
+        ===================================================== */}
+
+        <Route
+          path="*"
+          element={<Error404 />}
+        />
+
       </Routes>
 
-      <ToastContainer position="top-right" autoClose={2000} theme="colored" />
+      <Footer />
+
+      <ToastContainer
+        position="top-right"
+        autoClose={2000}
+        theme="colored"
+      />
     </>
   );
 }
 
 function App() {
-  return (<BrowserRouter> <Layout /> </BrowserRouter>);
+  return (
+    <BrowserRouter>
+      <Layout />
+    </BrowserRouter>
+  );
 }
 
 export default App;

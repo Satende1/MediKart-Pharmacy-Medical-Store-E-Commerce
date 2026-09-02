@@ -1,5 +1,11 @@
 import React from "react";
 import "./Blog.css";
+import image1 from "../../assets/blog1.jpg";
+import image2 from "../../assets/blog2.jpg";
+import image3 from "../../assets/blog3.jpg";
+import image4 from "../../assets/blog4.jpg";
+import image5 from "../../assets/blog5.jpg";
+import image6 from "../../assets/blog6.jpg";
 
 const blogs = [
   {
@@ -7,7 +13,7 @@ const blogs = [
     title: "10 Tips to Boost Your Immunity Naturally",
     category: "Health Tips",
     date: "August 2, 2026",
-    image: "https://via.placeholder.com/400x250",
+    image: image1,
     description:
       "Discover simple daily habits and foods that can strengthen your immune system naturally.",
   },
@@ -16,7 +22,7 @@ const blogs = [
     title: "How to Store Medicines Safely at Home",
     category: "Medicines",
     date: "July 28, 2026",
-    image: "https://via.placeholder.com/400x250",
+    image: image2,
     description:
       "Learn the best practices for storing medicines to maintain their effectiveness and safety.",
   },
@@ -25,7 +31,7 @@ const blogs = [
     title: "Choosing the Right Vitamins for Your Body",
     category: "Vitamins",
     date: "July 20, 2026",
-    image: "https://via.placeholder.com/400x250",
+    image: image3,
     description:
       "A beginner's guide to selecting the right vitamins and supplements based on your health needs.",
   },
@@ -34,7 +40,7 @@ const blogs = [
     title: "Benefits of Regular Health Checkups",
     category: "Healthcare",
     date: "July 15, 2026",
-    image: "https://via.placeholder.com/400x250",
+    image: image4,
     description:
       "Understand why routine health checkups are essential for preventing diseases and maintaining wellness.",
   },
@@ -43,7 +49,7 @@ const blogs = [
     title: "Hair Care Tips for Healthy Hair",
     category: "Hair Care",
     date: "July 10, 2026",
-    image: "https://via.placeholder.com/400x250",
+    image: image5,
     description:
       "Easy hair care routines and products that keep your hair healthy, shiny, and strong.",
   },
@@ -52,7 +58,7 @@ const blogs = [
     title: "Eye Care in the Digital Age",
     category: "Eye Care",
     date: "July 5, 2026",
-    image: "https://via.placeholder.com/400x250",
+    image: image6,
     description:
       "Protect your eyes from digital strain with these practical eye care tips.",
   },
@@ -102,7 +108,6 @@ function Blog() {
         ))}
 
       </div>
-
     </div>
   );
 }

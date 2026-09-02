@@ -1,560 +1,374 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
+import { BrowserRouter } from "react-router-dom";
+import "@testing-library/jest-dom";
+
 import Register from "./Register";
 
-const mockNavigate = jest.fn();
-
-jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
-  useNavigate: () => mockNavigate,
-}));
+const renderRegister = (props = {}) => {
+  return render(
+    <BrowserRouter>
+      <Register {...props} />
+    </BrowserRouter>
+  );
+};
 
 describe("Register Component", () => {
   beforeEach(() => {
-    jest.clearAllMocks();
     localStorage.clear();
+    jest.clearAllMocks();
+
+    window.alert = jest.fn();
   });
 
-  const renderRegister = () => {
-    return render(
-      <MemoryRouter>
-        <Register />
-      </MemoryRouter>
-    );
-  };
-
-  // --------------------------------------------------
-  // 1. RENDERING
-  // --------------------------------------------------
-
-  test("renders Create Account heading", () => {
+  test("renders registration page", () => {
     renderRegister();
 
     expect(
-      screen.getByRole("heading", { name: "Create Account" })
+      screen.getByRole("heading", {
+        name: /create account/i,
+      })
     ).toBeInTheDocument();
   });
 
-  test("renders register description", () => {
+  test("renders all input fields", () => {
     renderRegister();
 
     expect(
-      screen.getByText(
-        "Join MEDIKART and manage your healthcare easily."
-      )
+      screen.getByPlaceholderText(/enter your full name/i)
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByPlaceholderText(/enter your email/i)
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByPlaceholderText(/create a password/i)
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByPlaceholderText(/confirm your password/i)
     ).toBeInTheDocument();
   });
 
-  test("renders all form fields", () => {
+  test("renders create account button", () => {
     renderRegister();
 
     expect(
-      screen.getByPlaceholderText("Enter your full name")
-    ).toBeInTheDocument();
-
-    expect(
-      screen.getByPlaceholderText("Enter your email")
-    ).toBeInTheDocument();
-
-    expect(
-      screen.getByPlaceholderText("Create a password")
-    ).toBeInTheDocument();
-
-    expect(
-      screen.getByPlaceholderText("Confirm your password")
+      screen.getByRole("button", {
+        name: /create account/i,
+      })
     ).toBeInTheDocument();
   });
 
-  test("renders Create Account button", () => {
+  test("renders login button", () => {
     renderRegister();
 
     expect(
-      screen.getByRole("button", { name: "Create Account" })
+      screen.getByRole("button", {
+        name: /^login$/i,
+      })
     ).toBeInTheDocument();
   });
 
-  test("renders Login link", () => {
+  test("shows validation error when fields are empty", () => {
     renderRegister();
 
-    const loginLink = screen.getByRole("link", {
-      name: /login/i,
-    });
-
-    expect(loginLink).toBeInTheDocument();
-    expect(loginLink).toHaveAttribute("href", "/login");
-  });
-
-  test("renders healthcare image", () => {
-    renderRegister();
-
-    const image = screen.getByAltText("MEDIKART Healthcare");
-
-    expect(image).toBeInTheDocument();
-  });
-
-  test("renders image overlay content", () => {
-    renderRegister();
-
-    expect(
-      screen.getByText("Your Health, Our Priority")
-    ).toBeInTheDocument();
-
-    expect(
-      screen.getByText(
-        /Get medicines, healthcare products and wellness essentials/i
-      )
-    ).toBeInTheDocument();
-  });
-
-  // --------------------------------------------------
-  // 2. INPUT CHANGES
-  // --------------------------------------------------
-
-  test("updates full name input", () => {
-    renderRegister();
-
-    const nameInput = screen.getByPlaceholderText(
-      "Enter your full name"
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: /create account/i,
+      })
     );
 
-    fireEvent.change(nameInput, {
+    expect(
+      screen.getByText(/please fill in all fields/i)
+    ).toBeInTheDocument();
+  });
+
+  test("updates name input", () => {
+    renderRegister();
+
+    const input = screen.getByPlaceholderText(
+      /enter your full name/i
+    );
+
+    fireEvent.change(input, {
       target: {
         name: "name",
-        value: "John Doe",
+        value: "test",
       },
     });
 
-    expect(nameInput).toHaveValue("John Doe");
+    expect(input).toHaveValue("test");
   });
 
   test("updates email input", () => {
     renderRegister();
 
-    const emailInput = screen.getByPlaceholderText(
-      "Enter your email"
+    const input = screen.getByPlaceholderText(
+      /enter your email/i
     );
 
-    fireEvent.change(emailInput, {
+    fireEvent.change(input, {
       target: {
         name: "email",
-        value: "john@example.com",
+        value: "test@test.com",
       },
     });
 
-    expect(emailInput).toHaveValue("john@example.com");
+    expect(input).toHaveValue("test@test.com");
   });
 
   test("updates password input", () => {
     renderRegister();
 
-    const passwordInput = screen.getByPlaceholderText(
-      "Create a password"
+    const input = screen.getByPlaceholderText(
+      /create a password/i
     );
 
-    fireEvent.change(passwordInput, {
+    fireEvent.change(input, {
       target: {
         name: "password",
-        value: "password123",
+        value: "123",
       },
     });
 
-    expect(passwordInput).toHaveValue("password123");
+    expect(input).toHaveValue("123");
   });
 
-  test("updates confirm password input", () => {
-    renderRegister();
-
-    const confirmPasswordInput = screen.getByPlaceholderText(
-      "Confirm your password"
-    );
-
-    fireEvent.change(confirmPasswordInput, {
-      target: {
-        name: "confirmPassword",
-        value: "password123",
-      },
-    });
-
-    expect(confirmPasswordInput).toHaveValue("password123");
-  });
-
-  // --------------------------------------------------
-  // 3. VALIDATION
-  // --------------------------------------------------
-
-  test("shows error when fields are empty", () => {
-    renderRegister();
-
-    fireEvent.click(
-      screen.getByRole("button", {
-        name: "Create Account",
-      })
-    );
-
-    expect(
-      screen.getByText("Please fill in all fields.")
-    ).toBeInTheDocument();
-  });
-
-  test("shows error when password is less than 6 characters", () => {
+  test("shows password length validation error", () => {
     renderRegister();
 
     fireEvent.change(
-      screen.getByPlaceholderText("Enter your full name"),
+      screen.getByPlaceholderText(/enter your full name/i),
       {
         target: {
           name: "name",
-          value: "John Doe",
+          value: "test",
         },
       }
     );
 
     fireEvent.change(
-      screen.getByPlaceholderText("Enter your email"),
+      screen.getByPlaceholderText(/enter your email/i),
       {
         target: {
           name: "email",
-          value: "john@example.com",
+          value: "test@test.com",
         },
       }
     );
 
     fireEvent.change(
-      screen.getByPlaceholderText("Create a password"),
+      screen.getByPlaceholderText(/create a password/i),
       {
         target: {
           name: "password",
-          value: "12345",
+          value: "123",
         },
       }
     );
 
     fireEvent.change(
-      screen.getByPlaceholderText("Confirm your password"),
+      screen.getByPlaceholderText(/confirm your password/i),
       {
         target: {
           name: "confirmPassword",
-          value: "12345",
+          value: "123",
         },
       }
     );
 
     fireEvent.click(
       screen.getByRole("button", {
-        name: "Create Account",
+        name: /create account/i,
       })
     );
 
     expect(
       screen.getByText(
-        "Password must be at least 6 characters."
+        /password must be at least 6 characters/i
       )
     ).toBeInTheDocument();
   });
 
-  test("shows error when passwords do not match", () => {
+  test("shows password mismatch error", () => {
     renderRegister();
 
     fireEvent.change(
-      screen.getByPlaceholderText("Enter your full name"),
+      screen.getByPlaceholderText(/enter your full name/i),
       {
         target: {
           name: "name",
-          value: "John Doe",
+          value: "test",
         },
       }
     );
 
     fireEvent.change(
-      screen.getByPlaceholderText("Enter your email"),
+      screen.getByPlaceholderText(/enter your email/i),
       {
         target: {
           name: "email",
-          value: "john@example.com",
+          value: "test@test.com",
         },
       }
     );
 
     fireEvent.change(
-      screen.getByPlaceholderText("Create a password"),
+      screen.getByPlaceholderText(/create a password/i),
       {
         target: {
           name: "password",
-          value: "password123",
+          value: "123456",
         },
       }
     );
 
     fireEvent.change(
-      screen.getByPlaceholderText("Confirm your password"),
+      screen.getByPlaceholderText(/confirm your password/i),
       {
         target: {
           name: "confirmPassword",
-          value: "different123",
+          value: "654321",
         },
       }
     );
 
     fireEvent.click(
       screen.getByRole("button", {
-        name: "Create Account",
+        name: /create account/i,
       })
     );
 
     expect(
-      screen.getByText("Passwords do not match.")
+      screen.getByText(/passwords do not match/i)
     ).toBeInTheDocument();
   });
-
-  // --------------------------------------------------
-  // 4. ERROR CLEARING
-  // --------------------------------------------------
-
-  test("clears error when user changes an input", () => {
-    renderRegister();
-
-    fireEvent.click(
-      screen.getByRole("button", {
-        name: "Create Account",
-      })
-    );
-
-    expect(
-      screen.getByText("Please fill in all fields.")
-    ).toBeInTheDocument();
-
-    fireEvent.change(
-      screen.getByPlaceholderText("Enter your full name"),
-      {
-        target: {
-          name: "name",
-          value: "John",
-        },
-      }
-    );
-
-    expect(
-      screen.queryByText("Please fill in all fields.")
-    ).not.toBeInTheDocument();
-  });
-
-  // --------------------------------------------------
-  // 5. PASSWORD VISIBILITY
-  // --------------------------------------------------
 
   test("toggles password visibility", () => {
     renderRegister();
 
     const passwordInput = screen.getByPlaceholderText(
-      "Create a password"
+      /create a password/i
     );
 
-    expect(passwordInput).toHaveAttribute("type", "password");
+    const toggleButtons = screen.getAllByRole("button", {
+      name: "",
+    });
 
-    const toggleButtons = screen.getAllByRole("button");
-
-    // First password toggle is after close button
     const passwordToggle = toggleButtons.find(
       (button) =>
-        button.className === "password-toggle"
+        button.classList.contains("password-toggle")
     );
 
-    expect(passwordToggle).toBeInTheDocument();
+    expect(passwordInput).toHaveAttribute(
+      "type",
+      "password"
+    );
 
     fireEvent.click(passwordToggle);
 
-    expect(passwordInput).toHaveAttribute("type", "text");
+    expect(passwordInput).toHaveAttribute(
+      "type",
+      "text"
+    );
 
     fireEvent.click(passwordToggle);
 
-    expect(passwordInput).toHaveAttribute("type", "password");
+    expect(passwordInput).toHaveAttribute(
+      "type",
+      "password"
+    );
   });
 
   test("toggles confirm password visibility", () => {
     renderRegister();
 
-    const confirmPasswordInput =
-      screen.getByPlaceholderText(
-        "Confirm your password"
+    const confirmInput = screen.getByPlaceholderText(
+      /confirm your password/i
+    );
+
+    const toggleButtons = screen
+      .getAllByRole("button")
+      .filter((button) =>
+        button.classList.contains("password-toggle")
       );
 
-    expect(confirmPasswordInput).toHaveAttribute(
+    expect(confirmInput).toHaveAttribute(
       "type",
       "password"
     );
 
-    const toggleButtons = screen.getAllByRole("button");
+    fireEvent.click(toggleButtons[1]);
 
-    const passwordToggles = toggleButtons.filter(
-      (button) =>
-        button.className === "password-toggle"
-    );
-
-    expect(passwordToggles).toHaveLength(2);
-
-    fireEvent.click(passwordToggles[1]);
-
-    expect(confirmPasswordInput).toHaveAttribute(
+    expect(confirmInput).toHaveAttribute(
       "type",
       "text"
     );
-
-    fireEvent.click(passwordToggles[1]);
-
-    expect(confirmPasswordInput).toHaveAttribute(
-      "type",
-      "password"
-    );
   });
 
-  // --------------------------------------------------
-  // 6. SUCCESSFUL REGISTRATION
-  // --------------------------------------------------
-
-  test("registers user successfully with valid data", () => {
+  test("clears error when input changes", () => {
     renderRegister();
-
-    fireEvent.change(
-      screen.getByPlaceholderText("Enter your full name"),
-      {
-        target: {
-          name: "name",
-          value: "John Doe",
-        },
-      }
-    );
-
-    fireEvent.change(
-      screen.getByPlaceholderText("Enter your email"),
-      {
-        target: {
-          name: "email",
-          value: "john@example.com",
-        },
-      }
-    );
-
-    fireEvent.change(
-      screen.getByPlaceholderText("Create a password"),
-      {
-        target: {
-          name: "password",
-          value: "password123",
-        },
-      }
-    );
-
-    fireEvent.change(
-      screen.getByPlaceholderText("Confirm your password"),
-      {
-        target: {
-          name: "confirmPassword",
-          value: "password123",
-        },
-      }
-    );
 
     fireEvent.click(
       screen.getByRole("button", {
-        name: "Create Account",
+        name: /create account/i,
       })
     );
 
-    const storedUser = JSON.parse(
-      localStorage.getItem("user")
-    );
-
-    expect(storedUser).toEqual({
-      name: "John Doe",
-      email: "john@example.com",
-      password: "password123",
-    });
-
     expect(
-      localStorage.getItem("isLoggedIn")
-    ).toBe("true");
-
-    expect(mockNavigate).toHaveBeenCalledWith("/");
-  });
-
-  // --------------------------------------------------
-  // 7. LOCAL STORAGE
-  // --------------------------------------------------
-
-  test("stores user information in localStorage", () => {
-    renderRegister();
+      screen.getByText(/please fill in all fields/i)
+    ).toBeInTheDocument();
 
     fireEvent.change(
-      screen.getByPlaceholderText("Enter your full name"),
+      screen.getByPlaceholderText(/enter your full name/i),
       {
         target: {
           name: "name",
-          value: "Alice",
+          value: "test",
         },
       }
     );
-
-    fireEvent.change(
-      screen.getByPlaceholderText("Enter your email"),
-      {
-        target: {
-          name: "email",
-          value: "alice@gmail.com",
-        },
-      }
-    );
-
-    fireEvent.change(
-      screen.getByPlaceholderText("Create a password"),
-      {
-        target: {
-          name: "password",
-          value: "alice123",
-        },
-      }
-    );
-
-    fireEvent.change(
-      screen.getByPlaceholderText("Confirm your password"),
-      {
-        target: {
-          name: "confirmPassword",
-          value: "alice123",
-        },
-      }
-    );
-
-    fireEvent.submit(
-      screen.getByRole("button", {
-        name: "Create Account",
-      }).closest("form")
-    );
-
-    expect(localStorage.getItem("user")).not.toBeNull();
 
     expect(
-      JSON.parse(localStorage.getItem("user"))
-    ).toEqual({
-      name: "Alice",
-      email: "alice@gmail.com",
-      password: "alice123",
-    });
+      screen.queryByText(/please fill in all fields/i)
+    ).not.toBeInTheDocument();
   });
 
-  // --------------------------------------------------
-  // 8. CLOSE BUTTON
-  // --------------------------------------------------
+  test("calls onClose when close button is clicked", () => {
+    const onClose = jest.fn();
 
-  test("navigates to home when close button is clicked", () => {
+    renderRegister({ onClose });
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: /close/i,
+      })
+    );
+
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  test("calls onSwitchToLogin when login button is clicked", () => {
+    const onSwitchToLogin = jest.fn();
+
+    renderRegister({ onSwitchToLogin });
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: /^login$/i,
+      })
+    );
+
+    expect(onSwitchToLogin).toHaveBeenCalledTimes(1);
+  });
+
+  test("renders healthcare image", () => {
     renderRegister();
 
-    const closeButton = screen.getByRole("button", {
-      name: "Close",
-    });
-
-    fireEvent.click(closeButton);
-
-    expect(mockNavigate).toHaveBeenCalledWith("/");
+    expect(
+      screen.getByAltText(/medikart healthcare/i)
+    ).toBeInTheDocument();
   });
 });

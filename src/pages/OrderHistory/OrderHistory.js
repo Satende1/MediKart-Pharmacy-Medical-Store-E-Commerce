@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { FaBox, FaCalendarAlt, FaCheckCircle, FaTruck } from "react-icons/fa";
 import "./OrderHistory.css";
-import Footer from "../../components/Footer/Footer";
 
 const OrderHistory = () => {
     const [orders, setOrders] = useState([]);
@@ -341,7 +340,6 @@ const OrderHistory = () => {
                 )}
 
             </div>
-            <Footer/>
         </div>
     );
 };
