@@ -82,8 +82,6 @@ const Addresses = () => {
                 ))
             )}
         </div>
-
-
     );
 };
 

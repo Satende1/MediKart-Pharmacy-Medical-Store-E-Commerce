@@ -113,30 +113,266 @@
   }
 }
 
-/* Mobile */
-@media (max-width: 768px) {
+/* =========================================
+   MOBILE FOOTER ONLY
+   Screen: 600px and below
+========================================= */
+
+@media (max-width: 600px) {
+
   .footer {
-    padding: 40px 0 20px;
+    width: 100%;
+    margin-top: 25px;
+    overflow: hidden;
   }
 
   .footer-container {
-    grid-template-columns: 1fr;
-    text-align: center;
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+
+    padding: 30px 18px 20px;
+
+    gap: 0;
+
+    box-sizing: border-box;
+  }
+
+  /* ===============================
+     BRAND
+  =============================== */
+
+  .footer-section:first-child {
+    width: 100%;
+
+    padding-bottom: 25px;
+    margin-bottom: 5px;
+
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
   }
 
   .footer-logo {
-    font-size: 30px;
+    font-size: 25px;
+    margin-bottom: 12px;
+  }
+
+  .footer-section:first-child p {
+    font-size: 13px;
+
+    line-height: 1.7;
+
+    margin: 0;
+  }
+
+  /* ===============================
+     SOCIAL ICONS
+  =============================== */
+
+  .social-icons {
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    margin-top: 17px;
+  }
+
+  .social-icons a {
+    width: 36px;
+    height: 36px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    font-size: 14px;
+  }
+
+
+  /* ===============================
+     FOOTER SECTIONS
+  =============================== */
+
+  .footer-section {
+    width: 100%;
+
+    padding: 20px 0;
+
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+
+    box-sizing: border-box;
+  }
+
+  .footer-section:last-child {
+    border-bottom: none;
+  }
+
+
+  /* ===============================
+     HEADINGS
+  =============================== */
+
+  .footer-section h3 {
+    margin: 0 0 14px;
+
+    font-size: 16px;
+
+    font-weight: 700;
+  }
+
+
+  /* ===============================
+     LINKS
+  =============================== */
+
+  .footer-section ul {
+    padding: 0;
+    margin: 0;
+
+    list-style: none;
+  }
+
+  .footer-section ul li {
+    margin-bottom: 10px;
+  }
+
+  .footer-section ul li:last-child {
+    margin-bottom: 0;
+  }
+
+  .footer-section ul li a {
+    display: block;
+
+    font-size: 13px;
+
+    padding: 2px 0;
+
+    text-decoration: none;
+  }
+
+
+  /* ===============================
+     CONTACT
+  =============================== */
+
+  .footer-section>p {
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 9px;
+
+    margin: 0 0 12px;
+
+    font-size: 13px;
+
+    line-height: 1.6;
+  }
+
+  .footer-section>p:last-child {
+    margin-bottom: 0;
+  }
+
+  .footer-section .icon {
+    flex-shrink: 0;
+
+    font-size: 14px;
+
+    margin-top: 4px;
+  }
+
+
+  /* ===============================
+     COPYRIGHT
+  =============================== */
+
+  .footer-bottom {
+    width: 100%;
+
+    padding: 15px 12px;
+
+    box-sizing: border-box;
+
+    text-align: center;
+  }
+
+  .footer-bottom p {
+    margin: 0;
+
+    font-size: 11px;
+
+    line-height: 1.6;
+  }
+
+}
+
+
+/* =========================================
+   SMALL PHONES
+   400px and below
+========================================= */
+
+@media (max-width: 400px) {
+
+  .footer-container {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+
+  .footer-logo {
+    font-size: 23px;
   }
 
   .footer-section h3 {
-    margin-top: 15px;
+    font-size: 15px;
   }
 
-  .social-icons {
-    justify-content: center;
+  .footer-section p,
+  .footer-section ul li a {
+    font-size: 12px;
   }
 
-  .footer-section ul li a:hover {
-    padding-left: 0;
+  .social-icons a {
+    width: 34px;
+    height: 34px;
+
+    font-size: 13px;
   }
+
+}
+
+
+/* =========================================
+   VERY SMALL PHONES
+   350px and below
+========================================= */
+
+@media (max-width: 350px) {
+
+  .footer-container {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .footer-logo {
+    font-size: 21px;
+  }
+
+  .footer-section h3 {
+    font-size: 14px;
+  }
+
+  .footer-section p,
+  .footer-section ul li a {
+    font-size: 11px;
+  }
+
+  .footer-bottom p {
+    font-size: 10px;
+  }
+
 }

@@ -5,14 +5,17 @@ import {
     FaTrash,
     FaCheckCircle,
 } from "react-icons/fa";
+
 import "./UploadPrescription.css";
 
 const UploadPrescription = () => {
     const [file, setFile] = useState(null);
 
-    const handleFileChange = (e) => {
-        if (e.target.files.length > 0) {
-            setFile(e.target.files[0]);
+    const handleFileChange = (event) => {
+        const selectedFiles = event.target.files;
+
+        if (selectedFiles && selectedFiles.length > 0) {
+            setFile(selectedFiles[0]);
         }
     };
 
@@ -22,19 +25,16 @@ const UploadPrescription = () => {
 
     const submitPrescription = () => {
         if (!file) {
-            alert("Please upload a prescription.");
+            window.alert("Please upload a prescription.");
             return;
         }
 
-        alert("Prescription uploaded successfully!");
+        window.alert("Prescription uploaded successfully!");
     };
-<>
+
     return (
-        
         <div className="upload-page">
-
             <div className="upload-card">
-
                 <FaFileMedical className="upload-icon" />
 
                 <h2>Upload Prescription</h2>
@@ -57,38 +57,37 @@ const UploadPrescription = () => {
 
                 {file && (
                     <div className="selected-file">
-
                         <FaCheckCircle className="success-icon" />
 
                         <div>
                             <h4>{file.name}</h4>
+
                             <p>
                                 {(file.size / 1024).toFixed(2)} KB
                             </p>
                         </div>
 
                         <button
+                            type="button"
                             className="delete-file"
+                            aria-label="Delete selected file"
                             onClick={removeFile}
                         >
                             <FaTrash />
                         </button>
-
                     </div>
                 )}
 
                 <button
+                    type="button"
                     className="submit-btn"
                     onClick={submitPrescription}
                 >
                     Upload Prescription
                 </button>
-
             </div>
-
         </div>
     );
-    </>
 };
 
 export default UploadPrescription;

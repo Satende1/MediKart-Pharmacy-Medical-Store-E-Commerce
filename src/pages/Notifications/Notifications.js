@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import Footer from "../../components/Footer/Footer";
 import {
     FaBell,
     FaShoppingBag,
@@ -43,11 +42,20 @@ const Notifications = () => {
     ]);
 
     const clearNotification = (id) => {
-        const updated = notifications.filter((item) => item.id !== id);
+        const updated = notifications.filter(
+            (item) => item.id !== id
+        );
+
         setNotifications(updated);
+
+        // Remove React icon before storing in localStorage
+        const storageData = updated.map(
+            ({ icon, ...item }) => item
+        );
+
         localStorage.setItem(
             "notifications",
-            JSON.stringify(updated)
+            JSON.stringify(storageData)
         );
     };
 
@@ -67,31 +75,35 @@ const Notifications = () => {
                 </div>
             ) : (
                 notifications.map((item) => (
-                    <div className="notification-card" key={item.id}>
-
+                    <div
+                        className="notification-card"
+                        key={item.id}
+                    >
                         <div className="notification-icon">
                             {item.icon}
                         </div>
 
                         <div className="notification-content">
                             <h3>{item.title}</h3>
+
                             <p>{item.message}</p>
+
                             <small>{item.time}</small>
                         </div>
 
                         <button
                             className="delete-notification"
-                            onClick={() => clearNotification(item.id)}
+                            onClick={() =>
+                                clearNotification(item.id)
+                            }
+                            aria-label={`Delete ${item.title}`}
                         >
                             <FaTrash />
                         </button>
-
                     </div>
                 ))
             )}
         </div>
-
-
     );
 };
 

@@ -8,35 +8,61 @@ import {
 } from "react-icons/fa";
 import "./Payments.css";
 
+const initialPayments = [
+    {
+        id: 1,
+        type: "Credit Card",
+        holder: "Test Holder",
+        number: "**** **** **** 0000",
+        iconType: "card",
+    },
+    {
+        id: 2,
+        type: "UPI",
+        holder: "test@upi",
+        number: "",
+        iconType: "upi",
+    },
+    {
+        id: 3,
+        type: "Net Banking",
+        holder: "Test Bank",
+        number: "",
+        iconType: "bank",
+    },
+];
+
+const getPaymentIcon = (iconType) => {
+    switch (iconType) {
+        case "card":
+            return <FaCreditCard />;
+
+        case "upi":
+            return <FaWallet />;
+
+        case "bank":
+            return <FaUniversity />;
+
+        default:
+            return <FaCreditCard />;
+    }
+};
+
 const Payments = () => {
-    const [payments, setPayments] = useState([
-        {
-            id: 1,
-            type: "Credit Card",
-            holder: "Satender Kashyap",
-            number: "**** **** **** 4567",
-            icon: <FaCreditCard />,
-        },
-        {
-            id: 2,
-            type: "UPI",
-            holder: "satender@upi",
-            number: "",
-            icon: <FaWallet />,
-        },
-        {
-            id: 3,
-            type: "Net Banking",
-            holder: "State Bank of India",
-            number: "",
-            icon: <FaUniversity />,
-        },
-    ]);
+    const [payments, setPayments] = useState(initialPayments);
 
     const removePayment = (id) => {
-        const updated = payments.filter((item) => item.id !== id);
+        const updated = payments.filter(
+            (item) => item.id !== id
+        );
+
         setPayments(updated);
-        localStorage.setItem("payments", JSON.stringify(updated));
+
+        // Only plain serializable data is stored.
+        localStorage.setItem(
+            "payments",
+            JSON.stringify(updated)
+        );
     };
 
     return (
@@ -45,7 +71,10 @@ const Payments = () => {
             <div className="payments-header">
                 <h2>Saved Payment Methods</h2>
 
-                <button className="add-btn">
+                <button
+                    className="add-btn"
+                    type="button"
+                >
                     <FaPlus />
                     Add Payment Method
                 </button>
@@ -54,28 +83,46 @@ const Payments = () => {
             {payments.length === 0 ? (
                 <div className="empty-payment">
                     <FaMoneyBillWave />
-                    <h3>No Payment Methods Found</h3>
+
+                    <h3>
+                        No Payment Methods Found
+                    </h3>
                 </div>
             ) : (
                 payments.map((item) => (
-                    <div className="payment-card" key={item.id}>
+                    <div
+                        className="payment-card"
+                        key={item.id}
+                    >
 
                         <div className="payment-icon">
-                            {item.icon}
+                            {getPaymentIcon(item.iconType)}
                         </div>
 
                         <div className="payment-details">
-                            <h3>{item.type}</h3>
-                            <p>{item.holder}</p>
+
+                            <h3>
+                                {item.type}
+                            </h3>
+
+                            <p>
+                                {item.holder}
+                            </p>
 
                             {item.number && (
-                                <p>{item.number}</p>
+                                <p>
+                                    {item.number}
+                                </p>
                             )}
+
                         </div>
 
                         <button
                             className="remove-btn"
-                            onClick={() => removePayment(item.id)}
+                            type="button"
+                            onClick={() =>
+                                removePayment(item.id)
+                            }
                         >
                             Remove
                         </button>
@@ -83,9 +130,8 @@ const Payments = () => {
                     </div>
                 ))
             )}
+
         </div>
-
-
     );
 };
 

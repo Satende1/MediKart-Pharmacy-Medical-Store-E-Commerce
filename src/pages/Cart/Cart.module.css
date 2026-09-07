@@ -182,6 +182,10 @@
 
 @media (max-width: 768px) {
 
+  .cartPage {
+    padding: 12px;
+  }
+
   .cartHeader {
     flex-direction: column;
     gap: 15px;
@@ -192,11 +196,13 @@
     flex-direction: column;
     align-items: center;
     text-align: center;
+    padding: 16px;
   }
 
   .imageBox {
-    width: 180px;
-    height: 180px;
+    width: min(180px, 100%);
+    height: auto;
+    aspect-ratio: 1;
   }
 
   .quantityBox {
@@ -321,5 +327,35 @@ width:100%;
   .itemCount {
     font-size: 14px;
     padding: 6px 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .cartHeader {
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+
+  .cartHeader h1 {
+    font-size: 24px;
+  }
+
+  .deliveryAddress {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+  }
+
+  .changeAddressBtn {
+    width: 100%;
+  }
+
+  .productName {
+    font-size: 18px;
+  }
+
+  .productPrice {
+    font-size: 21px;
   }
 }

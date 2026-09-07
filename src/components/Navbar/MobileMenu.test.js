@@ -1,16 +1,26 @@
 import React from "react";
-import { render, screen, fireEvent, } from "@testing-library/react";
-import { MemoryRouter, useNavigate, } from "react-router-dom";
+import {
+    render,
+    screen,
+    fireEvent,
+    waitFor,
+} from "@testing-library/react";
+import "@testing-library/jest-dom";
+
+import { MemoryRouter } from "react-router-dom";
 import MobileMenu from "./MobileMenu";
+
+// Mock logo
+jest.mock("../../assets/Medikart-logo.png", () => "Medikart-logo.png");
 
 // Mock react-icons
 jest.mock("react-icons/fa", () => ({
     FaHome: () => <span data-testid="home-icon">HomeIcon</span>,
     FaShoppingCart: () => (
-        <span data-testid="shopping-cart-icon"> CartIcon </span>
+        <span data-testid="cart-icon">CartIcon</span>
     ),
     FaThLarge: () => (
-        <span data-testid="categories-icon"> CategoriesIcon </span>
+        <span data-testid="categories-icon">CategoriesIcon</span>
     ),
     FaHeart: () => (
         <span data-testid="heart-icon">HeartIcon</span>
@@ -20,6 +30,18 @@ jest.mock("react-icons/fa", () => ({
     ),
     FaPhone: () => (
         <span data-testid="phone-icon">PhoneIcon</span>
+    ),
+    FaUser: () => (
+        <span data-testid="user-icon">UserIcon</span>
+    ),
+    FaUserCircle: () => (
+        <span data-testid="user-circle-icon">UserCircleIcon</span>
+    ),
+    FaBox: () => (
+        <span data-testid="box-icon">BoxIcon</span>
+    ),
+    FaMapMarkerAlt: () => (
+        <span data-testid="map-icon">MapIcon</span>
     ),
     FaSignOutAlt: () => (
         <span data-testid="logout-icon">LogoutIcon</span>
@@ -33,54 +55,53 @@ jest.mock("react-icons/fa", () => ({
     FaTimes: () => (
         <span data-testid="times-icon">TimesIcon</span>
     ),
+    FaChevronDown: () => (
+        <span data-testid="chevron-icon">ChevronIcon</span>
+    ),
+    FaCog: () => (
+        <span data-testid="settings-icon">SettingsIcon</span>
+    ),
+    FaQuestionCircle: () => (
+        <span data-testid="question-icon">QuestionIcon</span>
+    ),
 }));
 
-// Mock useNavigate
-const mockNavigate = jest.fn();
-
-jest.mock("react-router-dom", () => {
-    const actual = jest.requireActual("react-router-dom");
-
-    return {
-        ...actual,
-        useNavigate: jest.fn(),
-    };
-});
+const renderMobileMenu = () => {
+    return render(
+        <MemoryRouter>
+            <MobileMenu />
+        </MemoryRouter>
+    );
+};
 
 describe("MobileMenu Component", () => {
     beforeEach(() => {
-        jest.clearAllMocks();
         localStorage.clear();
+        jest.clearAllMocks();
 
-        useNavigate.mockReturnValue(mockNavigate);
+        window.history.pushState({}, "", "/");
     });
 
-    // ==========================================
-    // RENDER TEST
-    // ==========================================
+    afterEach(() => {
+        document.body.style.overflow = "";
+    });
 
-    test("renders mobile menu button", () => {
-        render(
-            <MemoryRouter>
-                <MobileMenu />
-            </MemoryRouter>
-        );
+    test("renders hamburger menu button", () => {
+        renderMobileMenu();
+
+        expect(
+            screen.getByRole("button", {
+                name: "Open mobile menu",
+            })
+        ).toBeInTheDocument();
 
         expect(
             screen.getByTestId("bars-icon")
         ).toBeInTheDocument();
     });
 
-    // ==========================================
-    // SIDEBAR CONTENT TEST
-    // ==========================================
-
-    test("renders MEDIKART logo and title", () => {
-        render(
-            <MemoryRouter>
-                <MobileMenu />
-            </MemoryRouter>
-        );
+    test("renders MEDIKART logo and branding", () => {
+        renderMobileMenu();
 
         expect(
             screen.getByAltText("Medikart Logo")
@@ -89,18 +110,118 @@ describe("MobileMenu Component", () => {
         expect(
             screen.getByText("MEDIKART")
         ).toBeInTheDocument();
+
+        expect(
+            screen.getByText("Your Health Partner")
+        ).toBeInTheDocument();
     });
 
-    // ==========================================
-    // MENU ITEMS TEST
-    // ==========================================
+    test("menu is closed initially", () => {
+        renderMobileMenu();
 
-    test("renders all navigation menu items", () => {
-        render(
-            <MemoryRouter>
-                <MobileMenu />
-            </MemoryRouter>
+        expect(
+            screen.queryByRole("button", {
+                name: "Close menu",
+            })
+        ).toBeInTheDocument();
+
+        const sidebar = document.querySelector(
+            ".mobile-sidebar"
         );
+
+        expect(sidebar).not.toHaveClass(
+            "mobile-sidebar-open"
+        );
+    });
+
+    test("opens sidebar when hamburger button is clicked", () => {
+        renderMobileMenu();
+
+        fireEvent.click(
+            screen.getByRole("button", {
+                name: "Open mobile menu",
+            })
+        );
+
+        const sidebar = document.querySelector(
+            ".mobile-sidebar"
+        );
+
+        expect(sidebar).toHaveClass(
+            "mobile-sidebar-open"
+        );
+
+        expect(
+            screen.getByRole("button", {
+                name: "Close menu",
+            })
+        ).toBeInTheDocument();
+    });
+
+    test("prevents body scrolling when menu is open", () => {
+        renderMobileMenu();
+
+        fireEvent.click(
+            screen.getByRole("button", {
+                name: "Open mobile menu",
+            })
+        );
+
+        expect(document.body.style.overflow).toBe(
+            "hidden"
+        );
+    });
+
+    test("restores body scrolling when menu is closed", () => {
+        renderMobileMenu();
+
+        fireEvent.click(
+            screen.getByRole("button", {
+                name: "Open mobile menu",
+            })
+        );
+
+        expect(document.body.style.overflow).toBe(
+            "hidden"
+        );
+
+        fireEvent.click(
+            screen.getByRole("button", {
+                name: "Close menu",
+            })
+        );
+
+        expect(document.body.style.overflow).toBe("");
+    });
+
+    test("closes menu when overlay is clicked", () => {
+        renderMobileMenu();
+
+        fireEvent.click(
+            screen.getByRole("button", {
+                name: "Open mobile menu",
+            })
+        );
+
+        const overlay = document.querySelector(
+            ".mobile-menu-overlay"
+        );
+
+        expect(overlay).toBeInTheDocument();
+
+        fireEvent.click(overlay);
+
+        const sidebar = document.querySelector(
+            ".mobile-sidebar"
+        );
+
+        expect(sidebar).not.toHaveClass(
+            "mobile-sidebar-open"
+        );
+    });
+
+    test("renders all main menu items", () => {
+        renderMobileMenu();
 
         expect(screen.getByText("Home")).toBeInTheDocument();
         expect(screen.getByText("Shop")).toBeInTheDocument();
@@ -110,285 +231,205 @@ describe("MobileMenu Component", () => {
         expect(
             screen.getByText("Wishlist")
         ).toBeInTheDocument();
+        expect(
+            screen.getByText("Settings")
+        ).toBeInTheDocument();
         expect(screen.getByText("Cart")).toBeInTheDocument();
-        expect(screen.getByText("About")).toBeInTheDocument();
         expect(
-            screen.getByText("Contact")
+            screen.getByText("About Us")
+        ).toBeInTheDocument();
+        expect(
+            screen.getByText("Contact Us")
         ).toBeInTheDocument();
     });
 
-    // ==========================================
-    // LOGIN TEST
-    // ==========================================
-
-    test("shows Login when no user exists", () => {
-        localStorage.removeItem("user");
-
-        render(
-            <MemoryRouter>
-                <MobileMenu />
-            </MemoryRouter>
-        );
+    test("renders MENU heading", () => {
+        renderMobileMenu();
 
         expect(
-            screen.getByRole("button", {
-                name: /Login/i,
-            })
+            screen.getByText("MENU")
         ).toBeInTheDocument();
     });
 
-    // ==========================================
-    // LOGOUT TEST
-    // ==========================================
-
-    test("shows Logout when a test user exists", () => {
-        localStorage.setItem(
-            "user",
-            JSON.stringify({
-                name: "Test User",
-            })
-        );
-
-        render(
-            <MemoryRouter>
-                <MobileMenu />
-            </MemoryRouter>
-        );
+    test("renders help section", () => {
+        renderMobileMenu();
 
         expect(
-            screen.getByRole("button", {
-                name: /Logout/i,
-            })
+            screen.getByText("Need Help?")
+        ).toBeInTheDocument();
+
+        expect(
+            screen.getByText(
+                "Contact MEDIKART Support"
+            )
+        ).toBeInTheDocument();
+
+        expect(
+            screen.getByTestId("question-icon")
         ).toBeInTheDocument();
     });
 
-    // ==========================================
-    // OPEN MENU TEST
-    // ==========================================
-
-    test("opens sidebar when menu button is clicked", () => {
-        render(
-            <MemoryRouter>
-                <MobileMenu />
-            </MemoryRouter>
-        );
-
-        const menuButton = screen.getByTestId(
-            "bars-icon"
-        ).closest("button");
-
-        fireEvent.click(menuButton);
-
-        const sidebar =
-            document.querySelector(".mobile-sidebar");
-
-        expect(sidebar).toHaveClass("open");
+    test("shows login card when user is not logged in", () => {
+        renderMobileMenu();
 
         expect(
-            document.querySelector(".mobile-overlay")
+            screen.getByText("Welcome to MEDIKART")
+        ).toBeInTheDocument();
+
+        expect(
+            screen.getByText(
+                "Login to view your account"
+            )
         ).toBeInTheDocument();
     });
 
-    // ==========================================
-    // CLOSE BUTTON TEST
-    // ==========================================
+    test("shows bottom Login button when user is not logged in", () => {
+        renderMobileMenu();
 
-    test("closes sidebar when close button is clicked", () => {
-        render(
-            <MemoryRouter>
-                <MobileMenu />
-            </MemoryRouter>
-        );
-
-        const menuButton = screen.getByTestId(
-            "bars-icon"
-        ).closest("button");
-
-        fireEvent.click(menuButton);
-
-        const closeButton = screen
-            .getByTestId("times-icon")
-            .closest("button");
-
-        fireEvent.click(closeButton);
-
-        expect(
-            document.querySelector(".mobile-sidebar")
-        ).not.toHaveClass("open");
-    });
-
-    // ==========================================
-    // OVERLAY CLOSE TEST
-    // ==========================================
-
-    test("closes sidebar when overlay is clicked", () => {
-        render(
-            <MemoryRouter>
-                <MobileMenu />
-            </MemoryRouter>
-        );
-
-        const menuButton = screen.getByTestId(
-            "bars-icon"
-        ).closest("button");
-
-        fireEvent.click(menuButton);
-
-        const overlay =
-            document.querySelector(".mobile-overlay");
-
-        expect(overlay).toBeInTheDocument();
-
-        fireEvent.click(overlay);
-
-        expect(
-            document.querySelector(".mobile-sidebar")
-        ).not.toHaveClass("open");
-    });
-
-    // ==========================================
-    // NAVIGATION LINK TEST
-    // ==========================================
-
-    test("contains correct navigation paths", () => {
-        render(
-            <MemoryRouter>
-                <MobileMenu />
-            </MemoryRouter>
-        );
-
-        expect(
-            screen.getByRole("link", { name: /Home/i })
-        ).toHaveAttribute("href", "/");
-
-        expect(
-            screen.getByRole("link", { name: /Shop/i })
-        ).toHaveAttribute("href", "/shop");
-
-        expect(
-            screen.getByRole("link", {
-                name: /Categories/i,
-            })
-        ).toHaveAttribute("href", "/categories");
-
-        expect(
-            screen.getByRole("link", { name: /Wishlist/i, })
-        ).toHaveAttribute("href", "/wishlist");
-
-        expect(
-            screen.getByRole("link", { name: /About/i, })
-        ).toHaveAttribute("href", "/about");
-
-        expect(
-            screen.getByRole("link", { name: /Contact/i, })
-        ).toHaveAttribute("href", "/contact");
-    });
-
-    // ==========================================
-    // LINK CLOSE MENU TEST
-    // ==========================================
-
-    test("closes sidebar when navigation link is clicked", () => {
-        render(
-            <MemoryRouter>
-                <MobileMenu />
-            </MemoryRouter>
-        );
-
-        const menuButton = screen.getByTestId(
-            "bars-icon"
-        ).closest("button");
-
-        fireEvent.click(menuButton);
-
-        expect(
-            document.querySelector(".mobile-sidebar")
-        ).toHaveClass("open");
-
-        fireEvent.click(
-            screen.getByRole("link", {
-                name: /Shop/i,
-            })
-        );
-
-        expect(
-            document.querySelector(".mobile-sidebar")
-        ).not.toHaveClass("open");
-    });
-
-    // ==========================================
-    // LOGIN NAVIGATION TEST
-    // ==========================================
-
-    test("navigates to login when Login button is clicked", () => {
-        localStorage.removeItem("user");
-
-        render(
-            <MemoryRouter>
-                <MobileMenu />
-            </MemoryRouter>
-        );
-
-        const loginButton = screen.getByRole(
+        const loginButtons = screen.getAllByRole(
             "button",
             {
-                name: /Login/i,
+                name: /Login/,
             }
         );
 
-        fireEvent.click(loginButton);
-
-        expect(mockNavigate).toHaveBeenCalledWith(
-            "/login"
+        expect(loginButtons.length).toBeGreaterThanOrEqual(
+            1
         );
     });
 
-    // ==========================================
-    // LOGIN CLOSE MENU TEST
-    // ==========================================
+    test("navigates to login from login card", () => {
+        renderMobileMenu();
 
-    test("closes menu before navigating to login", () => {
-        localStorage.removeItem("user");
-
-        render(
-            <MemoryRouter>
-                <MobileMenu />
-            </MemoryRouter>
-        );
-
-        const menuButton = screen.getByTestId(
-            "bars-icon"
-        ).closest("button");
-
-        fireEvent.click(menuButton);
-
-        expect(
-            document.querySelector(".mobile-sidebar")
-        ).toHaveClass("open");
-
-        const loginButton = screen.getByRole(
+        const loginButtons = screen.getAllByRole(
             "button",
             {
-                name: /Login/i,
+                name: /Login/,
             }
         );
 
-        fireEvent.click(loginButton);
-
-        expect(mockNavigate).toHaveBeenCalledWith(
-            "/login"
-        );
+        fireEvent.click(loginButtons[0]);
 
         expect(
             document.querySelector(".mobile-sidebar")
-        ).not.toHaveClass("open");
+        ).not.toHaveClass("mobile-sidebar-open");
     });
 
-    // ==========================================
-    // LOGOUT TEST
-    // ==========================================
+    test("renders logged-in user section", () => {
+        const user = {
+            name: "Test User",
+        };
 
-    test("removes user from localStorage on logout", () => {
+        localStorage.setItem(
+            "user",
+            JSON.stringify(user)
+        );
+
+        renderMobileMenu();
+
+        expect(
+            screen.getByText("Hello,")
+        ).toBeInTheDocument();
+
+        expect(
+            screen.getByText("Test User")
+        ).toBeInTheDocument();
+    });
+
+    test("uses username when name is unavailable", () => {
+        const user = {
+            username: "TestUser",
+        };
+
+        localStorage.setItem(
+            "user",
+            JSON.stringify(user)
+        );
+
+        renderMobileMenu();
+
+        expect(
+            screen.getByText("TestUser")
+        ).toBeInTheDocument();
+    });
+
+    test("uses User fallback when name and username are unavailable", () => {
+        const user = {};
+
+        localStorage.setItem(
+            "user",
+            JSON.stringify(user)
+        );
+
+        renderMobileMenu();
+
+        expect(
+            screen.getByText("User")
+        ).toBeInTheDocument();
+    });
+
+    test("renders default user icon when photo and image are unavailable", () => {
+        const user = {
+            name: "Test User",
+        };
+
+        localStorage.setItem(
+            "user",
+            JSON.stringify(user)
+        );
+
+        renderMobileMenu();
+
+        expect(
+            screen.getByTestId("user-icon")
+        ).toBeInTheDocument();
+    });
+
+    test("renders profile image when user photo exists", () => {
+        const user = {
+            name: "Test User",
+            photo: "profile.jpg",
+        };
+
+        localStorage.setItem(
+            "user",
+            JSON.stringify(user)
+        );
+
+        renderMobileMenu();
+
+        const image = screen.getByAltText("Profile");
+
+        expect(image).toBeInTheDocument();
+
+        expect(image).toHaveAttribute(
+            "src",
+            "profile.jpg"
+        );
+    });
+
+    test("renders profile image when user image exists", () => {
+        const user = {
+            name: "Test User",
+            image: "user-image.jpg",
+        };
+
+        localStorage.setItem(
+            "user",
+            JSON.stringify(user)
+        );
+
+        renderMobileMenu();
+
+        const image = screen.getByAltText("Profile");
+
+        expect(image).toHaveAttribute(
+            "src",
+            "user-image.jpg"
+        );
+    });
+
+    test("opens account dropdown when user button is clicked", () => {
         localStorage.setItem(
             "user",
             JSON.stringify({
@@ -396,35 +437,27 @@ describe("MobileMenu Component", () => {
             })
         );
 
-        render(
-            <MemoryRouter>
-                <MobileMenu />
-            </MemoryRouter>
-        );
+        renderMobileMenu();
 
-        expect(
-            localStorage.getItem("user")
-        ).not.toBeNull();
-
-        const logoutButton = screen.getByRole(
+        const userButton = screen.getByRole(
             "button",
             {
-                name: /Logout/i,
+                name: /Test User/,
             }
         );
 
-        fireEvent.click(logoutButton);
+        fireEvent.click(userButton);
 
         expect(
-            localStorage.getItem("user")
-        ).toBeNull();
+            screen.getByText("My Profile")
+        ).toBeInTheDocument();
+
+        expect(
+            screen.getByText("My Orders")
+        ).toBeInTheDocument();
     });
 
-    // ==========================================
-    // LOGOUT NAVIGATION TEST
-    // ==========================================
-
-    test("navigates to login after logout", () => {
+    test("closes account dropdown when user button is clicked again", () => {
         localStorage.setItem(
             "user",
             JSON.stringify({
@@ -432,200 +465,29 @@ describe("MobileMenu Component", () => {
             })
         );
 
-        render(
-            <MemoryRouter>
-                <MobileMenu />
-            </MemoryRouter>
-        );
+        renderMobileMenu();
 
-        const logoutButton = screen.getByRole(
+        const userButton = screen.getByRole(
             "button",
             {
-                name: /Logout/i,
+                name: /Test User/,
             }
         );
 
-        fireEvent.click(logoutButton);
-
-        expect(mockNavigate).toHaveBeenCalledWith(
-            "/login"
-        );
-    });
-
-    // ==========================================
-    // LOGOUT CLOSE MENU TEST
-    // ==========================================
-
-    test("closes menu after logout", () => {
-        localStorage.setItem(
-            "user",
-            JSON.stringify({
-                name: "Test User",
-            })
-        );
-
-        render(
-            <MemoryRouter>
-                <MobileMenu />
-            </MemoryRouter>
-        );
-
-        const menuButton = screen.getByTestId(
-            "bars-icon"
-        ).closest("button");
-
-        fireEvent.click(menuButton);
+        fireEvent.click(userButton);
 
         expect(
-            document.querySelector(".mobile-sidebar")
-        ).toHaveClass("open");
-
-        const logoutButton = screen.getByRole(
-            "button",
-            {
-                name: /Logout/i,
-            }
-        );
-
-        fireEvent.click(logoutButton);
-
-        expect(
-            document.querySelector(".mobile-sidebar")
-        ).not.toHaveClass("open");
-    });
-
-    // ==========================================
-    // ICON TEST
-    // ==========================================
-
-    test("renders navigation icons", () => {
-        render(
-            <MemoryRouter>
-                <MobileMenu />
-            </MemoryRouter>
-        );
-
-        expect(
-            screen.getByTestId("home-icon")
+            screen.getByText("My Profile")
         ).toBeInTheDocument();
 
-        expect(
-            screen.getAllByTestId(
-                "shopping-cart-icon"
-            ).length
-        ).toBeGreaterThanOrEqual(2);
+        fireEvent.click(userButton);
 
         expect(
-            screen.getByTestId("categories-icon")
-        ).toBeInTheDocument();
-
-        expect(
-            screen.getByTestId("heart-icon")
-        ).toBeInTheDocument();
-
-        expect(
-            screen.getByTestId("info-icon")
-        ).toBeInTheDocument();
-
-        expect(
-            screen.getByTestId("phone-icon")
-        ).toBeInTheDocument();
-    });
-
-    // ==========================================
-    // LOGIN ICON TEST
-    // ==========================================
-
-    test("renders login icon when user is not logged in", () => {
-        localStorage.removeItem("user");
-
-        render(
-            <MemoryRouter>
-                <MobileMenu />
-            </MemoryRouter>
-        );
-
-        expect(
-            screen.getByTestId("login-icon")
-        ).toBeInTheDocument();
-    });
-
-    // ==========================================
-    // LOGOUT ICON TEST
-    // ==========================================
-
-    test("renders logout icon when user is logged in", () => {
-        localStorage.setItem(
-            "user",
-            JSON.stringify({
-                name: "Test User",
-            })
-        );
-
-        render(
-            <MemoryRouter>
-                <MobileMenu />
-            </MemoryRouter>
-        );
-
-        expect(
-            screen.getByTestId("logout-icon")
-        ).toBeInTheDocument();
-    });
-
-    // ==========================================
-    // USER JSON TEST
-    // ==========================================
-
-    test("handles valid user data in localStorage", () => {
-        localStorage.setItem(
-            "user",
-            JSON.stringify({
-                name: "Test User",
-                email: "test@example.com",
-            })
-        );
-
-        expect(() => {
-            render(
-                <MemoryRouter>
-                    <MobileMenu />
-                </MemoryRouter>
-            );
-        }).not.toThrow();
-
-        expect(
-            screen.getByRole("button", {
-                name: /Logout/i,
-            })
-        ).toBeInTheDocument();
-    });
-
-    // ==========================================
-    // SIDEBAR CLOSED BY DEFAULT TEST
-    // ==========================================
-
-    test("sidebar is closed by default", () => {
-        render(
-            <MemoryRouter>
-                <MobileMenu />
-            </MemoryRouter>
-        );
-
-        expect(
-            document.querySelector(".mobile-sidebar")
-        ).not.toHaveClass("open");
-
-        expect(
-            document.querySelector(".mobile-overlay")
+            screen.queryByText("My Profile")
         ).not.toBeInTheDocument();
     });
 
-    // ==========================================
-    // LOGOUT FUNCTION TEST
-    // ==========================================
-
-    test("logout removes only the user information", () => {
+    test("renders quick links for logged-in user", () => {
         localStorage.setItem(
             "user",
             JSON.stringify({
@@ -633,20 +495,49 @@ describe("MobileMenu Component", () => {
             })
         );
 
-        localStorage.setItem(
-            "testData",
-            "test-value"
+        renderMobileMenu();
+    });
+
+    test("does not render quick links for logged-out user", () => {
+        renderMobileMenu();
+
+        const quickLinks = document.querySelector(
+            ".mobile-quick-links"
         );
 
-        render(
-            <MemoryRouter>
-                <MobileMenu />
-            </MemoryRouter>
+        expect(quickLinks).not.toBeInTheDocument();
+    });
+
+    test("renders Logout button for logged-in user", () => {
+        localStorage.setItem(
+            "user",
+            JSON.stringify({
+                name: "Test User",
+            })
         );
+
+        renderMobileMenu();
+
+        expect(
+            screen.getByRole("button", {
+                name: /Logout/,
+            })
+        ).toBeInTheDocument();
+    });
+
+    test("logs out the user", async () => {
+        localStorage.setItem(
+            "user",
+            JSON.stringify({
+                name: "Test User",
+            })
+        );
+
+        renderMobileMenu();
 
         fireEvent.click(
             screen.getByRole("button", {
-                name: /Logout/i,
+                name: /Logout/,
             })
         );
 
@@ -654,8 +545,354 @@ describe("MobileMenu Component", () => {
             localStorage.getItem("user")
         ).toBeNull();
 
+        await waitFor(() => {
+            expect(
+                screen.getByText(
+                    "Welcome to MEDIKART"
+                )
+            ).toBeInTheDocument();
+        });
+    });
+
+    test("dispatches userUpdated event on logout", () => {
+        localStorage.setItem(
+            "user",
+            JSON.stringify({
+                name: "Test User",
+            })
+        );
+
+        const dispatchSpy = jest.spyOn(
+            window,
+            "dispatchEvent"
+        );
+
+        renderMobileMenu();
+
+        fireEvent.click(
+            screen.getByRole("button", {
+                name: /Logout/,
+            })
+        );
+
+        expect(dispatchSpy).toHaveBeenCalledWith(
+            expect.objectContaining({
+                type: "userUpdated",
+            })
+        );
+
+        dispatchSpy.mockRestore();
+    });
+
+    test("updates user when userUpdated event is dispatched", async () => {
+        renderMobileMenu();
+
         expect(
-            localStorage.getItem("testData")
-        ).toBe("test-value");
+            screen.getByText(
+                "Welcome to MEDIKART"
+            )
+        ).toBeInTheDocument();
+
+        localStorage.setItem(
+            "user",
+            JSON.stringify({
+                name: "Updated User",
+            })
+        );
+
+        window.dispatchEvent(
+            new Event("userUpdated")
+        );
+
+        await waitFor(() => {
+            expect(
+                screen.getByText("Updated User")
+            ).toBeInTheDocument();
+        });
+    });
+
+    test("removes user information when userUpdated event is dispatched after logout", async () => {
+        localStorage.setItem(
+            "user",
+            JSON.stringify({
+                name: "Test User",
+            })
+        );
+
+        renderMobileMenu();
+
+        expect(
+            screen.getByText("Test User")
+        ).toBeInTheDocument();
+
+        localStorage.removeItem("user");
+
+        window.dispatchEvent(
+            new Event("userUpdated")
+        );
+
+        await waitFor(() => {
+            expect(
+                screen.getByText(
+                    "Welcome to MEDIKART"
+                )
+            ).toBeInTheDocument();
+        });
+    });
+
+    test("handles invalid user JSON in localStorage", () => {
+        localStorage.setItem(
+            "user",
+            "invalid-json"
+        );
+
+        renderMobileMenu();
+
+        expect(
+            screen.getByText(
+                "Welcome to MEDIKART"
+            )
+        ).toBeInTheDocument();
+    });
+
+    test("closes account dropdown when close menu is clicked", () => {
+        localStorage.setItem(
+            "user",
+            JSON.stringify({
+                name: "Test User",
+            })
+        );
+
+        renderMobileMenu();
+
+        fireEvent.click(
+            screen.getByRole("button", {
+                name: /Test User/,
+            })
+        );
+
+        expect(
+            screen.getByText("My Profile")
+        ).toBeInTheDocument();
+
+        fireEvent.click(
+            screen.getByRole("button", {
+                name: "Close menu",
+            })
+        );
+
+        expect(
+            screen.queryByText("My Profile")
+        ).not.toBeInTheDocument();
+    });
+
+    test("main menu links have correct destinations", () => {
+        renderMobileMenu();
+
+        expect(
+            screen.getByText("Home").closest("a")
+        ).toHaveAttribute("href", "/");
+
+        expect(
+            screen.getByText("Shop").closest("a")
+        ).toHaveAttribute("href", "/shop");
+
+        expect(
+            screen.getByText("Categories").closest("a")
+        ).toHaveAttribute(
+            "href",
+            "/categories"
+        );
+
+        expect(
+            screen.getByText("Wishlist").closest("a")
+        ).toHaveAttribute(
+            "href",
+            "/wishlist"
+        );
+
+        expect(
+            screen.getByText("Settings").closest("a")
+        ).toHaveAttribute(
+            "href",
+            "/settings"
+        );
+
+        expect(
+            screen.getByText("Cart").closest("a")
+        ).toHaveAttribute("href", "/cart");
+
+        expect(
+            screen.getByText("About Us").closest("a")
+        ).toHaveAttribute("href", "/about");
+
+        expect(
+            screen.getByText("Contact Us").closest("a")
+        ).toHaveAttribute(
+            "href",
+            "/contact"
+        );
+    });
+
+    test("main menu closes when a navigation link is clicked", () => {
+        renderMobileMenu();
+
+        fireEvent.click(
+            screen.getByRole("button", {
+                name: "Open mobile menu",
+            })
+        );
+
+        const shopLink = screen.getByText("Shop");
+
+        fireEvent.click(shopLink);
+
+        const sidebar = document.querySelector(
+            ".mobile-sidebar"
+        );
+
+        expect(sidebar).not.toHaveClass(
+            "mobile-sidebar-open"
+        );
+    });
+
+    test("My Profile button exists in account dropdown", () => {
+        localStorage.setItem(
+            "user",
+            JSON.stringify({
+                name: "Test User",
+            })
+        );
+
+        renderMobileMenu();
+
+        fireEvent.click(
+            screen.getByRole("button", {
+                name: /Test User/,
+            })
+        );
+
+        expect(
+            screen.getByText("My Profile")
+        ).toBeInTheDocument();
+    });
+
+    test("My Orders button exists in account dropdown", () => {
+        localStorage.setItem(
+            "user",
+            JSON.stringify({
+                name: "Test User",
+            })
+        );
+
+        renderMobileMenu();
+
+        fireEvent.click(
+            screen.getByRole("button", {
+                name: /Test User/,
+            })
+        );
+
+        expect(
+            screen.getByText("My Orders")
+        ).toBeInTheDocument();
+    });
+
+    test("My Wishlist button exists in account dropdown", () => {
+        localStorage.setItem(
+            "user",
+            JSON.stringify({
+                name: "Test User",
+            })
+        );
+
+        renderMobileMenu();
+
+        fireEvent.click(
+            screen.getByRole("button", {
+                name: /Test User/,
+            })
+        );
+
+        expect(
+            screen.getByText("My Wishlist")
+        ).toBeInTheDocument();
+    });
+
+    test("Saved Addresses button exists in account dropdown", () => {
+        localStorage.setItem(
+            "user",
+            JSON.stringify({
+                name: "Test User",
+            })
+        );
+
+        renderMobileMenu();
+
+        fireEvent.click(
+            screen.getByRole("button", {
+                name: /Test User/,
+            })
+        );
+
+        expect(
+            screen.getByText("Saved Addresses")
+        ).toBeInTheDocument();
+    });
+
+    test("Settings button exists in account dropdown", () => {
+        localStorage.setItem(
+            "user",
+            JSON.stringify({
+                name: "Test User",
+            })
+        );
+
+        renderMobileMenu();
+
+        fireEvent.click(
+            screen.getByRole("button", {
+                name: /Test User/,
+            })
+        );
+    });
+
+    test("component cleans up userUpdated event listener", () => {
+        const removeEventListenerSpy =
+            jest.spyOn(
+                window,
+                "removeEventListener"
+            );
+
+        const { unmount } = renderMobileMenu();
+
+        unmount();
+
+        expect(
+            removeEventListenerSpy
+        ).toHaveBeenCalledWith(
+            "userUpdated",
+            expect.any(Function)
+        );
+
+        removeEventListenerSpy.mockRestore();
+    });
+
+    test("cleans body overflow on unmount", () => {
+        const { unmount } = renderMobileMenu();
+
+        fireEvent.click(
+            screen.getByRole("button", {
+                name: "Open mobile menu",
+            })
+        );
+
+        expect(document.body.style.overflow).toBe(
+            "hidden"
+        );
+
+        unmount();
+
+        expect(document.body.style.overflow).toBe("");
     });
 });

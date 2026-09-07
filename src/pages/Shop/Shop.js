@@ -79,19 +79,15 @@ const Shop = () => {
 
   const [sortBy, setSortBy] = useState("default");
 
-  const [selectedCategory, setSelectedCategory] =
-    useState(currentCategory);
+  const [selectedCategory, setSelectedCategory] = useState(currentCategory);
 
   const [priceRange, setPriceRange] = useState("all");
 
-  const [selectedRating, setSelectedRating] =
-    useState("all");
+  const [selectedRating, setSelectedRating] = useState("all");
 
-  const [selectedBrand, setSelectedBrand] =
-    useState("all");
+  const [selectedBrand, setSelectedBrand] = useState("all");
 
-  const [visibleProducts, setVisibleProducts] =
-    useState(12);
+  const [visibleProducts, setVisibleProducts] = useState(12);
 
   const [loading, setLoading] = useState(true);
 
