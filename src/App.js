@@ -63,6 +63,7 @@ import HealthRecords from "./pages/HealthRecords/HealthRecords";
 import Offers from "./pages/Offers/Offers";
 import Notifications from "./pages/Notifications/Notifications";
 import Settings from "./pages/Settings/Settings";
+import Help from "./pages/Helps/Help";
 
 function Layout() {
   const location = useLocation();
@@ -163,6 +164,8 @@ function Layout() {
           element={<Checkout />}
         />
 
+        <Route path="/help" element={<Help />} />
+
         {/* =====================================================
             WISHLIST
         ===================================================== */}
@@ -189,6 +192,8 @@ function Layout() {
           path="/order-confirmation"
           element={<OrderConfirmation />}
         />
+
+        <Route path="/help" element={<Help />} />
 
         {/* =====================================================
             DEMO COMPONENTS

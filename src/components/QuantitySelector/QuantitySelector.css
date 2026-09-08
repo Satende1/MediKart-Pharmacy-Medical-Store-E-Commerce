@@ -37,6 +37,7 @@
 .qty-btn.minus {
   background: #f1f3f5;
   color: #555;
+  padding-top: 2px;
 }
 
 .qty-btn.minus:hover {
@@ -47,6 +48,7 @@
 .qty-btn.plus {
   background: #16a34a;
   color: #fff;
+  padding-top: 2px;
 }
 
 .qty-btn.plus:hover {
