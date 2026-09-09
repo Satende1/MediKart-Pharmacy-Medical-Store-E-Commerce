@@ -1,0 +1,492 @@
+/* =========================================
+   REGISTER PAGE
+========================================= */
+
+.register-page {
+  min-height: 100vh;
+  width: 100%;
+  background: #f1f3f6;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  box-sizing: border-box;
+}
+
+
+/* =========================================
+   MAIN CONTAINER
+========================================= */
+
+.register-container {
+  width: min(1050px, 100%);
+  height: 680px;
+
+  background: #ffffff;
+  border-radius: 18px;
+
+  display: grid;
+  grid-template-columns: 48% 52%;
+
+  overflow: hidden;
+
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+}
+
+
+/* =========================================
+   LEFT FORM SECTION
+========================================= */
+
+.register-form-section {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 30px 55px;
+  background: #ffffff;
+
+  box-sizing: border-box;
+}
+
+
+/* =========================================
+   CLOSE BUTTON
+========================================= */
+
+.register-close {
+  position: absolute;
+  top: 20px;
+  right: 22px;
+
+  width: 32px;
+  height: 32px;
+
+  border: none;
+  background: transparent;
+
+  color: #777;
+  font-size: 17px;
+
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  transition: 0.2s ease;
+}
+
+.register-close:hover {
+  color: #222;
+  transform: scale(1.08);
+}
+
+
+/* =========================================
+   CONTENT
+========================================= */
+
+.register-content {
+  width: 100%;
+  max-width: 390px;
+  height: 100%;
+  
+}
+
+
+/* =========================================
+   HEADER
+========================================= */
+
+.register-header {
+  margin-bottom: 22px;
+}
+
+.register-header h1 {
+  margin: 0 0 7px;
+
+  font-size: 30px;
+  font-weight: 700;
+
+  color: #222;
+}
+
+.register-header p {
+  margin: 0;
+
+  font-size: 13px;
+  line-height: 1.5;
+
+  color: #777;
+}
+
+
+/* =========================================
+   FORM
+========================================= */
+
+.register-form {
+  width: 100%;
+}
+
+
+/* =========================================
+   INPUT GROUP
+========================================= */
+
+.register-input-group {
+  margin-bottom: 14px;
+}
+
+.register-input-group label {
+  display: block;
+
+  margin-bottom: 6px;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  color: #333;
+}
+
+
+/* =========================================
+   INPUT WRAPPER
+========================================= */
+
+.register-input-wrapper {
+  position: relative;
+
+  width: 100%;
+  height: 44px;
+}
+
+
+/* =========================================
+   INPUT
+========================================= */
+
+.register-input-wrapper input {
+  width: 100%;
+  height: 44px;
+
+  box-sizing: border-box;
+
+  border: 1px solid #d7d7d7;
+  border-radius: 7px;
+
+  outline: none;
+
+  background: #ffffff !important;
+
+  padding: 0 42px 0 42px;
+
+  font-size: 13px;
+  color: #222;
+
+  transition: border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.register-input-wrapper input::placeholder {
+  color: #aaa;
+}
+
+.register-input-wrapper input:focus {
+  border-color: #2874f0;
+
+  background: #ffffff !important;
+
+  box-shadow: 0 0 0 2px rgba(40, 116, 240, 0.08);
+}
+
+
+/* =========================================
+   REMOVE GREEN / AUTOFILL COLOR
+========================================= */
+
+.register-input-wrapper input:-webkit-autofill,
+.register-input-wrapper input:-webkit-autofill:hover,
+.register-input-wrapper input:-webkit-autofill:focus,
+.register-input-wrapper input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
+  -webkit-text-fill-color: #222 !important;
+
+  background-color: #ffffff !important;
+
+  transition: background-color 9999s ease-in-out 0s;
+}
+
+
+/* =========================================
+   INPUT ICON
+========================================= */
+
+.register-input-icon {
+  position: absolute;
+
+  left: 15px;
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  font-size: 14px;
+
+  color: #777;
+
+  pointer-events: none;
+
+  z-index: 2;
+}
+
+
+/* =========================================
+   PASSWORD EYE
+========================================= */
+
+.password-toggle {
+  position: absolute;
+
+  right: 12px;
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  border: none;
+  background: transparent;
+
+  color: #777;
+
+  font-size: 15px;
+
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 4px;
+}
+
+.password-toggle:hover {
+  color: #333;
+}
+
+
+/* =========================================
+   ERROR
+========================================= */
+
+.register-error {
+  margin: 5px 0 12px;
+
+  padding: 8px 10px;
+
+  border-radius: 5px;
+
+  background: #fff1f1;
+  color: #d93025;
+
+  font-size: 12px;
+}
+
+
+/* =========================================
+   CREATE ACCOUNT BUTTON
+========================================= */
+
+.register-button {
+  width: 100%;
+  height: 44px;
+
+  margin-top: 4px;
+
+  border: none;
+  border-radius: 7px;
+
+  background: #2874f0;
+  color: #ffffff;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+.register-button:hover {
+  background: #1765df;
+}
+
+.register-button:active {
+  transform: scale(0.99);
+}
+
+
+/* =========================================
+   LOGIN LINK
+========================================= */
+
+.register-login {
+  text-align: center;
+
+  margin-top: 17px;
+
+  font-size: 13px;
+
+  color: #777;
+}
+
+.register-login a {
+  color: #2874f0;
+
+  font-weight: 600;
+
+  text-decoration: none;
+}
+
+.register-login a:hover {
+  text-decoration: underline;
+}
+
+
+/* =========================================
+   RIGHT IMAGE SECTION
+========================================= */
+
+.register-image-section {
+  position: relative;
+
+  height: 80%;
+
+  overflow: hidden;
+
+  background: #eef4ff;
+}
+
+
+/* =========================================
+   IMAGE
+========================================= */
+
+.register-image {
+  width: 100%;
+  height: 100%;
+  display: block;
+  padding-right: 0px;
+  object-fit: cover;
+}
+
+
+/* =========================================
+   IMAGE OVERLAY
+========================================= */
+
+.register-image-overlay {
+  position: absolute;
+
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  color: #ffffff;
+
+  background: linear-gradient(transparent,
+      rgba(0, 0, 0, 0.72));
+      
+}
+
+.register-image-overlay h2 {
+  margin: 0 0 8px;
+
+  font-size: 25px;
+  font-weight: 700;
+}
+
+.register-image-overlay p {
+  margin: 0;
+
+  max-width: 400px;
+
+  font-size: 13px;
+  line-height: 1.6;
+
+  color: #f2f2f2;
+}
+
+
+/* =========================================
+   TABLET
+========================================= */
+
+@media (max-width: 850px) {
+  .register-container {
+    width: min(700px, 100%);
+    height: auto;
+
+    grid-template-columns: 1fr;
+  }
+
+  .register-image-section {
+    display: none;
+  }
+
+  .register-form-section {
+    min-height: 650px;
+    padding: 35px 45px;
+  }
+
+  .register-content {
+    max-width: 430px;
+  }
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 500px) {
+  .register-page {
+    padding: 0;
+
+    align-items: stretch;
+  }
+
+  .register-container {
+    width: 100%;
+    min-height: 100vh;
+
+    border-radius: 0;
+
+    box-shadow: none;
+  }
+
+  .register-form-section {
+    min-height: 100vh;
+
+    padding: 30px 22px;
+  }
+
+  .register-header h1 {
+    font-size: 26px;
+  }
+
+  .register-header p {
+    font-size: 12px;
+  }
+
+  .register-input-group {
+    margin-bottom: 13px;
+  }
+
+  .register-input-wrapper,
+  .register-input-wrapper input {
+    height: 43px;
+  }
+}
