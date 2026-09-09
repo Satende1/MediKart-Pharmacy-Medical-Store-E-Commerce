@@ -52,19 +52,37 @@ const ForgotPassword = ({ onClose, onSwitchToLogin }) => {
         }
       );
 
-      const data = await response.json();
-
+      // Check if response is OK
       if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
         throw new Error(
-          data.message ||
-          data.detail ||
-          "Unable to send OTP."
+          errorData.message ||
+          errorData.detail ||
+          `Server error: ${response.status}`
         );
       }
 
+      const data = await response.json();
+
+      // For development - simulate OTP sending
+      if (process.env.NODE_ENV === 'development') {
+        console.log('OTP sent to:', email);
+        console.log('OTP:', data.otp || '123456');
+      }
+
       setStep("otp");
+      setError("");
     } catch (err) {
-      setError(err.message || "Unable to send OTP.");
+      console.error('Send OTP Error:', err);
+
+      // Handle network errors specifically
+      if (err.message === 'Failed to fetch') {
+        setError(
+          "Cannot connect to server. Please check if the backend is running at http://127.0.0.1:8000"
+        );
+      } else {
+        setError(err.message || "Unable to send OTP. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
@@ -100,20 +118,27 @@ const ForgotPassword = ({ onClose, onSwitchToLogin }) => {
         }
       );
 
-      const data = await response.json();
-
       if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
         throw new Error(
-          data.message ||
-          data.detail ||
-          "Invalid OTP."
+          errorData.message ||
+          errorData.detail ||
+          `Server error: ${response.status}`
         );
       }
 
       setStep("reset");
       setError("");
     } catch (err) {
-      setError(err.message || "Invalid OTP.");
+      console.error('Verify OTP Error:', err);
+
+      if (err.message === 'Failed to fetch') {
+        setError(
+          "Cannot connect to server. Please check if the backend is running at http://127.0.0.1:8000"
+        );
+      } else {
+        setError(err.message || "Invalid OTP. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
@@ -126,7 +151,6 @@ const ForgotPassword = ({ onClose, onSwitchToLogin }) => {
   const handleResetPassword = async (e) => {
     e.preventDefault();
 
-    // Validate passwords before API call
     if (!password || !confirmPassword) {
       setError("Please enter your password.");
       return;
@@ -161,15 +185,15 @@ const ForgotPassword = ({ onClose, onSwitchToLogin }) => {
         }
       );
 
-      const data = await response.json();
-
       if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
         throw new Error(
-          data.message ||
-          data.detail ||
-          "Unable to reset password."
+          errorData.message ||
+          errorData.detail ||
+          `Server error: ${response.status}`
         );
       }
+
 
       // Clear password fields
       setPassword("");
@@ -179,9 +203,15 @@ const ForgotPassword = ({ onClose, onSwitchToLogin }) => {
       // Move to success page
       setStep("success");
     } catch (err) {
-      setError(
-        err.message || "Unable to reset password."
-      );
+      console.error('Reset Password Error:', err);
+
+      if (err.message === 'Failed to fetch') {
+        setError(
+          "Cannot connect to server. Please check if the backend is running at http://127.0.0.1:8000"
+        );
+      } else {
+        setError(err.message || "Unable to reset password. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
@@ -308,6 +338,7 @@ const ForgotPassword = ({ onClose, onSwitchToLogin }) => {
               className="back-login"
               onClick={handleBackToLogin}
             >
+              <FaArrowLeft />
               Back to Login
             </button>
           </>
